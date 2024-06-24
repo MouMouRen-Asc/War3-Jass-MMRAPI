@@ -1,0 +1,286 @@
+[MMRAPI_BaseAttributemodification]
+title = "万能属性模拟系统（基础）[某某人制作]"
+description = "需要设置的单位为 ${单位}，属性类型为 ${属性类型}，数值为 ${数值}，是增加么 ${是还是否}"
+comment = "模拟属性增减，但是只会模拟部分属性"
+category = TC_MMRAPI
+[[.args]]
+type = unit
+default = ""
+[[.args]]
+type = unitstate
+default = UNIT_STATE_LIFE
+[[.args]]
+type = integer
+default = "0"
+[[.args]]
+type = boolean
+default = false
+
+[MMRAPI_HeroSet]
+title = "内置英雄设置[某某人制作]"
+description = "需要设置的单位为 ${玩家}，设置的英雄 ${单位}"
+comment = "设置内置内联函数的一个英雄，给他一个初始值用于支持百分比全属性增幅的运行"
+category = TC_MMRAPI
+[[.args]]
+type = player
+default = "GetTriggerPlayer"
+[[.args]]
+type = unit
+default = "GetTriggerUnit"
+
+[MMRAPI_HeroPercentSet]
+title = "百分比属性设置系统[某某人制作]"
+description = "需要设置的玩家 ${玩家}，属性类型为 ${属性类型}，数值为 ${数值}"
+comment = "属性类型1是力量，属性类型2是敏捷，属性类型3是智力，4是白字攻击力(需要内置英雄设置的支持)"
+category = TC_MMRAPI
+[[.args]]
+type = player
+default = "GetTriggerPlayer"
+[[.args]]
+type = integer
+default = "0"
+[[.args]]
+type = integer
+default = "0"
+
+[MMRAPI_ChangeAttributePercent]
+title = "设置百分比属性值增减[某某人制作]"
+description = "需要设置的玩家 ${玩家}，属性类型为 ${整数} , 值为${整数} ， 是否增加${布尔}"
+comment = "属性类型1是力量，属性类型2是敏捷，属性类型3是智力，4是白字攻击力(需要内置英雄设置的支持)"
+category = TC_MMRAPI
+[[.args]]
+type = player
+default = "GetTriggerPlayer"
+[[.args]]
+type = integer
+default = "0"
+[[.args]]
+type = integer
+default = "0"
+[[.args]]
+type = boolean
+default = "true"
+
+[MMRAPI_DynamicAttributeTimeInit]
+title = "百分比属性启用[某某人制作]"
+description = "开启玩家1到玩家8的百分比属性系统，需要设置内置英雄设置"
+comment = "开启玩家1到玩家8的百分比属性系统，需要设置内置英雄设置"
+category = TC_MMRAPI
+
+[MMRAPI_HeroTransformation]
+title = "变身系统[某某人制作]"
+description = "需要设置的玩家 ${需要变身的单位}，单位类型为 ${目标单位类型}"
+comment = "将需要传入的单位变身为这个单位所有者所有的目标单位类型的单位"
+category = TC_MMRAPI
+[[.args]]
+type = unit
+default = "GetTriggerUnit"
+[[.args]]
+type = unitpool
+default = "CreateUnitPool()"
+
+[MMRAPI_DeleteSkillAsSoltAndHero]
+title = "删除内置指定玩家英雄的指定槽位技能[某某人制作]"
+description = "需要设置的玩家 ${玩家指定}，槽位${槽位值}"
+comment = "将需要传入的单位变身为这个单位所有者所有的目标单位类型的单位"
+category = TC_MMRAPI
+[[.args]]
+type = player
+default = "GetTriggerPlayer"
+[[.args]]
+type = integer
+default = "0"
+
+[MMRAPI_AddSkillAsSoltAndHero]
+title = "为空置槽位添加一个指定技能"
+description = "需要设置的玩家 ${玩家指定}，技能${槽位值}"
+comment = "将需要传入的单位变身为这个单位所有者所有的目标单位类型的单位"
+category = TC_MMRAPI
+[[.args]]
+type = player
+default = "GetTriggerPlayer"
+[[.args]]
+type = abilcode
+
+[MMRAPI_SetInTransSkillHash]
+title = "添加一个合成技能"
+description = "合成技能主技能 ${技能ID}，合成技能辅技能1${技能ID} ，合成技能辅技能2${技能ID} ，合成技能辅技能3${技能ID} ，合成技能辅技能4${技能ID} ， 合成技能目标技能${技能ID}"
+comment = "将需要传入的单位变身为这个单位所有者所有的目标单位类型的单位"
+category = TC_MMRAPI
+[[.args]]
+type = abilcode
+[[.args]]
+type = abilcode
+[[.args]]
+type = abilcode
+[[.args]]
+type = abilcode
+[[.args]]
+type = abilcode
+[[.args]]
+type = abilcode
+
+[MMRAPI_ChangeCanTransState]
+title = "合成技能系统状态切换"
+description = "合成状态切换玩家ID：${玩家ID}"
+comment = "将需要传入的单位变身为这个单位所有者所有的目标单位类型的单位,玩家1的ID是0"
+category = TC_MMRAPI
+[[.args]]
+type = integer
+default = "0"
+
+[BagPackApi_SetItemToBag]
+title = "增加一件装备去背包[某某人制作]"
+description = "需要设置的玩家 ${player}，物品为 ${物品}"
+comment = ""
+category = TC_MMRBAGPACK
+[[.args]]
+type = player
+[[.args]]
+type = item
+
+[BagPackApi_UiCreate]
+title = "创建背包UI[某某人制作]"
+description = "开启并创建一个背包UI"
+comment = "不可重复创建，初始化创建即可"
+category = TC_MMRBAGPACK
+
+[BagPackApi_UiShowOrClose]
+title = "显示或关闭背包UI[某某人制作]"
+description = "需要显示的玩家 ${player}"
+comment = ""
+category = TC_MMRBAGPACK
+[[.args]]
+type = player
+
+
+[BagPackApi_SetBackGround]
+title = "设置背包各类背景图[某某人制作]"
+description = "背包背景底图 ${str}，说明底图 ${str},按钮开启${str}，按钮关闭${str}"
+comment = "最好初始化时设置于创建UI前设置"
+category = TC_MMRBAGPACK
+[[.args]]
+type = string
+[[.args]]
+type = string
+[[.args]]
+type = string
+[[.args]]
+type = string
+
+[BagPackApi_SetPlayerBagPackCanUse]
+title = "设置玩家234号背包是否可以使用[某某人制作]"
+description = "设置的玩家 ${玩家}，背包2 ${b},背包3${b1}，背包4${b2}"
+comment = "最好初始化时设置于创建UI前设置"
+category = TC_MMRBAGPACK
+[[.args]]
+type = player
+default = "GetTriggerPlayer"
+[[.args]]
+type = boolean
+default = "true"
+[[.args]]
+type = boolean
+default = "true"
+[[.args]]
+type = boolean
+default = "true"
+
+[ChangeBaseTextur]
+title = "设置某个选项的底图路径"
+description = "设置 ${玩家} 的 ${选项123其中一个} 的 ${图片路径} "
+comment = ""
+category =TC_MMRThreeForOne
+[[.args]]
+type = player
+default = "GetTriggerPlayer"
+[[.args]]
+type = integer
+[[.args]]
+type = string
+default = "UI\\Widgets\\ToolTips\\Human\\human-tooltip-background.blp"
+
+[ChangeTxModle]
+title = "设置某个选项的进入特效"
+description = "设置 ${玩家} 的 ${选项123其中一个} 的 ${特效路径} "
+comment = ""
+category = TC_MMRThreeForOne
+[[.args]]
+type = player
+default = "GetTriggerPlayer"
+[[.args]]
+type = integer
+[[.args]]
+type = string
+default = "UI\\Feedback\\Autocast\\UI-ModalButtonOn.mdl"
+
+[ChangePlayerChoose3Bool]
+title = "设置玩家是否可以使用第三个选项"
+description = "设置 ${玩家} 的 ${选项是否} "
+comment = ""
+category = TC_MMRThreeForOne
+[[.args]]
+type = player
+default = "GetTriggerPlayer"
+[[.args]]
+type = boolean
+
+[ShowChooseUiToPlayer]
+title = "对玩家显示三选一UI"
+description = "设置 ${玩家} 选项 ${第1个选项类型}  ${4字节码} ${第2个选项类型} ${4字节码} ${第3个选项类型} ${4字节码}"
+comment = "选项类型1为装备2为技能"
+category = TC_MMRThreeForOne
+[[.args]]
+type = player
+default = "GetTriggerPlayer"
+[[.args]]
+type = integer
+[[.args]]
+type = integer
+[[.args]]
+type = integer
+[[.args]]
+type = integer
+[[.args]]
+type = integer
+[[.args]]
+type = integer
+
+[ChooseOneForThree_Init]
+title = "载入三选一UI"
+description = "加载三选一UI"
+comment = "建议初始化时载入"
+category = TC_MMRThreeForOne
+
+[FuncItemSystem_Init]
+title = "启用Lua预读物品与相应的伤害系统"
+description = "初始化时加载"
+comment = ""
+category = TC_MMRAPI
+
+[AddAttributeAsItem]
+title = "增加指定物品的属性给英雄"
+description = "指定属性的物品：${物品} 哪个玩家： ${玩家}"
+comment = "给内置属性系统添加一部分属性，需要扣除使用移除物品的属性"
+category = TC_MMRAPI
+[[.args]]
+type = item
+[[.args]]
+type = player
+
+[RemoveAttributeAsItem]
+title = "移除指定物品的属性给英雄"
+description = "需要移除属性的物品：${物品} 哪个玩家： ${玩家}"
+comment = "给内置属性系统添加一部分属性，如果需要增加使用增加指定物品的属性"
+category = TC_MMRAPI
+[[.args]]
+type = item
+[[.args]]
+type = player
+
+
+[InitTrig_MemoryHack]
+title = "MH启动！"
+description = "进入游戏后加载"
+comment = ""
+category = TC_MMRAPI

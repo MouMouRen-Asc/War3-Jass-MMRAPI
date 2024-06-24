@@ -1,0 +1,75 @@
+[MMRAPI_CheckHeroMainAttribute]
+title = "英雄主属性获得"
+description = "获得${单位}的主属性[某某人制作]"
+comment = "返回值1是力量，2是敏捷，3是智力"
+category = TC_MMRAPI
+returns = integer
+[[.args]]
+type = unit
+default = "GetTriggerUnit"
+
+[MMRAPI_TargetPlayer]
+title = "获取内置英雄单位"
+description = "获得${玩家}的内置英雄单位[某某人制作]"
+comment = "返回一个当前玩家的内置指定单位"
+category = TC_MMRAPI
+returns = unit
+[[.args]]
+type = player
+default = "GetTriggerPlayer"
+
+[MMRAPI_GetSkillIdSolt]
+title = "获取技能所在槽位"
+description = "指定玩家ID的${玩家id} ,指定技能id${技能id}[某某人制作]"
+comment = "返回技能ID所在的槽位，无则返回0"
+category = TC_MMRAPI
+returns = integer
+[[.args]]
+type = integer
+[[.args]]
+type = integer
+
+[MMRAPI_GetPlayerUnitSkill]
+title = "获取指定槽位的技能"
+description = "指定玩家ID的${玩家id} ,指定槽位id${槽位id}[某某人制作]"
+comment = "返回指定槽位的技能，无则返回0"
+category = TC_MMRAPI
+returns = abilcode
+[[.args]]
+type = integer
+[[.args]]
+type = integer
+
+
+
+[LoadPlayerLastChoose]
+title = "三选一上次选择"
+description = "获得${触发玩家}的三选一上次选择"
+comment = "在三选一期间返回值为9999"
+category = TC_MMRThreeForOne
+returns = integer
+[[.args]]
+type = player
+default = "GetTriggerPlayer"
+
+
+[MMRAPI_ChangeCanTransState]
+title = "合成技能系统状态切换"
+description = "合成状态切换玩家ID：${玩家ID}"
+comment = "将需要传入的单位变身为这个单位所有者所有的目标单位类型的单位,玩家1的ID是0"
+category = TC_MMRAPI
+returns = boolean
+[[.args]]
+type = integer
+default = "0"
+
+
+[GetPlayerSkillCoodDown]
+title = "返回一个目标单位技能冷却时间"
+description = "需要返回的目标单位：${单位}"
+comment = "传入一个单位，返回这个单位所有者的技能冷却(直接乘数)"
+category = TC_MMRAPI
+returns = real
+[[.args]]
+type = unit
+default = "GetTriggerUnit"
