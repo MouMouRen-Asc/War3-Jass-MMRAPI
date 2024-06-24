@@ -1,0 +1,6 @@
+[TriggerCategories]
+TC_JM=[加密],ReplaceableTextures\CommandButtons\BTNBearBlink.blp
+
+[TriggerTypes]
+string=0,1,1,WESTRING_TRIGTYPE_string
+

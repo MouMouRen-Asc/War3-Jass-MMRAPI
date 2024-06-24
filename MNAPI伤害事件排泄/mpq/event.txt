@@ -1,0 +1,8 @@
+[MNAnyUnitDamaged]
+title = "[猛男]任意单位接受伤害[自动排泄事件]"
+description = "任意单位接受伤害,并且每隔${多少}秒自动排泄"
+comment = "本事件在原版基础上进行了改进，每隔一段时间自动排泄。设定的时间为全局变量，以第一个本事件设定的时间参数为准。"
+category = TC_MNAPI
+[[.args]]
+type = real
+default = 60

@@ -1,0 +1,155 @@
+[XIAOWU_BSE_C]
+title = "贝塞尔曲线[带高度]PS：单位到单位"
+description = "单位1：${单位} 到单位2：${单位} 特效：${特效} 初始高度：${实数} 最高高度：${实数} 角度：${实数} 距离：${实数} "
+comment = "高度可以写随机初始高度-任意高度，角度可以写随机实数110-250，距离自己试试就知道了PS：创建特效在坐标，不要创建到点"
+category = TC_XIAOWU
+[[.args]]
+type = unit
+default = ""
+[[.args]]
+type = unit
+default = ""
+[[.args]]
+type = effect
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+
+[XIAOWU_BSE_F]
+title = "贝塞尔曲线[带高度]PS：点到点"
+description = "开始点：${点} 结束点：${点} 特效：${特效} 初始高度：${实数} 最高高度：${实数} 角度：${实数} 距离开始点距离：${实数} "
+comment = "PS:开始点和结束点会-自动排泄-不需要预设点。创建特效在坐标，不要创建到点"
+category = TC_XIAOWU
+[[.args]]
+type = location
+default = ""
+[[.args]]
+type = location
+default = ""
+[[.args]]
+type = effect
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+
+[XIAOWU_BSESH_A]
+title = "贝塞尔曲线[带伤害]"
+description = "单位1：${单位} 单位2：${单位} 特效：${特效} 初始高度：${实数} 最高高度：${实数} 角度：${实数} 距离：${实数} ，并让单位1对单位2造成${实数}攻击伤害，攻击类型：${法术}伤害类型：${普通}"
+comment = "高度可以写随机初始高度-任意高度，角度可以写随机实数110-250，距离自己试试就知道了，PS：创建特效在坐标，不要创建到点"
+category = TC_XIAOWU
+[[.args]]
+type = unit
+default = ""
+[[.args]]
+type = unit
+default = ""
+[[.args]]
+type = effect
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = attacktype
+default = ""
+[[.args]]
+type = damagetype
+default = ""
+
+[XIAOWU_SXXQ_A]
+title = "扇形选取[带伤害]"
+description = "单位：造成伤害${单位} 目标单位${单位}选取半径：${实数} 选取角度：${角度}造成：${伤害}点伤害(${true}攻击伤害，${false}远程伤害)攻击类型：${法术}伤害类型：${普通}"
+comment = "选取单位面向角度PS：选取单位不是建筑，单位生命值大于0，是单位所有者的敌对单位"
+category = TC_XIAOWU
+[[.args]]
+type = unit
+default = ""
+[[.args]]
+type = unit
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = boolean
+default = "true"
+[[.args]]
+type = boolean
+default = "false"
+[[.args]]
+type = attacktype
+default = ""
+[[.args]]
+type = damagetype
+default = ""
+
+[XIAOWU_JXXQ_A]
+title = "任意矩形选取[带伤害]"
+description = "造成伤害单位：${单位} ，开始位置单位：${单位}结束点：${点}宽度：${宽度}对直线造成：${伤害}伤害(${true}攻击伤害，${false}远程伤害)攻击类型：${法术}伤害类型：${普通}"
+comment = "选取开始单位到结束点宽度内矩形的单位造成伤害,矩形直线伤害PS：选取单位不是建筑，单位生命值大于0，是单位所有者的敌对单位"
+category = TC_XIAOWU
+[[.args]]
+type = unit
+default = ""
+[[.args]]
+type = unit
+default = ""
+[[.args]]
+type = location
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = boolean
+default = "true"
+[[.args]]
+type = boolean
+default = "false"
+[[.args]]
+type = attacktype
+default = ""
+[[.args]]
+type = damagetype
+default = ""

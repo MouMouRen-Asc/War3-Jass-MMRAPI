@@ -1,0 +1,14 @@
+[XIAOWU_XQDWDR_A]
+title = "[小舞]单位是玩家的敌对单位(便捷3合一条件)"
+description = "单位：${选取单位}是 玩家：${玩家} 的敌对单位"
+comment = "就是把（单位不等于建筑）and（单位生命值大于0）and（单位是玩家的敌对单位）这3个条件合成到一起了"
+category = TC_UNIT
+returns = boolean
+[[.args]]
+type = unit
+default = "GetEnumUnit"
+[[.args]]
+type = player
+default = ""
+
+
