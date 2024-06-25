@@ -730,7 +730,7 @@ library MmrApi initializer MmrApi_Init requires YDWEYDWEJapiScript
             return 3
         endif
         return 0
-    endfunction
+    endfunction 
 
     function MMRAPI_DynamicAttributeCalcute takes unit wichUnit , integer percentage ,integer wichAttribute  , real thisAttrApvalue , boolean includeBonuses returns nothing
         local integer str 
@@ -3324,23 +3324,25 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
 
 	private function trg5Co takes nothing returns boolean
 		///任意单位伤害事件的条件，筛选用的
-    	return GetEventDamage() >= 1.00 and IsUnitEnemy(GetTriggerUnit(), GetOwningPlayer(GetEventDamageSource())) == true
+    	return GetEventDamage() >= 1.00 and IsUnitEnemy(GetTriggerUnit(), GetOwningPlayer(GetEventDamageSource())) == true 
 	endfunction
 
     //暴击检测
-    private function CheckAndCalcutePhysicalOrMagic_CriticalStrike takes real damagevalue ,integer pid , boolean isphysical ,real damagepower returns real damage
+    private function CheckAndCalcutePhysicalOrMagic_CriticalStrike takes real damagevalue ,integer pid , boolean isphysical returns real damage
         local real needreturn = 0
         if isphysical then
             if (Player_Physical_Critical_Percent[pid]) >= GetRandomInt(1,100) then
                 set needreturn = damagevalue * (1 + (Player_Physical_Critical_Value[pid]/100))
-                if  damagepower > 100000000 then
-                     call PFWZ("|cfffc2c2c物理暴击" + I2S(R2I(needreturn)) + "亿",GetTriggerUnit(),0.02,255,255,255,0.00,0.05,1.0)
-                elseif  damagepower > 1000000  then
-                    call PFWZ("|cfffc2c2c物理暴击" + I2S(R2I(needreturn)) + "百万",GetTriggerUnit(),0.02,255,255,255,0.00,0.05,1.0)
-                elseif damagepower > 10000 then
-                    call PFWZ("|cfffc2c2c物理暴击" + I2S(R2I(needreturn)) + "万",GetTriggerUnit(),0.02,255,255,255,0.00,0.05,1.0)
+                if  needreturn > 100000000 then
+                    call PFWZ("|cfffc2c2c物理暴击" + I2S(R2I(needreturn/100000000)) + "亿",GetTriggerUnit(),0.035,255,255,255,GetRandomReal(0.00,0.05),GetRandomReal(0.00,0.05),3.0)
+                elseif  needreturn > 10000000  then
+                    call PFWZ("|cfffc2c2c物理暴击" + I2S(R2I(needreturn/1000000)) + "千万",GetTriggerUnit(),0.03,255,255,255,GetRandomReal(0.00,0.05),GetRandomReal(0.00,0.05),2.5)
+                elseif  needreturn > 1000000  then
+                    call PFWZ("|cfffc2c2c物理暴击" + I2S(R2I(needreturn/1000000)) + "百万",GetTriggerUnit(),0.025,255,255,255,GetRandomReal(0.00,0.05),GetRandomReal(0.00,0.05),2.0)
+                elseif needreturn > 10000 then
+                    call PFWZ("|cfffc2c2c物理暴击" + I2S(R2I(needreturn/10000)) + "万",GetTriggerUnit(),0.02,255,255,255,GetRandomReal(0.00,0.05),GetRandomReal(0.00,0.05),1.5)
                 else 
-                    call PFWZ("|cfffc2c2c物理暴击" + I2S(R2I(needreturn)) ,GetTriggerUnit(),0.02,255,255,255,0.00,0.05,1.0)
+                    call PFWZ("|cfffc2c2c物理暴击" + I2S(R2I(needreturn)) ,GetTriggerUnit(),0.02,255,255,255,GetRandomReal(0.00,0.05),GetRandomReal(0.00,0.05),1.0)
                 endif
                 return needreturn
             else
@@ -3350,14 +3352,16 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
             if (Player_Magic_Critical_Percent[pid]) >= GetRandomInt(1,100) then
                 set needreturn = damagevalue * (1 + (Player_Magic_Critical_Value[pid]/100))
 
-                if  damagepower > 100000000 then
-                    call PFWZ("|cff2c5dfc魔法暴击" + R2S(needreturn) + "亿",GetTriggerUnit(),0.02,255,255,255,0.00,0.05,1.0)
-                elseif  damagepower > 1000000  then
-                    call PFWZ("|cff2c5dfc魔法暴击" + I2S(R2I(needreturn)) + "百万",GetTriggerUnit(),0.02,255,255,255,0.00,0.05,1.0)
-                elseif damagepower > 10000 then
-                    call PFWZ("|cff2c5dfc魔法暴击" + I2S(R2I(needreturn)) + "万",GetTriggerUnit(),0.02,255,255,255,0.00,0.05,1.0)
+                if  needreturn > 100000000 then
+                    call PFWZ("|cff2c5dfc魔法暴击" + R2S(needreturn/100000000) + "亿",GetTriggerUnit(),0.035,255,255,255,GetRandomReal(0.00,0.05),GetRandomReal(0.00,0.05),3.0)
+                elseif  needreturn > 10000000  then
+                    call PFWZ("|cff2c5dfc魔法暴击" + I2S(R2I(needreturn/10000000)) + "千万",GetTriggerUnit(),0.03,255,255,255,GetRandomReal(0.00,0.05),GetRandomReal(0.00,0.05),2.5)
+                elseif  needreturn > 1000000  then
+                    call PFWZ("|cff2c5dfc魔法暴击" + I2S(R2I(needreturn/1000000)) + "百万",GetTriggerUnit(),0.025,255,255,255,GetRandomReal(0.00,0.05),GetRandomReal(0.00,0.05),2.0)
+                elseif needreturn > 10000 then
+                    call PFWZ("|cff2c5dfc魔法暴击" + I2S(R2I(needreturn/10000)) + "万",GetTriggerUnit(),0.02,255,255,255,GetRandomReal(0.00,0.05),GetRandomReal(0.00,0.05),1.5)
                 else 
-                    call PFWZ("|cff2c5dfc魔法暴击" + I2S(R2I(needreturn)) ,GetTriggerUnit(),0.02,255,255,255,0.00,0.05,1.0)             
+                    call PFWZ("|cff2c5dfc魔法暴击" + I2S(R2I(needreturn)) ,GetTriggerUnit(),0.02,255,255,255,GetRandomReal(0.00,0.05),GetRandomReal(0.00,0.05),1.0)             
                 endif
                 return needreturn
             else
@@ -3382,17 +3386,6 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
         local unit targetunit = GetTriggerUnit()
         local real suckingvalue
         local real needsetdamage
-        local real damagepower = 1
-
-        if getdamage > 1000000 then
-            set getdamage = getdamage / 10000
-            set damagepower = damagepower * 10000
-        endif
-        if getdamage > 10000 then
-            set getdamage = getdamage / 100
-            set damagepower = damagepower * 100
-        endif
-
 
         if GetPlayerController(GetOwningPlayer(damageunit)) == MAP_CONTROL_USER then
             set pid = GetPlayerId(GetOwningPlayer(damageunit))
@@ -3413,7 +3406,7 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
             if (YDWEIsEventAttackDamage() == true) then
                 if (YDWEIsEventPhysicalDamage() == true) and ( YDWEIsEventAttackType(ATTACK_TYPE_MAGIC) == false ) then
                     set realdamage = (Player_Attack_Damage_Append[pid] + getdamage) * physicalDamageMmult
-                    set needsetdamage = CheckAndCalcutePhysicalOrMagic_CriticalStrike(realdamage , pid , true, damagepower) * damagepower
+                    set needsetdamage = CheckAndCalcutePhysicalOrMagic_CriticalStrike(realdamage , pid , true)
                     if needsetdamage >2000000000 or needsetdamage < 0 then
                         set needsetdamage = 2000000000
                     endif
@@ -3423,7 +3416,7 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
                     endif 
                 else
                     set realdamage = (Player_Attack_Damage_Append[pid] + getdamage) * magicDamageMult 
-                    set needsetdamage = CheckAndCalcutePhysicalOrMagic_CriticalStrike(realdamage , pid , false, damagepower) * damagepower
+                    set needsetdamage = CheckAndCalcutePhysicalOrMagic_CriticalStrike(realdamage , pid , false)
                     if needsetdamage >2000000000 or needsetdamage < 0 then
                         set needsetdamage = 2000000000
                     endif
@@ -3436,7 +3429,7 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
             else 
                 if (YDWEIsEventPhysicalDamage() == true) then
                     set realdamage = (Player_Skill_Damage_Append[pid] + getdamage) * physicalDamageMmult * (1 + (Player_Skill_Damage_Percent[pid]/100))
-                    set needsetdamage = CheckAndCalcutePhysicalOrMagic_CriticalStrike(realdamage , pid , true, damagepower) * damagepower
+                    set needsetdamage = CheckAndCalcutePhysicalOrMagic_CriticalStrike(realdamage , pid , true) 
                     if needsetdamage >2000000000 or needsetdamage < 0 then
                         set needsetdamage = 2000000000
                     endif
@@ -3446,7 +3439,7 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
                     endif
                 else
                     set realdamage = (Player_Skill_Damage_Append[pid] + getdamage) * magicDamageMult * (1 + (Player_Skill_Damage_Percent[pid]/100))
-                    set needsetdamage = CheckAndCalcutePhysicalOrMagic_CriticalStrike(realdamage , pid , false, damagepower) * damagepower
+                    set needsetdamage = CheckAndCalcutePhysicalOrMagic_CriticalStrike(realdamage , pid , false)
                     if needsetdamage >2000000000 or needsetdamage < 0 then
                         set needsetdamage = 2000000000
                     endif
@@ -3565,7 +3558,7 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
 		static if LIBRARY_YDWETriggerEvent then
 		set trg[5] = CreateTrigger() ///任意单位接受伤害
 		call YDWESyStemAnyUnitDamagedRegistTrigger(trg[5])
-		call TriggerAddCondition(trg[3], Condition(function trg5Co))
+		call TriggerAddCondition(trg[5], Condition(function trg5Co))
 		call TriggerAddAction(trg[5],function trg5Ac)
 		endif
         set Sy = 0
