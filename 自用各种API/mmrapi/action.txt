@@ -252,6 +252,46 @@ description = "加载三选一UI"
 comment = "建议初始化时载入"
 category = TC_MMRThreeForOne
 
+[NewChooseInHashTable]
+title = "三选一属性选项增加一项可选择的属性选项"
+description = "显示贴图路径 ${字符串} "
+comment = "生成一个新的三选一可选的选项"
+category = TC_MMRThreeForOne
+[[.args]]
+type = string
+default = "ReplaceableTextures\\CommandButtons\\BTNBoots.blp"
+
+[AddAttributeToHash]
+title = "为指定三选一属性选项的ID增加一项属性"
+description = "选项ID ${ID} ，属性ID ${ID} ，属性增加值 ${ID} ,带数值的说明 ${ID} "
+comment = "可增加无限多选项，建议不要超过5个PS:属性增加值会被属性增加值修正器修正"
+category = TC_MMRThreeForOne
+[[.args]]
+type = integer
+default = "0"
+[[.args]]
+type = integer
+default = "0"
+[[.args]]
+type = integer
+default = "0"
+[[.args]]
+type = string
+default = "这是一串属性说明"
+
+[ChangePlayerAttributeCorrectedValue]
+title = "三选一属性增加值修正值调整"
+description = "需要改变的玩家为 ${玩家} ，目标值为 ${整数} "
+comment = "属性增加值*修正值 = 最终值 ：不设置的话默认值为1"
+category = TC_MMRThreeForOne
+[[.args]]
+type = player
+default = "ReplaceableTextures\\CommandButtons\\BTNBoots.blp"
+[[.args]]
+type = integer
+default = "1"
+
+
 [FuncItemSystem_Init]
 title = "启用Lua预读物品与相应的伤害系统"
 description = "初始化时加载"
