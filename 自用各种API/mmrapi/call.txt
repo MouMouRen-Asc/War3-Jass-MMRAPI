@@ -73,3 +73,17 @@ returns = real
 [[.args]]
 type = unit
 default = "GetTriggerUnit"
+
+
+[GetAttributeForPlayer]
+title = "查询指定玩家的指定属性"
+description = "需要查询的玩家：${玩家} 属性ID： ${整数}"
+comment = "查询内置指定玩家的指定属性"
+category = TC_MMRAPI
+returns = integer
+[[.args]]
+type = player
+default = "GetTriggerPlayer"
+[[.args]]
+type = integer
+default = "1"

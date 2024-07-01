@@ -2470,51 +2470,51 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
 		private integer array GreenValueSkill
         private integer array MonsterCheckSkill
 
-        private integer array Time_Add_Attack
-        private integer array Time_Add_Str
-        private integer array Time_Add_Agi
-        private integer array Time_Add_Int
-        private integer array Time_Add_MaxHealth
-        private integer array Time_Add_MaxMana
-        private integer array Time_Add_Gold
-        private integer array Time_Add_Wood
-        private integer array Time_Add_Health
-        private integer array Time_Add_Mana
+        private integer array Time_Add_Attack//1
+        private integer array Time_Add_Str//2
+        private integer array Time_Add_Agi//3
+        private integer array Time_Add_Int//4
+        private integer array Time_Add_MaxHealth//5
+        private integer array Time_Add_MaxMana//6
+        private integer array Time_Add_Gold//7
+        private integer array Time_Add_Wood//8
+        private integer array Time_Add_Health//9
+        private integer array Time_Add_Mana//10
 
 
-        private integer array Kill_Add_Attack
-        private integer array Kill_Add_Str
-        private integer array Kill_Add_Agi
-        private integer array Kill_Add_Int
-        private integer array Kill_Add_MaxHealth
-        private integer array Kill_Add_MaxMana
-        private integer array Kill_Add_Exp
-        private integer array Kill_Add_Exp_Percent
-        private integer array Kill_Add_Gold
-        private integer array Kill_Add_Gold_Percent
-        private integer array Kill_Add_Wood
-        private integer array Kill_Add_Wood_Percent
+        private integer array Kill_Add_Attack//11
+        private integer array Kill_Add_Str//12
+        private integer array Kill_Add_Agi//13
+        private integer array Kill_Add_Int//14
+        private integer array Kill_Add_MaxHealth//15
+        private integer array Kill_Add_MaxMana//16
+        private integer array Kill_Add_Exp//17
+        private integer array Kill_Add_Exp_Percent//18
+        private integer array Kill_Add_Gold//19
+        private integer array Kill_Add_Gold_Percent//20
+        private integer array Kill_Add_Wood//21
+        private integer array Kill_Add_Wood_Percent//22
 
-        private integer array Player_Physical_Critical_Value
-        private integer array Player_Physical_Critical_Percent
-        private integer array Player_Magic_Critical_Value
-        private integer array Player_Magic_Critical_Percent
-        private integer array Player_Skill_Damage_Percent
-        private integer array Player_Skill_Damage_Append
-        private integer array Player_Attack_Damage_Append
+        private integer array Player_Physical_Critical_Value//23
+        private integer array Player_Physical_Critical_Percent//24
+        private integer array Player_Magic_Critical_Value//25
+        private integer array Player_Magic_Critical_Percent//26
+        private integer array Player_Skill_Damage_Percent//27
+        private integer array Player_Skill_Damage_Append//28
+        private integer array Player_Attack_Damage_Append//29
 
 
-        private integer array Player_Physical_Damage_Percent
-        private integer array Player_Magic_Damage_Percent
-        private integer array Player_Last_Damage_Percent
-        private integer array Player_Normal_Damage_Percent
-        private integer array Player_Elite_Damage_Percent
-        private integer array Player_Boss_Damage_Percent
+        private integer array Player_Physical_Damage_Percent//30
+        private integer array Player_Magic_Damage_Percent//31
+        private integer array Player_Last_Damage_Percent//32
+        private integer array Player_Normal_Damage_Percent//33
+        private integer array Player_Elite_Damage_Percent//34
+        private integer array Player_Boss_Damage_Percent//35
 
-        private integer array Player_Physical_Sucking
-        private integer array Player_Magic_Sucking
-        private integer array Player_Physical_LessDamage
-        private integer array Player_Magic_LessDamage
+        private integer array Player_Physical_Sucking//36
+        private integer array Player_Magic_Sucking//37
+        private integer array Player_Physical_LessDamage//38
+        private integer array Player_Magic_LessDamage//39
 
         private integer array Player_Normal_Physical_MultipliedValue
         private integer array Player_Elite_Physical_MultipliedValue
@@ -2523,7 +2523,7 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
         private integer array Player_Elite_Magic_MultipliedValue
         private integer array Player_Boss_Magic_MultipliedValue
 
-        private integer array Player_Skill_Cold_Donw
+        private integer array Player_Skill_Cold_Donw//40
 
 	endglobals
 
@@ -3994,171 +3994,171 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
 
     function GetAttributeForPlayer takes player wichplayer , integer wihcattribute returns integer value
         local integer pid = GetPlayerId(wichplayer)
-        if wihcattribute = 1 then
+        if wihcattribute == 1 then
             return Time_Add_Attack[pid]
-        elseif wihcattribute = 2 then
+        elseif wihcattribute == 2 then
             return Time_Add_Str[pid]
-        elseif wihcattribute = 3 then
+        elseif wihcattribute == 3 then
             return Time_Add_Agi[pid]
-        elseif wihcattribute = 4 then
+        elseif wihcattribute == 4 then
             return Time_Add_Int[pid]
-        elseif wihcattribute = 5 then
+        elseif wihcattribute == 5 then
             return Time_Add_MaxHealth[pid]
-        elseif wihcattribute = 6 then
+        elseif wihcattribute == 6 then
             return Time_Add_MaxMana[pid]
-        elseif wihcattribute = 7 then
+        elseif wihcattribute == 7 then
             return Time_Add_Gold[pid]
-        elseif wihcattribute = 8 then
+        elseif wihcattribute == 8 then
             return Time_Add_Wood[pid]
-        elseif wihcattribute = 9 then
+        elseif wihcattribute == 9 then
             return Time_Add_Health[pid]
-        elseif wihcattribute = 10 then
+        elseif wihcattribute == 10 then
             return Time_Add_Mana[pid]
-        elseif wihcattribute = 11 then
+        elseif wihcattribute == 11 then
             return Kill_Add_Attack[pid]
-        elseif wihcattribute = 12 then
+        elseif wihcattribute == 12 then
             return Kill_Add_Str[pid]
-        elseif wihcattribute = 13 then
+        elseif wihcattribute == 13 then
             return Kill_Add_Agi[pid]
-        elseif wihcattribute = 14 then
+        elseif wihcattribute == 14 then
             return Kill_Add_Int[pid]
-        elseif wihcattribute = 15 then
+        elseif wihcattribute == 15 then
             return Kill_Add_MaxHealth[pid]
-        elseif wihcattribute = 16 then
+        elseif wihcattribute == 16 then
             return Kill_Add_MaxMana[pid]
-        elseif wihcattribute = 17 then
+        elseif wihcattribute == 17 then
             return Kill_Add_Exp[pid]
-        elseif wihcattribute = 18 then
+        elseif wihcattribute == 18 then
             return Kill_Add_Exp_Percent[pid]
-        elseif wihcattribute = 19 then
+        elseif wihcattribute == 19 then
             return Kill_Add_Gold[pid]
-        elseif wihcattribute = 20 then
+        elseif wihcattribute == 20 then
             return Kill_Add_Gold_Percent[pid]
-        elseif wihcattribute = 21 then
+        elseif wihcattribute == 21 then
             return Kill_Add_Wood[pid]
-        elseif wihcattribute = 22 then
+        elseif wihcattribute == 22 then
             return Kill_Add_Wood_Percent[pid]
-        elseif wihcattribute = 23 then
+        elseif wihcattribute == 23 then
             return Player_Physical_Critical_Value[pid]
-        elseif wihcattribute = 24 then
+        elseif wihcattribute == 24 then
             return Player_Physical_Critical_Percent[pid]
-        elseif wihcattribute = 25 then
+        elseif wihcattribute == 25 then
             return Player_Magic_Critical_Value[pid]
-        elseif wihcattribute = 26 then
+        elseif wihcattribute == 26 then
             return Player_Magic_Critical_Percent[pid]
-        elseif wihcattribute = 27 then
+        elseif wihcattribute == 27 then
             return Player_Skill_Damage_Percent[pid]
-        elseif wihcattribute = 28 then
+        elseif wihcattribute == 28 then
             return Player_Skill_Damage_Append[pid]
-        elseif wihcattribute = 29 then
+        elseif wihcattribute == 29 then
             return Player_Attack_Damage_Append[pid]
-        elseif wihcattribute = 30 then
+        elseif wihcattribute == 30 then
             return Player_Physical_Damage_Percent[pid]
-        elseif wihcattribute = 31 then
+        elseif wihcattribute == 31 then
             return Player_Magic_Damage_Percent[pid]
-        elseif wihcattribute = 32 then
+        elseif wihcattribute == 32 then
             return Player_Last_Damage_Percent[pid]
-        elseif wihcattribute = 33 then
+        elseif wihcattribute == 33 then
             return Player_Normal_Damage_Percent[pid]
-        elseif wihcattribute = 34 then
+        elseif wihcattribute == 34 then
             return Player_Elite_Damage_Percent[pid]
-        elseif wihcattribute = 35 then
+        elseif wihcattribute == 35 then
             return Player_Boss_Damage_Percent[pid]
-        elseif wihcattribute = 36 then
+        elseif wihcattribute == 36 then
             return Player_Physical_Sucking[pid]
-        elseif wihcattribute = 37 then
+        elseif wihcattribute == 37 then
             return Player_Magic_Sucking[pid]
-        elseif wihcattribute = 38 then
+        elseif wihcattribute == 38 then
             return Player_Physical_LessDamage[pid]
-        elseif wihcattribute = 39 then
+        elseif wihcattribute == 39 then
             return Player_Magic_LessDamage[pid]
-        elseif wihcattribute = 40 then
+        elseif wihcattribute == 40 then
             return Player_Skill_Cold_Donw[pid]
         endif
-
+            return 0 
     endfunction
 
     function SetAttributeForPlayer takes player wichplayer , integer wihcattribute , integer value returns nothing
         local integer pid = GetPlayerId(wichplayer)
-        if wihcattribute = 1 then
+        if wihcattribute == 1 then
             set Time_Add_Attack[pid] = value
-        elseif wihcattribute = 2 then
+        elseif wihcattribute == 2 then
             set Time_Add_Str[pid] = value
-        elseif wihcattribute = 3 then
+        elseif wihcattribute == 3 then
             set Time_Add_Agi[pid] = value
-        elseif wihcattribute = 4 then
+        elseif wihcattribute == 4 then
             set Time_Add_Int[pid] = value
-        elseif wihcattribute = 5 then
+        elseif wihcattribute == 5 then
             set Time_Add_MaxHealth[pid] = value
-        elseif wihcattribute = 6 then
+        elseif wihcattribute == 6 then
             set Time_Add_MaxMana[pid] = value
-        elseif wihcattribute = 7 then
+        elseif wihcattribute == 7 then
             set Time_Add_Gold[pid] = value
-        elseif wihcattribute = 8 then
+        elseif wihcattribute == 8 then
             set Time_Add_Wood[pid] = value
-        elseif wihcattribute = 9 then
+        elseif wihcattribute == 9 then
             set Time_Add_Health[pid] = value
-        elseif wihcattribute = 10 then
+        elseif wihcattribute == 10 then
             set Time_Add_Mana[pid] = value
-        elseif wihcattribute = 11 then
+        elseif wihcattribute == 11 then
             set Kill_Add_Attack[pid] = value
-        elseif wihcattribute = 12 then
+        elseif wihcattribute == 12 then
             set Kill_Add_Str[pid] = value
-        elseif wihcattribute = 13 then
+        elseif wihcattribute == 13 then
             set Kill_Add_Agi[pid] = value
-        elseif wihcattribute = 14 then
+        elseif wihcattribute == 14 then
             set Kill_Add_Int[pid] = value
-        elseif wihcattribute = 15 then
+        elseif wihcattribute == 15 then
             set Kill_Add_MaxHealth[pid] = value
-        elseif wihcattribute = 16 then
+        elseif wihcattribute == 16 then
             set Kill_Add_MaxMana[pid] = value
-        elseif wihcattribute = 17 then
+        elseif wihcattribute == 17 then
             set Kill_Add_Exp[pid] = value
-        elseif wihcattribute = 18 then
+        elseif wihcattribute == 18 then
             set Kill_Add_Exp_Percent[pid] = value
-        elseif wihcattribute = 19 then
+        elseif wihcattribute == 19 then
             set Kill_Add_Gold[pid] = value
-        elseif wihcattribute = 20 then
+        elseif wihcattribute == 20 then
             set Kill_Add_Gold_Percent[pid] = value
-        elseif wihcattribute = 21 then
+        elseif wihcattribute == 21 then
             set Kill_Add_Wood[pid] = value
-        elseif wihcattribute = 22 then
+        elseif wihcattribute == 22 then
             set Kill_Add_Wood_Percent[pid] = value
-        elseif wihcattribute = 23 then
+        elseif wihcattribute == 23 then
             set Player_Physical_Critical_Value[pid] = value
-        elseif wihcattribute = 24 then
+        elseif wihcattribute == 24 then
             set Player_Physical_Critical_Percent[pid] = value
-        elseif wihcattribute = 25 then
+        elseif wihcattribute == 25 then
             set Player_Magic_Critical_Value[pid] = value
-        elseif wihcattribute = 26 then
+        elseif wihcattribute == 26 then
             set Player_Magic_Critical_Percent[pid] = value
-        elseif wihcattribute = 27 then
+        elseif wihcattribute == 27 then
             set Player_Skill_Damage_Percent[pid] = value
-        elseif wihcattribute = 28 then
+        elseif wihcattribute == 28 then
             set Player_Skill_Damage_Append[pid] = value
-        elseif wihcattribute = 29 then
+        elseif wihcattribute == 29 then
             set Player_Attack_Damage_Append[pid] = value
-        elseif wihcattribute = 30 then
+        elseif wihcattribute == 30 then
             set Player_Physical_Damage_Percent[pid] = value
-        elseif wihcattribute = 31 then
+        elseif wihcattribute == 31 then
             set Player_Magic_Damage_Percent[pid] = value
-        elseif wihcattribute = 32 then
+        elseif wihcattribute == 32 then
             set Player_Last_Damage_Percent[pid] = value
-        elseif wihcattribute = 33 then
+        elseif wihcattribute == 33 then
             set Player_Normal_Damage_Percent[pid] = value
-        elseif wihcattribute = 34 then
+        elseif wihcattribute == 34 then
             set Player_Elite_Damage_Percent[pid] = value
-        elseif wihcattribute = 35 then
+        elseif wihcattribute == 35 then
             set Player_Boss_Damage_Percent[pid] = value
-        elseif wihcattribute = 36 then
+        elseif wihcattribute == 36 then
             set Player_Physical_Sucking[pid] = value
-        elseif wihcattribute = 37 then
+        elseif wihcattribute == 37 then
             set Player_Magic_Sucking[pid] = value
-        elseif wihcattribute = 38 then
+        elseif wihcattribute == 38 then
             set Player_Physical_LessDamage[pid] = value
-        elseif wihcattribute = 39 then
+        elseif wihcattribute == 39 then
             set Player_Magic_LessDamage[pid] = value
-        elseif wihcattribute = 40 then
+        elseif wihcattribute == 40 then
             set Player_Skill_Cold_Donw[pid] = value
         endif
     set Player_Normal_Physical_MultipliedValue[pid] = ( 1 + (Player_Normal_Damage_Percent[pid]/100)) * ( 1 + (Player_Physical_Damage_Percent[pid]/100)) * (1 + (Player_Last_Damage_Percent[pid]/100))
