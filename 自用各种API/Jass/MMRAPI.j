@@ -3778,7 +3778,7 @@ library ChooseOneForThree  requires BzAPI , YDWEAbilityState , YDWEYDWEJapiScrip
         private integer array LastTimeChoose 
         private boolean TestContral = false
         private hashtable AbStr = InitHashtable()
-
+        private integer array ChooseThreeOfOneTime
 
         private string array BaseChoose_DB_TextureFile_Choose1
         private string array BaseChoose_DB_TextureFile_Choose2
@@ -4042,6 +4042,7 @@ library ChooseOneForThree  requires BzAPI , YDWEAbilityState , YDWEYDWEJapiScrip
         loop
             exitwhen LoopTime > 7
             set PlayerAttributeCorrectedValue[LoopTime] = 1
+            set ChooseThreeOfOneTime[LoopTime] = 0
             set IsShowChooseOneForThree[LoopTime] = IsFirstTimeOpen
             set LastTimeChoose[LoopTime] = 9999
             set BaseChoose_DB_TextureFile_Choose1[LoopTime] = BaseChoose_DB_TextureFile
@@ -4224,14 +4225,25 @@ library ChooseOneForThree  requires BzAPI , YDWEAbilityState , YDWEYDWEJapiScrip
         set CanThisPalyerUseChoose3[pid] = IsOpen
     endfunction
 
+    function ChooseThreeOfOneTimeChange takes player pl , integer value returns nothing
+        local integer pid = GetPlayerId(pl)
+        set ChooseThreeOfOneTime[pid] = ChooseThreeOfOneTime[pid] + value
+    endfunction
+
+    function GetChooseThreeOfOneTime takes player pl returns integer
+        local integer pid = GetPlayerId(pl)
+        return ChooseThreeOfOneTime[pid]
+    endfunction
+
     private function ShowChooseOneForThreeUi takes player ShowPlayer returns nothing
         local integer ydul_a
         local integer playerid = GetPlayerId(ShowPlayer)
 
         if (IsShowChooseOneForThree[GetPlayerId(ShowPlayer)]) then
-            call DisplayTextToPlayer( ShowPlayer, 0, 0, "|cffffcc00【系统】|r 有一个还未选择的三选一。" )
+            call DisplayTextToPlayer( ShowPlayer, 0, 0, "|cffffcc00【系统】|r 有一个还未选择的三选一。已经储存" )
         else
             if (GetLocalPlayer() == ShowPlayer) then
+                call ChooseThreeOfOneTimeChange( ShowPlayer , -1 )
                 call DzFrameSetTexture( ChooseOneForThree_BaseChoose_DB[0], BaseChoose_DB_TextureFile_Choose1[playerid] , 0)
                 call DzFrameSetTexture( ChooseOneForThree_BaseChoose_DB[1], BaseChoose_DB_TextureFile_Choose2[playerid] , 0)
                 call DzFrameSetTexture( ChooseOneForThree_BaseChoose_DB[2], BaseChoose_DB_TextureFile_Choose3[playerid] , 0)
@@ -4270,6 +4282,8 @@ library ChooseOneForThree  requires BzAPI , YDWEAbilityState , YDWEYDWEJapiScrip
         local integer pid = GetPlayerId(WillShowPlayer)
         local boolean array skillid
         local integer looptime = 1
+
+        call ChooseThreeOfOneTimeChange( WillShowPlayer , 1 )
 
         set skillid[1] = MMRAPI_CheckSkillCanTransReturnSkid(pid, 1 , Choose1id) or MMRAPI_CheckSkillCanTransReturnSkid(pid, 2 , Choose1id) or MMRAPI_CheckSkillCanTransReturnSkid(pid, 3 , Choose1id) or MMRAPI_CheckSkillCanTransReturnSkid(pid, 4 , Choose1id)
         set skillid[2] = MMRAPI_CheckSkillCanTransReturnSkid(pid, 1 , Choose2id) or MMRAPI_CheckSkillCanTransReturnSkid(pid, 2 , Choose2id) or MMRAPI_CheckSkillCanTransReturnSkid(pid, 3 , Choose2id) or MMRAPI_CheckSkillCanTransReturnSkid(pid, 4 , Choose2id)
@@ -4381,6 +4395,8 @@ library ChooseOneForThree  requires BzAPI , YDWEAbilityState , YDWEYDWEJapiScrip
     function ChangePlayerAttributeCorrectedValue takes player needchangeplayer , integer newvalue  returns nothing
         set PlayerAttributeCorrectedValue[GetPlayerId(needchangeplayer)] = newvalue
     endfunction
+
+
 endlibrary
 
 #endif  /// YDWEAbilityStateIncluded

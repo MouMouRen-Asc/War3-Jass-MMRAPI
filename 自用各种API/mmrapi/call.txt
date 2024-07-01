@@ -52,6 +52,17 @@ returns = integer
 type = player
 default = "GetTriggerPlayer"
 
+[GetChooseThreeOfOneTime]
+title = "三选一上次选择"
+description = "获得${触发玩家}的三选一选择次数"
+comment = "返回一个整数"
+category = TC_MMRThreeForOne
+returns = integer
+[[.args]]
+type = player
+default = "GetTriggerPlayer"
+
+
 
 [MMRAPI_ChangeCanTransState]
 title = "合成技能系统状态切换"

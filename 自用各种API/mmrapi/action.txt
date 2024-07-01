@@ -286,11 +286,22 @@ comment = "属性增加值*修正值 = 最终值 ：不设置的话默认值为1
 category = TC_MMRThreeForOne
 [[.args]]
 type = player
-default = "ReplaceableTextures\\CommandButtons\\BTNBoots.blp"
+default = "GetTriggerPlayer"
 [[.args]]
 type = integer
 default = "1"
 
+[ChooseThreeOfOneTimeChange]
+title = "三选一储存计数增减"
+description = "三选一储存计数改变的玩家 ${玩家} ，改变的值${整数}"
+comment = "调用则减1"
+category = TC_MMRThreeForOne
+[[.args]]
+type = player
+default = "GetTriggerPlayer"
+[[.args]]
+type = integer
+default = "1"
 
 [FuncItemSystem_Init]
 title = "启用Lua预读物品与相应的伤害系统"
