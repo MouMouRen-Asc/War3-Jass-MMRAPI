@@ -778,7 +778,7 @@ library MmrApi initializer MmrApi_Init requires YDWEYDWEJapiScript
 
     function MMRAPI_DynamicAttributeTimeTick takes nothing returns nothing
         local integer loopTimes = 0
-        if TargetUnit[loopTimes] != null then
+        if TargetUnit[loopTimes] != null and (GetPlayerSlotState(Player(loopTimes)) == PLAYER_SLOT_STATE_PLAYING) then
            call MMRAPI_DynamicAttributeCalcute(TargetUnit[loopTimes] , StrPercent[loopTimes] , 1 , I2R(StrAppend[loopTimes]) , false)    
            call  MMRAPI_DynamicAttributeCalcute(TargetUnit[loopTimes] , AgiPercent[loopTimes] , 2 , I2R(AgiAppend[loopTimes]) , false) 
            call  MMRAPI_DynamicAttributeCalcute(TargetUnit[loopTimes] , IntPercent[loopTimes] , 3 , I2R(IntAppend[loopTimes]) , false)   
@@ -787,7 +787,7 @@ library MmrApi initializer MmrApi_Init requires YDWEYDWEJapiScript
            call  MMRAPI_DynamicAttributeCalcute(TargetUnit[loopTimes] , MaxManaPercent[loopTimes] , 6 , MaxManaAppend[loopTimes] , false)                
         endif
         set loopTimes = 1
-        if TargetUnit[loopTimes] != null then
+        if TargetUnit[loopTimes] != null and (GetPlayerSlotState(Player(loopTimes)) == PLAYER_SLOT_STATE_PLAYING) then
            call MMRAPI_DynamicAttributeCalcute(TargetUnit[loopTimes] , StrPercent[loopTimes] , 1 , I2R(StrAppend[loopTimes]) , false)    
            call  MMRAPI_DynamicAttributeCalcute(TargetUnit[loopTimes] , AgiPercent[loopTimes] , 2 , I2R(AgiAppend[loopTimes]) , false) 
            call  MMRAPI_DynamicAttributeCalcute(TargetUnit[loopTimes] , IntPercent[loopTimes] , 3 , I2R(IntAppend[loopTimes]) , false)   
@@ -796,7 +796,7 @@ library MmrApi initializer MmrApi_Init requires YDWEYDWEJapiScript
            call  MMRAPI_DynamicAttributeCalcute(TargetUnit[loopTimes] , MaxManaPercent[loopTimes] , 6 , MaxManaAppend[loopTimes] , false)                               
         endif
         set loopTimes = 2
-        if TargetUnit[loopTimes] != null then
+        if TargetUnit[loopTimes] != null and (GetPlayerSlotState(Player(loopTimes)) == PLAYER_SLOT_STATE_PLAYING) then
            call MMRAPI_DynamicAttributeCalcute(TargetUnit[loopTimes] , StrPercent[loopTimes] , 1 , I2R(StrAppend[loopTimes]) , false)    
            call  MMRAPI_DynamicAttributeCalcute(TargetUnit[loopTimes] , AgiPercent[loopTimes] , 2 , I2R(AgiAppend[loopTimes]) , false) 
            call  MMRAPI_DynamicAttributeCalcute(TargetUnit[loopTimes] , IntPercent[loopTimes] , 3 , I2R(IntAppend[loopTimes]) , false)   
@@ -805,7 +805,7 @@ library MmrApi initializer MmrApi_Init requires YDWEYDWEJapiScript
            call  MMRAPI_DynamicAttributeCalcute(TargetUnit[loopTimes] , MaxManaPercent[loopTimes] , 6 , MaxManaAppend[loopTimes] , false)             
         endif
         set loopTimes = 3
-        if TargetUnit[loopTimes] != null then
+        if TargetUnit[loopTimes] != null and (GetPlayerSlotState(Player(loopTimes)) == PLAYER_SLOT_STATE_PLAYING) then
            call MMRAPI_DynamicAttributeCalcute(TargetUnit[loopTimes] , StrPercent[loopTimes] , 1 , I2R(StrAppend[loopTimes]) , false)    
            call  MMRAPI_DynamicAttributeCalcute(TargetUnit[loopTimes] , AgiPercent[loopTimes] , 2 , I2R(AgiAppend[loopTimes]) , false) 
            call  MMRAPI_DynamicAttributeCalcute(TargetUnit[loopTimes] , IntPercent[loopTimes] , 3 , I2R(IntAppend[loopTimes]) , false)   
@@ -814,7 +814,7 @@ library MmrApi initializer MmrApi_Init requires YDWEYDWEJapiScript
            call  MMRAPI_DynamicAttributeCalcute(TargetUnit[loopTimes] , MaxManaPercent[loopTimes] , 6 , MaxManaAppend[loopTimes] , false)                        
         endif
         set loopTimes = 4
-        if TargetUnit[loopTimes] != null then
+        if TargetUnit[loopTimes] != null and (GetPlayerSlotState(Player(loopTimes)) == PLAYER_SLOT_STATE_PLAYING) then
            call MMRAPI_DynamicAttributeCalcute(TargetUnit[loopTimes] , StrPercent[loopTimes] , 1 , I2R(StrAppend[loopTimes]) , false)    
            call  MMRAPI_DynamicAttributeCalcute(TargetUnit[loopTimes] , AgiPercent[loopTimes] , 2 , I2R(AgiAppend[loopTimes]) , false) 
            call  MMRAPI_DynamicAttributeCalcute(TargetUnit[loopTimes] , IntPercent[loopTimes] , 3 , I2R(IntAppend[loopTimes]) , false)   
@@ -823,7 +823,7 @@ library MmrApi initializer MmrApi_Init requires YDWEYDWEJapiScript
            call  MMRAPI_DynamicAttributeCalcute(TargetUnit[loopTimes] , MaxManaPercent[loopTimes] , 6 , MaxManaAppend[loopTimes] , false)                      
         endif
         set loopTimes = 5
-        if TargetUnit[loopTimes] != null then
+        if TargetUnit[loopTimes] != null and (GetPlayerSlotState(Player(loopTimes)) == PLAYER_SLOT_STATE_PLAYING) then
            call MMRAPI_DynamicAttributeCalcute(TargetUnit[loopTimes] , StrPercent[loopTimes] , 1 , I2R(StrAppend[loopTimes]) , false)    
            call  MMRAPI_DynamicAttributeCalcute(TargetUnit[loopTimes] , AgiPercent[loopTimes] , 2 , I2R(AgiAppend[loopTimes]) , false) 
            call  MMRAPI_DynamicAttributeCalcute(TargetUnit[loopTimes] , IntPercent[loopTimes] , 3 , I2R(IntAppend[loopTimes]) , false)   
@@ -832,7 +832,7 @@ library MmrApi initializer MmrApi_Init requires YDWEYDWEJapiScript
            call  MMRAPI_DynamicAttributeCalcute(TargetUnit[loopTimes] , MaxManaPercent[loopTimes] , 6 , MaxManaAppend[loopTimes] , false)                       
         endif
         set loopTimes = 6
-        if TargetUnit[loopTimes] != null then
+        if TargetUnit[loopTimes] != null and (GetPlayerSlotState(Player(loopTimes)) == PLAYER_SLOT_STATE_PLAYING) then
            call MMRAPI_DynamicAttributeCalcute(TargetUnit[loopTimes] , StrPercent[loopTimes] , 1 , I2R(StrAppend[loopTimes]) , false)    
            call  MMRAPI_DynamicAttributeCalcute(TargetUnit[loopTimes] , AgiPercent[loopTimes] , 2 , I2R(AgiAppend[loopTimes]) , false) 
            call  MMRAPI_DynamicAttributeCalcute(TargetUnit[loopTimes] , IntPercent[loopTimes] , 3 , I2R(IntAppend[loopTimes]) , false)   
@@ -841,7 +841,7 @@ library MmrApi initializer MmrApi_Init requires YDWEYDWEJapiScript
            call  MMRAPI_DynamicAttributeCalcute(TargetUnit[loopTimes] , MaxManaPercent[loopTimes] , 6 , MaxManaAppend[loopTimes] , false)                      
         endif
         set loopTimes = 7
-        if TargetUnit[loopTimes] != null then
+        if TargetUnit[loopTimes] != null and (GetPlayerSlotState(Player(loopTimes)) == PLAYER_SLOT_STATE_PLAYING) then
            call MMRAPI_DynamicAttributeCalcute(TargetUnit[loopTimes] , StrPercent[loopTimes] , 1 , I2R(StrAppend[loopTimes]) , false)    
            call  MMRAPI_DynamicAttributeCalcute(TargetUnit[loopTimes] , AgiPercent[loopTimes] , 2 , I2R(AgiAppend[loopTimes]) , false) 
            call  MMRAPI_DynamicAttributeCalcute(TargetUnit[loopTimes] , IntPercent[loopTimes] , 3 , I2R(IntAppend[loopTimes]) , false)   
