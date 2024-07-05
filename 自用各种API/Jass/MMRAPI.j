@@ -2986,8 +2986,8 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
                     if needsetdamage >2000000000 or needsetdamage < 0 then
                         set needsetdamage = 2000000000
                     endif
-                    if (Player_Physical_Sucking[pid]/100 ) > 0 then
-                        set suckingvalue = needsetdamage*(Player_Physical_Sucking[pid]/100)
+                    if (I2R(Player_Physical_Sucking[pid])/100 ) > 0 then
+                        set suckingvalue = needsetdamage*(I2R(Player_Physical_Sucking[pid])/100)
                         call SetUnitState(damageunit , UNIT_STATE_LIFE , (GetUnitState(damageunit,UNIT_STATE_LIFE) +suckingvalue )) 
                     endif
                 else
@@ -2996,31 +2996,31 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
                     if needsetdamage >2000000000 or needsetdamage < 0 then
                         set needsetdamage = 2000000000
                     endif
-                    if (Player_Magic_Sucking[pid]/100 ) > 0 then
-                        set suckingvalue = needsetdamage*(Player_Magic_Sucking[pid]/100)
+                    if (I2R(Player_Magic_Sucking[pid])/100 ) > 0 then
+                        set suckingvalue = needsetdamage*(I2R(Player_Magic_Sucking[pid])/100)
                         call SetUnitState(damageunit , UNIT_STATE_LIFE , (GetUnitState(damageunit,UNIT_STATE_LIFE) +suckingvalue )) 
                     endif  
                 endif
                 call YDWESetEventDamage(needsetdamage) 
             endif
         else
-            // set pid = GetPlayerId(GetOwningPlayer(GetTriggerUnit()))
-            // set AttackValue = GetUnitState(GetEventDamageSource(),ConvertUnitState(0x12)) + GetUnitState(GetEventDamageSource(),ConvertUnitState(0x13))
-            // if (YDWEIsEventPhysicalDamage() == true) then
-            //     if AttackValue > 10000 then
-            //         set AttackValue = AttackValue/100
-            //         set realdamage = (((AttackValue * 1 + 100) * AttackValue)/(AttackValue +(GetUnitState(GetTriggerUnit(),ConvertUnitState(0x20))* 0.5 + 100))) * (1- (Player_Physical_LessDamage[pid]/100))                
-            //         set realdamage = realdamage * 100
-            //     else
-            //         set realdamage = (((AttackValue * 1 + 100) * AttackValue)/(AttackValue +(GetUnitState(GetTriggerUnit(),ConvertUnitState(0x20))* 0.5 + 100))) * (1- (Player_Physical_LessDamage[pid]/100))
-            //     endif
-            // else
-            //     set realdamage = (((getdamage * 1 + 100) * getdamage)/(getdamage +(GetUnitState(GetTriggerUnit(),ConvertUnitState(0x20))* 0.5 + 100))) * (1- (Player_Magic_LessDamage[pid]/100))
-            //     if realdamage >2000000000 or realdamage < 0 then
-            //         set realdamage = 2000000000
-            //     endif
-            // endif
-            // call YDWESetEventDamage(realdamage)
+            set pid = GetPlayerId(GetOwningPlayer(GetTriggerUnit()))
+            set AttackValue = GetUnitState(GetEventDamageSource(),ConvertUnitState(0x12)) + GetUnitState(GetEventDamageSource(),ConvertUnitState(0x13))
+            if (YDWEIsEventPhysicalDamage() == true) then
+                if AttackValue > 10000 then
+                    set AttackValue = AttackValue/100
+                    set realdamage = (((AttackValue * 1 + 100) * AttackValue)/(AttackValue +(GetUnitState(GetTriggerUnit(),ConvertUnitState(0x20))* 0.5 + 100))) * (1- (Player_Physical_LessDamage[pid]/100))                
+                    set realdamage = realdamage * 100
+                else
+                    set realdamage = (((AttackValue * 1 + 100) * AttackValue)/(AttackValue +(GetUnitState(GetTriggerUnit(),ConvertUnitState(0x20))* 0.5 + 100))) * (1- (Player_Physical_LessDamage[pid]/100))
+                endif
+            else
+                set realdamage = (((getdamage * 1 + 100) * getdamage)/(getdamage +(GetUnitState(GetTriggerUnit(),ConvertUnitState(0x20))* 0.5 + 100))) * (1- (Player_Magic_LessDamage[pid]/100))
+                if realdamage >2000000000 or realdamage < 0 then
+                    set realdamage = 2000000000
+                endif
+            endif
+            call YDWESetEventDamage(realdamage)
         endif
 
 		// static if LIBRARY_YDWEEventDamageData then
@@ -3195,11 +3195,10 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
             call SetHeroStr(GetItemUnit , GetHeroStr(GetItemUnit , false) + STR ,false)
         endif
         if AGI != 0 then
-            call SetHeroStr(GetItemUnit , GetHeroStr(GetItemUnit , false) + STR ,false)
+            call SetHeroAgi(GetItemUnit , GetHeroAgi(GetItemUnit , false) + AGI ,false)
         endif
-
         if INT != 0 then
-            call SetHeroStr(GetItemUnit , GetHeroStr(GetItemUnit , false) + STR ,false)
+            call SetHeroInt(GetItemUnit , GetHeroInt(GetItemUnit , false) + INT ,false)
         endif
 
 
