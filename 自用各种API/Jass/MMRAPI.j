@@ -3006,9 +3006,9 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
         else
             set pid = GetPlayerId(GetOwningPlayer(GetTriggerUnit()))
             if (YDWEIsEventPhysicalDamage() == true) then
-                set realdamage = getdamage * (1- (Player_Physical_LessDamage[pid]/100))
+                set realdamage = getdamage * (1- (I2R(Player_Physical_LessDamage[pid])/100))
             else
-                set realdamage = getdamage * (1- (Player_Magic_LessDamage[pid]/100))
+                set realdamage = getdamage * (1- (I2R(Player_Magic_LessDamage[pid])/100))
             endif
             call YDWESetEventDamage(realdamage)
         endif
