@@ -2963,8 +2963,8 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
                     if needsetdamage >2000000000 or needsetdamage < 0 then
                         set needsetdamage = 2000000000
                     endif
-                    if (Player_Physical_Sucking[pid]/100 ) > 0 then
-                        set suckingvalue = realdamage*(Player_Physical_Sucking[pid]/100)
+                    if (I2R(Player_Physical_Sucking[pid])/100 ) > 0 then
+                        set suckingvalue = realdamage*(I2R(Player_Physical_Sucking[pid])/100)
                         call SetUnitState(damageunit , UNIT_STATE_LIFE , (GetUnitState(damageunit,UNIT_STATE_LIFE) +suckingvalue )) 
                     endif 
                 else
@@ -2973,8 +2973,8 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
                     if needsetdamage >2000000000 or needsetdamage < 0 then
                         set needsetdamage = 2000000000
                     endif
-                    if (Player_Magic_Sucking[pid]/100 ) > 0 then
-                        set suckingvalue = needsetdamage*(Player_Magic_Sucking[pid]/100)
+                    if (I2R(Player_Magic_Sucking[pid])/100 ) > 0 then
+                        set suckingvalue = needsetdamage*(I2R(Player_Magic_Sucking[pid])/100)
                         call SetUnitState(damageunit , UNIT_STATE_LIFE , (GetUnitState(damageunit,UNIT_STATE_LIFE) +suckingvalue )) 
                     endif            
                 endif
