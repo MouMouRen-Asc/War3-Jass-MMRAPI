@@ -3005,20 +3005,10 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
             endif
         else
             set pid = GetPlayerId(GetOwningPlayer(GetTriggerUnit()))
-            set AttackValue = GetUnitState(GetEventDamageSource(),ConvertUnitState(0x12)) + GetUnitState(GetEventDamageSource(),ConvertUnitState(0x13))
             if (YDWEIsEventPhysicalDamage() == true) then
-                if AttackValue > 10000 then
-                    set AttackValue = AttackValue/100
-                    set realdamage = (((AttackValue * 1 + 100) * AttackValue)/(AttackValue +(GetUnitState(GetTriggerUnit(),ConvertUnitState(0x20))* 0.5 + 100))) * (1- (Player_Physical_LessDamage[pid]/100))                
-                    set realdamage = realdamage * 100
-                else
-                    set realdamage = (((AttackValue * 1 + 100) * AttackValue)/(AttackValue +(GetUnitState(GetTriggerUnit(),ConvertUnitState(0x20))* 0.5 + 100))) * (1- (Player_Physical_LessDamage[pid]/100))
-                endif
+                set realdamage = getdamage * (1- (Player_Physical_LessDamage[pid]/100))
             else
-                set realdamage = (((getdamage * 1 + 100) * getdamage)/(getdamage +(GetUnitState(GetTriggerUnit(),ConvertUnitState(0x20))* 0.5 + 100))) * (1- (Player_Magic_LessDamage[pid]/100))
-                if realdamage >2000000000 or realdamage < 0 then
-                    set realdamage = 2000000000
-                endif
+                set realdamage = getdamage * (1- (Player_Magic_LessDamage[pid]/100))
             endif
             call YDWESetEventDamage(realdamage)
         endif
