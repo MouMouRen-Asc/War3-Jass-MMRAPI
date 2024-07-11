@@ -1365,7 +1365,7 @@ endlibrary
 #define BagPackApiIncluded 
 
  
-library BagPackApi  requires BzAPI , YDWEYDWEJapiScript , MmrApi
+library BagPackApi requires BzAPI , YDWEYDWEJapiScript , MmrApi
 
     native function DzTriggerRegisterMouseEventTrg takes trigger trg, integer status, integer btn returns nothing
     
@@ -1885,11 +1885,272 @@ endlibrary
 #endif
 
 
+#ifndef DamageShowIncluded
+#define DamageShowIncluded
+
+library DamageShow requires optional BzAPI , YDWEYDWEJapiScript , MmrApi
+
+    globals
+        private integer array UiDamQuick
+        private real array Damage
+        private integer array Soft
+        private string array playart
+    endglobals
+
+    function DAMAGESHOW_PlayerArtSet takes player pl returns nothing
+        set playart[GetPlayerId(pl)] = YDWEGetObjectPropertyString(YDWE_OBJECT_TYPE_UNIT,GetUnitTypeId(MMRAPI_TargetPlayer(pl)) , "Art")
+    endfunction
+
+    function DAMAGESHOW_DamageAdd takes player playerwho  , real value returns nothing
+        set Damage[GetPlayerId(playerwho)] = Damage[GetPlayerId(playerwho)] + value
+    endfunction
+
+    function DAMAGESHOW_DamageNull takes player playerwho  returns nothing
+        set Damage[GetPlayerId(playerwho)] = 0
+    endfunction
+
+    private function DAMAGESHOW_HideActions takes nothing returns nothing
+        local player p = DzGetTriggerUIEventPlayer()
+        if DzFrameIsVisible(UiDamQuick[0]) then
+            if (p == GetLocalPlayer()) then
+                call DzFrameShow( UiDamQuick[0], false )
+                call DzFrameSetTexture( UiDamQuick[1], "DamageShow\\Tasktip.tga", 0 )
+            endif
+        else
+            if (p == GetLocalPlayer()) then
+                call DzFrameShow( UiDamQuick[0], true )
+                call DzFrameSetTexture( UiDamQuick[1], "DamageShow\\Taskhide.tga", 0 )
+            endif
+        endif
+    endfunction
+
+    private function DAMAGESHOW_Create takes nothing returns nothing
+        local integer loopa
+        local integer n
+        // Dam
+        set n = 0
+        set UiDamQuick[n] = DzCreateFrameByTagName("BACKDROP", ( "rw" + I2S(n) ), DzGetGameUI(), "template", 0)
+        call DzFrameSetSize( UiDamQuick[n], 0.24, 0.18 )
+        call DzFrameSetPoint( UiDamQuick[n], 2, DzGetGameUI(), 5, 0.00, 0.1 )
+        call DzFrameSetTexture( UiDamQuick[n], "DamageShow\\taskbg.tga", 0 )
+        call DzFrameShow( UiDamQuick[n], false )
+        set n = 1
+        set UiDamQuick[n] = DzCreateFrameByTagName("BACKDROP", ( "rw" + I2S(n) ), DzGetGameUI(), "template", 0)
+        call DzFrameSetSize( UiDamQuick[n], 0.0431, 0.0237 )
+        call DzFrameSetPoint( UiDamQuick[n], 8, UiDamQuick[0], 2, 0.00, 0.00 )
+        call DzFrameSetTexture( UiDamQuick[n], "DamageShow\\Taskhide.tga", 0 )
+        call DzFrameShow( UiDamQuick[n], false )
+        set n = 2
+        set UiDamQuick[n] = DzCreateFrameByTagName("TEXT", ( "rw" + I2S(n) ), DzGetGameUI(), "template", 0)
+        call DzFrameSetPoint( UiDamQuick[n], 0, UiDamQuick[1], 0, 0.00, 0.00 )
+        call DzFrameSetPoint( UiDamQuick[n], 8, UiDamQuick[1], 8, 0.00, 0.00 )
+        call DzFrameSetScriptByCode(UiDamQuick[n], 1, function DAMAGESHOW_HideActions, true)
+        call DzFrameSetEnable( UiDamQuick[n], false )
+        set n = 101
+        set UiDamQuick[n] = DzCreateFrameByTagName("BACKDROP", ( "blood" + I2S(n) ), UiDamQuick[0], "template", 0)
+        call DzFrameSetPoint( UiDamQuick[n], 2, UiDamQuick[0], 2, -0.004, -0.012 )
+        call DzFrameSetSize( UiDamQuick[n], 0.025, 0.025 )
+        call DzFrameSetTexture( UiDamQuick[n], "ReplaceableTextures\\CommandButtons\\BTNArthas.blp", 0 )
+        set n = 102
+        set UiDamQuick[n] = DzCreateFrameByTagName("BACKDROP", ( "blood" + I2S(n) ), UiDamQuick[0], "template", 0)
+        call DzFrameSetPoint( UiDamQuick[n], 2, UiDamQuick[0], 2, -0.004, -0.042 )
+        call DzFrameSetSize( UiDamQuick[n], 0.025, 0.025 )
+        call DzFrameSetTexture( UiDamQuick[n], "ReplaceableTextures\\CommandButtons\\BTNArthas.blp", 0 )
+        set n = 103
+        set UiDamQuick[n] = DzCreateFrameByTagName("BACKDROP", ( "blood" + I2S(n) ), UiDamQuick[0], "template", 0)
+        call DzFrameSetPoint( UiDamQuick[n], 2, UiDamQuick[0], 2, -0.004, -0.072 )
+        call DzFrameSetSize( UiDamQuick[n], 0.025, 0.025 )
+        call DzFrameSetTexture( UiDamQuick[n], "ReplaceableTextures\\CommandButtons\\BTNArthas.blp", 0 )
+        set n = 104
+        set UiDamQuick[n] = DzCreateFrameByTagName("BACKDROP", ( "blood" + I2S(n) ), UiDamQuick[0], "template", 0)
+        call DzFrameSetPoint( UiDamQuick[n], 2, UiDamQuick[0], 2, -0.004, -0.102 )
+        call DzFrameSetSize( UiDamQuick[n], 0.025, 0.025 )
+        call DzFrameSetTexture( UiDamQuick[n], "ReplaceableTextures\\CommandButtons\\BTNArthas.blp", 0 )
+        set n = 105
+        set UiDamQuick[n] = DzCreateFrameByTagName("BACKDROP", ( "blood" + I2S(n) ), UiDamQuick[0], "template", 0)
+        call DzFrameSetPoint( UiDamQuick[n], 2, UiDamQuick[0], 2, -0.004, -0.132 )
+        call DzFrameSetSize( UiDamQuick[n], 0.025, 0.025 )
+        call DzFrameSetTexture( UiDamQuick[n], "ReplaceableTextures\\CommandButtons\\BTNArthas.blp", 0 )
+        
+        set loopa = 201
+        loop
+            exitwhen loopa > 205
+            set n = loopa
+            set UiDamQuick[n] = DzCreateFrameByTagName("BACKDROP", ( "blood" + I2S(n) ), UiDamQuick[0], "template", 0)
+            call DzFrameSetPoint( UiDamQuick[n], 8, UiDamQuick[( n - 100 )], 6, 0, 0.00 )
+            call DzFrameSetSize( UiDamQuick[n], ( 220.00 / 1280.00 ), ( 20.00 / 1280.00 ) )
+            call DzFrameSetTexture( UiDamQuick[n], "DamageShow\\p" + I2S(( n - 200 )) + ".tga", 0 )
+            set loopa = loopa + 1
+        endloop
+
+        set loopa = 301
+        loop
+            exitwhen loopa > 305
+            set n = loopa
+            set UiDamQuick[n] = DzCreateFrameByTagName("TEXT", ( "blood" + I2S(n) ), UiDamQuick[0], "template", 0)
+            call DzFrameSetPoint( UiDamQuick[n], 8, UiDamQuick[( n - 100 )], 2, -0.005, 0.00 )
+            call DzFrameSetFont( UiDamQuick[n], "FontsZiTi_ui.ttf", 0.01, 0 )
+            call DzFrameSetPriority( UiDamQuick[n], 1 )
+            set loopa = loopa + 1
+        endloop
+
+        set loopa = 401
+        loop
+            exitwhen loopa > 405
+            set n = loopa
+            set UiDamQuick[n] = DzCreateFrameByTagName("TEXT", ( "blood" + I2S(n) ), UiDamQuick[0], "template", 0)
+            call DzFrameSetPoint( UiDamQuick[n], 5, UiDamQuick[( n - 200 )], 5, -0.174875, 0.00 )
+            call DzFrameSetFont( UiDamQuick[n], "FontsZiTi_ui.ttf", 0.01, 0 )
+            call DzFrameSetPriority( UiDamQuick[n], 1 )
+        set loopa = loopa + 1
+        endloop
+
+        set loopa = 501
+        loop
+            exitwhen loopa > 505
+            set n = loopa
+            set UiDamQuick[n] = DzCreateFrameByTagName("TEXT", ( "blood" + I2S(n) ), UiDamQuick[0], "template", 0)
+            call DzFrameSetPoint( UiDamQuick[n], 4, UiDamQuick[( n - 300 )], 5, -0.0859375, 0.00 )
+            call DzFrameSetFont( UiDamQuick[n], "FontsZiTi_ui.ttf", 0.01, 0 )
+            call DzFrameSetPriority( UiDamQuick[n], 1 )
+            set loopa = loopa + 1
+        endloop
+        
+        call DestroyTrigger( GetTriggeringTrigger() )
+    endfunction
+
+    private function CheckBubble takes integer leftindex , integer rightindex  returns integer wintime
+        local integer looptime = 0
+        local integer temptime = 0
+        local integer tyid = leftindex
+        loop
+            exitwhen looptime > rightindex
+            if Damage[leftindex] < Damage[looptime] and leftindex != looptime then
+                set temptime = temptime + 1
+            endif
+            set looptime = looptime + 1
+        endloop
+            return temptime
+    endfunction
+
+    private function BubbleSort takes integer leftindex , integer rightindex  returns nothing//冒泡
+        local integer looptimes = 0
+        if (leftindex >= rightindex) then//
+		    return
+        endif
+        loop
+            exitwhen looptimes >= 5
+            set Soft[CheckBubble.evaluate(looptimes , rightindex)] = looptimes
+            set looptimes = looptimes + 1
+        endloop
+    endfunction
+
+
+    private function DAMAGESHOW_TimerFunction takes nothing returns nothing
+        local integer loopa
+        local integer loops
+        local real damageforall = Damage[0] + Damage[1] + Damage[2] + Damage[3] + Damage[4]
+        local integer playerid
+        local string stringggg
+        local timer timerc
+        local integer cleantime = 100
+        call BubbleSort.execute(0 , 5)
+        set loopa = 1
+
+        loop
+            exitwhen loopa > 5
+            if ((GetPlayerSlotState(Player(loopa - 1)) == PLAYER_SLOT_STATE_PLAYING) and (GetPlayerController(Player(loopa - 1)) == MAP_CONTROL_USER)) then
+                if ((Player(loopa - 1) == GetLocalPlayer())) then
+                    set loops = 1
+                    loop
+                        exitwhen loops > 5
+                        set playerid = Soft[loops - 1]
+                        if ((Damage[playerid] > 10.00)) then
+                            call DzFrameShow( UiDamQuick[( loops + 100 )], true )
+                            call DzFrameShow( UiDamQuick[( loops + 200 )], true )
+                            call DzFrameShow( UiDamQuick[( loops + 300 )], true )
+                            call DzFrameShow( UiDamQuick[( loops + 400 )], false )
+                            call DzFrameShow( UiDamQuick[( loops + 500 )], true )
+                            call DzFrameSetTexture( UiDamQuick[( loops + 100 )], playart[playerid] , 0 )
+                            call DzFrameSetTexture( UiDamQuick[( loops + 200 )], "DamageShow\\p" + I2S(playerid + 1 ) + ".tga", 0 )
+                            call DzFrameSetSize( UiDamQuick[( loops + 200 )],  ((220.00 * (Damage[playerid] / damageforall))/1280.00), ( 20.00 / 1280.00 ) )
+                            call DzFrameSetText( UiDamQuick[( loops + 300 )], GetPlayerName(Player(playerid)))
+                            call DzFrameSetText( UiDamQuick[( loops + 400 )],  R2SW( (Damage[playerid] / damageforall)  * 100.00 , 1, 2) + "%" ) 
+                            if (Damage[playerid] / 10000000000.00) > 1 then
+                                set stringggg = R2SW(( Damage[playerid] / 10000000000.00 ), 1, 2) + "百亿"
+                            elseif (Damage[playerid] / 100000000.00) > 1 then
+                                set stringggg = R2SW(( Damage[playerid] / 100000000.00 ), 1, 2) + "亿"
+                            elseif (Damage[playerid] / 1000000.00) > 1 then
+                                set stringggg = R2SW(( Damage[playerid] / 1000000.00 ), 1, 2) + "百万"
+                            elseif (Damage[playerid] / 10000.00) > 1 then
+                                set stringggg = R2SW(( Damage[playerid] / 10000.00 ), 1, 2) + "万"
+                            else
+                                set stringggg = R2SW(Damage[playerid], 1, 2)
+                            endif
+                            call DzFrameSetText( UiDamQuick[( loops + 500 )], "|cFF000000" + stringggg)
+                            set Damage[playerid] = 0.1
+                        else
+                            call DzFrameShow( UiDamQuick[( loops + 100 )], false )
+                            call DzFrameShow( UiDamQuick[( loops + 200 )], false )
+                            call DzFrameShow( UiDamQuick[( loops + 300 )], false )
+                            call DzFrameShow( UiDamQuick[( loops + 400 )], false )
+                            call DzFrameShow( UiDamQuick[( loops + 500 )], false )
+                        endif
+                        set loops = loops + 1
+                    endloop
+                endif
+            endif
+            set loopa = loopa + 1
+        endloop
+    endfunction
+
+
+    private function DAMAGESHOW_TimeCreateAndStart takes nothing returns nothing
+        local timer timerc
+        set timerc = CreateTimer()
+        call TimerStart(timerc, 1 , true , function DAMAGESHOW_TimerFunction)
+        set timerc = null
+    endfunction
+
+    private function DAMAGESHOW_TimeOn takes nothing returns nothing
+        local integer loopa
+            set loopa = 0
+        loop
+            exitwhen loopa > 4
+            if ((GetPlayerSlotState(Player(loopa)) == PLAYER_SLOT_STATE_PLAYING) and (GetPlayerController(Player(loopa)) == MAP_CONTROL_USER)) then
+                if ((Player(loopa) == GetLocalPlayer())) then
+                call DzFrameShow( UiDamQuick[0], true )
+                call DzFrameShow( UiDamQuick[1], true )
+                call DzFrameSetEnable( UiDamQuick[2], true )
+                endif
+            endif
+        set loopa = loopa + 1
+        endloop
+        call DAMAGESHOW_TimeCreateAndStart()
+    endfunction
+
+    function DAMAGESHOW_Init takes nothing returns nothing
+        local integer lp = 0
+
+        loop
+            exitwhen lp > 4
+            set Damage[lp] = 0.1
+            set Soft[lp] = lp
+            set lp = lp + 1
+        endloop
+
+        call DAMAGESHOW_Create()
+        call DAMAGESHOW_TimeOn()
+    endfunction
+
+endlibrary
+
+#endif
 
 #ifndef FuncItemSystemIncluded
 #define FuncItemSystemIncluded
 
-library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDamageData,YDWEAbilityState,MmrApi
+library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDamageData,YDWEAbilityState,MmrApi , DamageShow
 	
 	globals
 		/*
@@ -2955,11 +3216,11 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
                 set  magicDamageMult = Player_Normal_Magic_MultipliedValue[pid]
                 set  physicalDamageMmult = Player_Normal_Physical_MultipliedValue[pid]
             endif
-            
             if (YDWEIsEventAttackDamage() == true) then
                 if (YDWEIsEventPhysicalDamage() == true) and ( YDWEIsEventAttackType(ATTACK_TYPE_MAGIC) == false ) then
                     set realdamage = (Player_Attack_Damage_Append[pid] + getdamage) * physicalDamageMmult
                     set needsetdamage = CheckAndCalcutePhysicalOrMagic_CriticalStrike(realdamage , pid , true)
+                    call DAMAGESHOW_DamageAdd(Player(pid) , needsetdamage)
                     if needsetdamage >2000000000 or needsetdamage < 0 then
                         set needsetdamage = 2000000000
                     endif
@@ -2970,6 +3231,7 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
                 else
                     set realdamage = (Player_Attack_Damage_Append[pid] + getdamage) * magicDamageMult 
                     set needsetdamage = CheckAndCalcutePhysicalOrMagic_CriticalStrike(realdamage , pid , false)
+                    call DAMAGESHOW_DamageAdd(Player(pid) , needsetdamage)
                     if needsetdamage >2000000000 or needsetdamage < 0 then
                         set needsetdamage = 2000000000
                     endif
@@ -2983,6 +3245,7 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
                 if (YDWEIsEventPhysicalDamage() == true) then
                     set realdamage = (Player_Skill_Damage_Append[pid] + getdamage) * physicalDamageMmult * (1 + (Player_Skill_Damage_Percent[pid]/100))
                     set needsetdamage = CheckAndCalcutePhysicalOrMagic_CriticalStrike(realdamage , pid , true) 
+                    call DAMAGESHOW_DamageAdd(Player(pid) , needsetdamage)
                     if needsetdamage >2000000000 or needsetdamage < 0 then
                         set needsetdamage = 2000000000
                     endif
@@ -2993,6 +3256,7 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
                 else
                     set realdamage = (Player_Skill_Damage_Append[pid] + getdamage) * magicDamageMult * (1 + (Player_Skill_Damage_Percent[pid]/100))
                     set needsetdamage = CheckAndCalcutePhysicalOrMagic_CriticalStrike(realdamage , pid , false)
+                    call DAMAGESHOW_DamageAdd(Player(pid) , needsetdamage)
                     if needsetdamage >2000000000 or needsetdamage < 0 then
                         set needsetdamage = 2000000000
                     endif
@@ -3750,6 +4014,8 @@ endlibrary
 #define ChooseOneForThreeIncluded
 library ChooseOneForThree  requires BzAPI , YDWEAbilityState , YDWEYDWEJapiScript , MmrApi , FuncItemSystem
     globals
+
+        private integer array ChooseOneForThree_InUI
         private integer array ChooseOneForThree_BaseChoose_DB
         private integer array ChooseOneForThree_Choose_Texture
         private integer array ChooseOneForThree_Choose_Bottom
@@ -3828,6 +4094,10 @@ library ChooseOneForThree  requires BzAPI , YDWEAbilityState , YDWEYDWEJapiScrip
         call DzFrameShow(ChooseOneForThree_MouseInTx, false )
     endfunction
 
+    private function WhenLocalPlayerMouseKickInChooseThreeOfOne takes nothing returns nothing
+        call DzSyncData( SyncDataType, "9"+I2S(GetPlayerId(DzGetTriggerUIEventPlayer())))
+    endfunction
+
     private function LocalPlayerMousePressBottom takes nothing returns nothing
         local integer Tui = DzGetTriggerUIEventFrame()
         local player Tplayer = DzGetTriggerUIEventPlayer()
@@ -3890,6 +4160,33 @@ library ChooseOneForThree  requires BzAPI , YDWEAbilityState , YDWEYDWEJapiScrip
 
         call LuaLoadAbility()
 
+        if true then
+
+            set ChooseOneForThree_InUI[0] = DzCreateFrameByTagName("BACKDROP", "ChooseInUI1", BaseUserUi, "template", 0)
+            call DzFrameShow( ChooseOneForThree_InUI[0] , true )
+            call DzFrameSetSize( ChooseOneForThree_InUI[0] , 0.035, 0.035 )
+            call DzFrameSetTexture( ChooseOneForThree_InUI[0] , "ReplaceableTextures\\CommandButtons\\BTNBookOfTheDead.blp" , 0 )
+            call DzFrameSetPoint( ChooseOneForThree_InUI[0] , 4, BaseUserUi , 4, 0.08, -0.13 )
+
+            set ChooseOneForThree_InUI[1] = DzCreateFrameByTagName("TEXT", "ChooseInUI2", ChooseOneForThree_InUI[0], "template", 0)
+            call DzFrameSetText(ChooseOneForThree_InUI[1] , "三选一")
+            call DzFrameSetTextColor(ChooseOneForThree_InUI[1] , DzGetColor(0x00, 0xff, 0xfb, 0x00))
+            call DzFrameSetPoint( ChooseOneForThree_InUI[1] , 4, ChooseOneForThree_InUI[0] , 4, 0, 0 )
+            call DzFrameSetFont(ChooseOneForThree_InUI[1] , "war3mapImported\\fonts.ttf" ,0.01 , 1)
+
+            set ChooseOneForThree_InUI[2] = DzCreateFrameByTagName("SPRITE", "ChooseInUI3", ChooseOneForThree_InUI[0], "template", 0)
+            call DzFrameSetModel( ChooseOneForThree_InUI[2], MouseInTx_ModeFile, 0, 0 )
+            call DzFrameSetSize( ChooseOneForThree_InUI[2], 0.035, 0.035 )
+            call DzFrameSetPoint( ChooseOneForThree_InUI[2] , 4, ChooseOneForThree_InUI[0] , 4, 0, 0 )
+            call DzFrameShow( ChooseOneForThree_InUI[2] , false )
+
+            set ChooseOneForThree_InUI[3] = DzCreateFrameByTagName("BUTTON", "ChooseInUI4", ChooseOneForThree_InUI[2], "template", 0)
+            call DzFrameSetSize( ChooseOneForThree_InUI[3], 0.035, 0.035 )
+            call DzFrameSetPoint( ChooseOneForThree_InUI[3] , 4, ChooseOneForThree_InUI[2] , 4, 0, 0 )
+            if GetLocalPlayer() == GetLocalPlayer() then
+            	call DzFrameSetScriptByCode( ChooseOneForThree_InUI[3] , 1 , function WhenLocalPlayerMouseKickInChooseThreeOfOne, false)
+            endif
+        endif
         set ChooseOneForThree_BaseChoose_DB[0] =  DzCreateFrameByTagName("BACKDROP", "ChooseBaseDB1", BaseUserUi, "template", 0)
         set ChooseOneForThree_BaseChoose_DB[1] =  DzCreateFrameByTagName("BACKDROP", "ChooseBaseDB2", BaseUserUi, "template", 0)
         set ChooseOneForThree_BaseChoose_DB[2] =  DzCreateFrameByTagName("BACKDROP", "ChooseBaseDB3", BaseUserUi, "template", 0)
@@ -4005,6 +4302,9 @@ library ChooseOneForThree  requires BzAPI , YDWEAbilityState , YDWEYDWEJapiScrip
     elseif S2I(ChooseType) == 2 then    
     set ChooseDataType = Choose_3_Type[PlayerId]
     set ChooseValueId = Choose_3_Id[PlayerId]
+    elseif S2I(ChooseType) == 9 then  
+    call ShowChooseUiToPlayer.execute(Player(PlayerId) , 3 , 0 , 3 , 0 , 3 , 0 )
+    set ChooseDataType = 0
     endif
     if locUnit != null then
         if ChooseDataType == 1 then
@@ -4217,6 +4517,11 @@ library ChooseOneForThree  requires BzAPI , YDWEAbilityState , YDWEYDWEJapiScrip
     function ChooseThreeOfOneTimeChange takes player pl , integer value returns nothing
         local integer pid = GetPlayerId(pl)
         set ChooseThreeOfOneTime[pid] = ChooseThreeOfOneTime[pid] + value
+        if ChooseThreeOfOneTime[pid] > 0 and pl == GetLocalPlayer() then
+            call DzFrameShow( ChooseOneForThree_InUI[2] , true )
+        elseif ChooseThreeOfOneTime[pid] <= 0 and pl == GetLocalPlayer() then
+            call DzFrameShow( ChooseOneForThree_InUI[2] , false )
+        endif
     endfunction
 
     function GetChooseThreeOfOneTime takes player pl returns integer
@@ -4271,8 +4576,6 @@ library ChooseOneForThree  requires BzAPI , YDWEAbilityState , YDWEYDWEJapiScrip
         local integer pid = GetPlayerId(WillShowPlayer)
         local boolean array skillid
         local integer looptime = 1
-
-        call ChooseThreeOfOneTimeChange( WillShowPlayer , 1 )
 
         set skillid[1] = MMRAPI_CheckSkillCanTransReturnSkid(pid, 1 , Choose1id) or MMRAPI_CheckSkillCanTransReturnSkid(pid, 2 , Choose1id) or MMRAPI_CheckSkillCanTransReturnSkid(pid, 3 , Choose1id) or MMRAPI_CheckSkillCanTransReturnSkid(pid, 4 , Choose1id)
         set skillid[2] = MMRAPI_CheckSkillCanTransReturnSkid(pid, 1 , Choose2id) or MMRAPI_CheckSkillCanTransReturnSkid(pid, 2 , Choose2id) or MMRAPI_CheckSkillCanTransReturnSkid(pid, 3 , Choose2id) or MMRAPI_CheckSkillCanTransReturnSkid(pid, 4 , Choose2id)

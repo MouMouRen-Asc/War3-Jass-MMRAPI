@@ -351,3 +351,18 @@ title = "MH启动！"
 description = "进入游戏后加载"
 comment = ""
 category = TC_MMRAPI
+
+[DAMAGESHOW_Init]
+title = "伤害面板启动"
+description = "进入游戏后0.1秒加载这个伤害面板即可"
+comment = ""
+category = TC_MMRDPS
+
+[DAMAGESHOW_PlayerArtSet]
+title = "伤害面板英雄头像设置"
+description = "设置为指定玩家内置英雄的头像图片：${玩家} "
+comment = "设置伤害面板显示头像为指定玩家内置英雄的头像图片"
+category = TC_MMRDPS
+[[.args]]
+type = player
+default = "GetTriggerPlayer"
