@@ -98,3 +98,15 @@ default = "GetTriggerPlayer"
 [[.args]]
 type = integer
 default = "1"
+
+[WareHouseUiSystem_AddItmeToWareHouse]
+title = "给指定玩家仓库增加一个物品[某某人仓库UI]"
+description = "给指定玩家仓库增加一个物品——物品类型${物品类型} 玩家：${那个玩家} "
+comment = ""
+category = TC_WHUS
+returns = boolean
+[[.args]]
+type = itemcode
+[[.args]]
+type = player
+default = "GetTriggerPlayer()"

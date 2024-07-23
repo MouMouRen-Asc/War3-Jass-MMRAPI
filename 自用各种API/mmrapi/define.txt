@@ -3,6 +3,8 @@ TC_MMRAPI=[某某人自用API],ReplaceableTextures\CommandButtons\BTNMassTelepor
 TC_MMRBAGPACK=[某某人背包],ReplaceableTextures\CommandButtons\BTNDustOfAppearance.blp
 TC_MMRThreeForOne=[某某人三选一],ReplaceableTextures\PassiveButtons\PASBTNFeedBack.blp
 TC_MMRDPS=[某某人DPS],ReplaceableTextures\PassiveButtons\PASBTNFeedBack.blp
+TC_WHUS=[某某人仓库UI],ReplaceableTextures\CommandButtons\BTNIceShard.blp
+
 [TriggerTypes]
 boolean=0,1,1,WESTRING_TRIGTYPE_boolean
 integer=0,1,1,WESTRING_TRIGTYPE_integer

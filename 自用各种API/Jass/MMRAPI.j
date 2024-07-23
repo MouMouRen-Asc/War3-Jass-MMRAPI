@@ -1361,6 +1361,7 @@ endlibrary
 #endif  ///MMRAPIIncluded
 
 
+
 #ifndef BagPackApiIncluded 
 #define BagPackApiIncluded 
 
@@ -1427,6 +1428,8 @@ library BagPackApi requires BzAPI , YDWEYDWEJapiScript , MmrApi
     private string BaseBagPackInmageSolt = "UI\\Widgets\\Console\\Human\\human-inventory-slotfiller.blp"
     private string BagPack_ChooseBagBottomOn = "ReplaceableTextures\\CommandButtons\\BTNMoonKey.blp"
     private string BagPack_ChooseBagBottomOFF = "ReplaceableTextures\\CommandButtons\\BTNGlyph.blp"
+
+    boolean IsCanUseBagOn = true
 
     endglobals
 
@@ -1606,6 +1609,31 @@ library BagPackApi requires BzAPI , YDWEYDWEJapiScript , MmrApi
         endif
     endfunction
 
+    function BagPackApi_SetItemTypeToBag takes player wichplayer , integer wichitemtype returns nothing
+        local integer nullsolt = 0
+        local integer pager = 1
+
+        set nullsolt = BagPackApi_GetNullBag(wichplayer , 1 )
+
+        if PlayerBagCanUse_2[GetPlayerId(wichplayer)] and nullsolt == 0 then
+            set nullsolt = BagPackApi_GetNullBag(wichplayer , 2 )
+            set pager = 2
+        endif
+        if PlayerBagCanUse_3[GetPlayerId(wichplayer)] and nullsolt == 0 then
+            set nullsolt = BagPackApi_GetNullBag(wichplayer , 3 )
+            set pager = 3
+        endif
+        if PlayerBagCanUse_4[GetPlayerId(wichplayer)] and nullsolt == 0 then
+            set nullsolt = BagPackApi_GetNullBag(wichplayer , 4 )
+            set pager = 4
+        endif
+        if nullsolt != 0 then
+            call BagPackApi_ItemToBagPack(wichplayer , pager , nullsolt , wichitemtype , 1)
+        else
+            call DisplayTextToPlayer(GetLocalPlayer() ,0 , 0 , "装备背包已经满了")
+        endif
+    endfunction
+
     private function BagPackApi_WhneUnitKickChangeBottom takes nothing returns nothing
         local integer kickfarm = DzGetTriggerUIEventFrame()
         local integer pid = GetPlayerId(DzGetTriggerUIEventPlayer())
@@ -1662,25 +1690,57 @@ library BagPackApi requires BzAPI , YDWEYDWEJapiScript , MmrApi
         local RandomItem needcitem
         local integer itemtypeid
         local item createitem
-        if MMRAPI_TargetPlayerBagIsNull(pid) and DzGetTriggerSyncPlayer() == GetLocalPlayer() then
-            loop
-                exitwhen frame == BackPackUi[looptimeA] or looptimeA> 321
-                set looptimeA = looptimeA + 1
-            endloop
-            if looptimeA == 321 then
-                set solt = 0        
-            else
-                set solt = looptimeA - 300
-                set needcitem = LoadInteger(BackPackHash[pid], page , solt )
-                set itemtypeid = needcitem.GetRandomItemBaseItemType()
-                call BagPackApi_RemoveItemFormBagPack(DzGetTriggerSyncPlayer() , page , solt)
-                call DzSyncData("BagPackApi_CreateItem" , I2S(GetPlayerId(DzGetTriggerUIEventPlayer())) + I2S(itemtypeid))
-                //set createitem = CreateItem(itemtypeid , 0 , 0 )
-                //call UnitAddItem( MMRAPI_TargetPlayer(DzGetTriggerSyncPlayer()), CreateItem(itemtypeid , 0 , 0 ) )
+
+        if IsCanUseBagOn == true then
+            if ItemUseBag_GetNullSolt.evaluate(pid) != 0 and DzGetTriggerSyncPlayer() == GetLocalPlayer() then
+                loop
+                    exitwhen frame == BackPackUi[looptimeA] or looptimeA> 321
+                    set looptimeA = looptimeA + 1
+                endloop
+                if looptimeA == 321 then
+                    set solt = 0        
+                else
+                    set solt = looptimeA - 300
+                    set needcitem = LoadInteger(BackPackHash[pid], page , solt )
+                    if needcitem.GetRandomItemBaseItemType() != 0 and  needcitem.GetRandomItemBaseItemType() != null then
+                        set itemtypeid = needcitem.GetRandomItemBaseItemType()
+                        call BagPackApi_RemoveItemFormBagPack(DzGetTriggerSyncPlayer() , page , solt)
+                        call DzSyncData("ItemUseBag_AddAB" , I2S(GetPlayerId(DzGetTriggerSyncPlayer())) + I2S(itemtypeid))    
+                    endif
+
+                    //set createitem = CreateItem(itemtypeid , 0 , 0 )
+                    //call UnitAddItem( MMRAPI_TargetPlayer(DzGetTriggerSyncPlayer()), CreateItem(itemtypeid , 0 , 0 ) )
+                endif
+            elseif ItemUseBag_GetNullSolt.evaluate(pid) == 0 and DzGetTriggerSyncPlayer() == GetLocalPlayer() then
+                call DisplayTextToPlayer(GetLocalPlayer() ,0 , 0 , "存档装备已经装备了6件了")
             endif
-        elseif MMRAPI_TargetPlayerBagIsNull(pid) == false and DzGetTriggerSyncPlayer() == GetLocalPlayer() then
-            call DisplayTextToPlayer(GetLocalPlayer() ,0 , 0 , "英雄身上装备满了")
+        else
+            if MMRAPI_TargetPlayerBagIsNull(pid) and DzGetTriggerSyncPlayer() == GetLocalPlayer() then
+                loop
+                    exitwhen frame == BackPackUi[looptimeA] or looptimeA> 321
+                    set looptimeA = looptimeA + 1
+                endloop
+                if looptimeA == 321 then
+                    set solt = 0        
+                else
+                    set solt = looptimeA - 300
+                    
+                    set needcitem = LoadInteger(BackPackHash[pid], page , solt )
+                    if needcitem.GetRandomItemBaseItemType() != 0 and  needcitem.GetRandomItemBaseItemType() != null then
+                        set itemtypeid = needcitem.GetRandomItemBaseItemType()
+                        call BagPackApi_RemoveItemFormBagPack(DzGetTriggerSyncPlayer() , page , solt)
+                        call DzSyncData("BagPackApi_CreateItem" , I2S(GetPlayerId(DzGetTriggerUIEventPlayer())) + I2S(itemtypeid))
+                    endif
+
+                    //set createitem = CreateItem(itemtypeid , 0 , 0 )
+                    //call UnitAddItem( MMRAPI_TargetPlayer(DzGetTriggerSyncPlayer()), CreateItem(itemtypeid , 0 , 0 ) )
+                endif
+            elseif MMRAPI_TargetPlayerBagIsNull(pid) == false and DzGetTriggerSyncPlayer() == GetLocalPlayer() then
+                call DisplayTextToPlayer(GetLocalPlayer() ,0 , 0 , "英雄身上装备满了")
+            endif
+            
         endif
+
     endfunction
 
     function BagPackApi_UiCreate takes nothing returns nothing
@@ -1848,9 +1908,13 @@ library BagPackApi requires BzAPI , YDWEYDWEJapiScript , MmrApi
         set newtrigger = CreateTrigger()
         call DzTriggerRegisterSyncData(newtrigger , "BagPackApi_CreateItem" , false)
         call TriggerAddAction(newtrigger , function CreateItemToUnit)
+
     endfunction
 
     function BagPackApi_UiShowOrClose takes player tplayer returns nothing
+        if IsCanUseBagOn == true then
+            call ItemUseBag_ShowUseBag.execute(tplayer)
+        endif
         if tplayer == GetLocalPlayer() and DzFrameIsVisible(BackPackUi[0]) == false then
             call DzFrameShow( BackPackUi[0], true )
             call DzFrameSetTexture( BackPackUi[0], BagPack_Base_BackGround_1_Texter, 0 )
@@ -1930,7 +1994,7 @@ library DamageShow requires optional BzAPI , YDWEYDWEJapiScript , MmrApi
         // Dam
         set n = 0
         set UiDamQuick[n] = DzCreateFrameByTagName("BACKDROP", ( "rw" + I2S(n) ), DzGetGameUI(), "template", 0)
-        call DzFrameSetSize( UiDamQuick[n], 0.24, 0.18 )
+        call DzFrameSetSize( UiDamQuick[n], 0.13, 0.18 )
         call DzFrameSetPoint( UiDamQuick[n], 2, DzGetGameUI(), 5, 0.00, 0.1 )
         call DzFrameSetTexture( UiDamQuick[n], "DamageShow\\taskbg.tga", 0 )
         call DzFrameShow( UiDamQuick[n], false )
@@ -1978,7 +2042,7 @@ library DamageShow requires optional BzAPI , YDWEYDWEJapiScript , MmrApi
             set n = loopa
             set UiDamQuick[n] = DzCreateFrameByTagName("BACKDROP", ( "blood" + I2S(n) ), UiDamQuick[0], "template", 0)
             call DzFrameSetPoint( UiDamQuick[n], 8, UiDamQuick[( n - 100 )], 6, 0, 0.00 )
-            call DzFrameSetSize( UiDamQuick[n], ( 220.00 / 1280.00 ), ( 20.00 / 1280.00 ) )
+            call DzFrameSetSize( UiDamQuick[n], ( 110.00 / 1280.00 ), ( 20.00 / 1280.00 ) )
             call DzFrameSetTexture( UiDamQuick[n], "DamageShow\\p" + I2S(( n - 200 )) + ".tga", 0 )
             set loopa = loopa + 1
         endloop
@@ -2010,7 +2074,7 @@ library DamageShow requires optional BzAPI , YDWEYDWEJapiScript , MmrApi
             exitwhen loopa > 505
             set n = loopa
             set UiDamQuick[n] = DzCreateFrameByTagName("TEXT", ( "blood" + I2S(n) ), UiDamQuick[0], "template", 0)
-            call DzFrameSetPoint( UiDamQuick[n], 4, UiDamQuick[( n - 300 )], 5, -0.0859375, 0.00 )
+            call DzFrameSetPoint( UiDamQuick[n], 4, UiDamQuick[( n - 300 )], 5, -0.0559375, 0.00 )
             call DzFrameSetFont( UiDamQuick[n], "FontsZiTi_ui.ttf", 0.01, 0 )
             call DzFrameSetPriority( UiDamQuick[n], 1 )
             set loopa = loopa + 1
@@ -2073,7 +2137,7 @@ library DamageShow requires optional BzAPI , YDWEYDWEJapiScript , MmrApi
                             call DzFrameShow( UiDamQuick[( loops + 500 )], true )
                             call DzFrameSetTexture( UiDamQuick[( loops + 100 )], playart[playerid] , 0 )
                             call DzFrameSetTexture( UiDamQuick[( loops + 200 )], "DamageShow\\p" + I2S(playerid + 1 ) + ".tga", 0 )
-                            call DzFrameSetSize( UiDamQuick[( loops + 200 )],  ((220.00 * (Damage[playerid] / damageforall))/1280.00), ( 20.00 / 1280.00 ) )
+                            call DzFrameSetSize( UiDamQuick[( loops + 200 )],  ((110.00 * (Damage[playerid] / damageforall))/1280.00), ( 20.00 / 1280.00 ) )
                             call DzFrameSetText( UiDamQuick[( loops + 300 )], GetPlayerName(Player(playerid)))
                             call DzFrameSetText( UiDamQuick[( loops + 400 )],  R2SW( (Damage[playerid] / damageforall)  * 100.00 , 1, 2) + "%" ) 
                             if (Damage[playerid] / 10000000000.00) > 1 then
@@ -2087,7 +2151,7 @@ library DamageShow requires optional BzAPI , YDWEYDWEJapiScript , MmrApi
                             else
                                 set stringggg = R2SW(Damage[playerid], 1, 2)
                             endif
-                            call DzFrameSetText( UiDamQuick[( loops + 500 )], "|cFF000000" + stringggg)
+                            call DzFrameSetText( UiDamQuick[( loops + 500 )], "|cffffffff" + stringggg)
                             set Damage[playerid] = 0.1
                         else
                             call DzFrameShow( UiDamQuick[( loops + 100 )], false )
@@ -2279,11 +2343,38 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
         private constant integer ITEM_SYSTEM_BOSS_DAMAGE_PERCENT = 58
         private constant integer ITEM_SYSTEM_PHYSICAL_PROTECT_PERCENT = 59
         private constant integer ITEM_SYSTEM_MAGIC_PROTECT_PERCENT = 60
+
+        private constant integer ITEM_SYSTEM_TIME_ATTACK_10 = 61
+        private constant integer ITEM_SYSTEM_TIME_STR_10 = 62
+        private constant integer ITEM_SYSTEM_TIME_AGI_10 = 63
+        private constant integer ITEM_SYSTEM_TIME_INT_10 = 64
+        private constant integer ITEM_SYSTEM_TIME_MAX_HEALTH_10 = 65
+        private constant integer ITEM_SYSTEM_TIME_MAX_MANA_10 = 66
+        private constant integer ITEM_SYSTEM_TIME_GOLD_10 = 67
+        private constant integer ITEM_SYSTEM_TIME_WOOD_10 = 68
+        private constant integer ITEM_SYSTEM_TIME_HEALTH_10 = 69
+        private constant integer ITEM_SYSTEM_TIME_MANA_10 = 70
+        private constant integer ITEM_SYSTEM_KILL_ATTACK_10 = 71
+        private constant integer ITEM_SYSTEM_KILL_STR_10 = 72
+        private constant integer ITEM_SYSTEM_KILL_AGI_10 = 73
+        private constant integer ITEM_SYSTEM_KILL_INT_10 = 74
+        private constant integer ITEM_SYSTEM_KILL_MAX_HEALTH_10 = 75
+        private constant integer ITEM_SYSTEM_KILL_MAX_MANA_10 = 76
+        private constant integer ITEM_SYSTEM_KILL_EXP_10 = 77
+        private constant integer ITEM_SYSTEM_KILL_EXP_PERCENT_10 = 78
+        private constant integer ITEM_SYSTEM_KILL_GOLD_10 = 79
+        private constant integer ITEM_SYSTEM_KILL_GOLD_PERCENT_10 = 80
+        private constant integer ITEM_SYSTEM_KILL_WOOD_10 = 81
+        private constant integer ITEM_SYSTEM_KILL_WOOD_PERCENT_10 = 82
+
+
 		private hashtable Item = InitHashtable()
 		private trigger array trg
 		//0是三维技能，1是攻击技能，2是防御技能
 		private integer array GreenValueSkill
         private integer array MonsterCheckSkill
+        private integer TimerRunTime = 1
+        private integer array KillTimes
 
         private integer array Time_Add_Attack//1
         private integer array Time_Add_Str//2
@@ -2339,6 +2430,29 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
         private integer array Player_Boss_Magic_MultipliedValue
 
         private integer array Player_Skill_Cold_Donw//40
+
+        private integer array Time_Add_Attack_10//1
+        private integer array Time_Add_Str_10//2
+        private integer array Time_Add_Agi_10//3
+        private integer array Time_Add_Int_10//4
+        private integer array Time_Add_MaxHealth_10//5
+        private integer array Time_Add_MaxMana_10//6
+        private integer array Time_Add_Gold_10//7
+        private integer array Time_Add_Wood_10//8
+
+        private integer array Kill_Add_Attack_10//11
+        private integer array Kill_Add_Str_10//12
+        private integer array Kill_Add_Agi_10//13
+        private integer array Kill_Add_Int_10//14
+        private integer array Kill_Add_MaxHealth_10//15
+        private integer array Kill_Add_MaxMana_10//16
+        private integer array Kill_Add_Exp_10//17
+        private integer array Kill_Add_Exp_Percent_10//18
+        private integer array Kill_Add_Gold_10//19
+        private integer array Kill_Add_Gold_Percent_10//20
+        private integer array Kill_Add_Wood_10//21
+        private integer array Kill_Add_Wood_Percent_10//22
+
 
 	endglobals
 
@@ -2426,6 +2540,27 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
     local damageadd_boss = string.match(Tip,"Boss增伤.[+-]?%d+")--整数
     local lessdamage_physical = string.match(Tip,"物理减伤.[+-]?%d+")--整数
     local lessdamage_magic = string.match(Tip,"魔法减伤.[+-]?%d+")--整数
+    --v1.1
+    local time_attack_10 =  string.match(Tip,"每十秒攻击力.[+-]?%d+")--整数
+    local time_str_10 =  string.match(Tip,"每十秒力量.[+-]?%d+")--整数
+    local time_agi_10 =  string.match(Tip,"每十秒敏捷.[+-]?%d+")--整数
+    local time_int_10 =  string.match(Tip,"每十秒智力.[+-]?%d+")--整数
+    local time_maxhealth_10 =  string.match(Tip,"每十秒最大生命.[+-]?%d+")--整数
+    local time_maxmana_10 =  string.match(Tip,"每十秒最大魔法.[+-]?%d+")--整数
+    local time_gold_10 =  string.match(Tip,"每十秒金币.[+-]?%d+")--整数
+    local time_wood_10 =  string.match(Tip,"每十秒木材.[+-]?%d+")--整数
+    local kill_attack_10 =  string.match(Tip,"杀十个敌人攻击.[+-]?%d+")--整数
+    local kill_str_10 =  string.match(Tip,"杀十个敌人力量.[+-]?%d+")--整数
+    local kill_agi_10 =  string.match(Tip,"杀十个敌人敏捷.[+-]?%d+")--整数
+    local kill_int_10 =  string.match(Tip,"杀十个敌人智力.[+-]?%d+")--整数
+    local kill_maxhealth_10 =  string.match(Tip,"杀十个敌人最大生命.[+-]?%d+")--整数
+    local kill_mana_10 =  string.match(Tip,"杀十个敌人最大魔法.[+-]?%d+")--整数
+    local kill_exp_10 =  string.match(Tip,"杀十个敌人经验.[+-]?%d+")--整数
+    local kill_exp_p_10 =  string.match(Tip,"杀十个敌人经验加成.[+-]?%d+")--整数
+    local kill_gold_10 =  string.match(Tip,"杀十个敌人金币.[+-]?%d+")--整数
+    local kill_gold_p_10 =  string.match(Tip,"杀十个敌人金币加成.[+-]?%d+")--整数
+    local kill_wood_10 =  string.match(Tip,"杀十个敌人木材.[+-]?%d+")--整数
+    local kill_wood_p_10 =  string.match(Tip,"杀十个敌人木材加成.[+-]?%d+")--整数
 	?>
 
 	<?if attack ~= nil then?>
@@ -2607,6 +2742,68 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
 	<?end?>
     <?if lessdamage_magic ~= nil then?>
 	call SaveInteger(Item,'<?=id?>',ITEM_SYSTEM_MAGIC_PROTECT_PERCENT,<?=tonumber(string.match(lessdamage_magic,"[+-]?%d+"))?>)
+	<?end?>
+
+
+    <?if time_attack_10 ~= nil then?>
+	call SaveInteger(Item,'<?=id?>',ITEM_SYSTEM_TIME_ATTACK_10,<?=tonumber(string.match(time_attack_10,"[+-]?%d+"))?>)
+	<?end?>
+    <?if time_str_10 ~= nil then?>
+	call SaveInteger(Item,'<?=id?>',ITEM_SYSTEM_TIME_STR_10,<?=tonumber(string.match(time_str_10,"[+-]?%d+"))?>)
+	<?end?>
+    <?if time_agi_10 ~= nil then?>
+	call SaveInteger(Item,'<?=id?>',ITEM_SYSTEM_TIME_AGI_10,<?=tonumber(string.match(time_agi_10,"[+-]?%d+"))?>)
+	<?end?>
+    <?if time_int_10 ~= nil then?>
+	call SaveInteger(Item,'<?=id?>',ITEM_SYSTEM_TIME_INT_10,<?=tonumber(string.match(time_int_10,"[+-]?%d+"))?>)
+	<?end?>
+    <?if time_maxhealth_10 ~= nil then?>
+	call SaveInteger(Item,'<?=id?>',ITEM_SYSTEM_TIME_MAX_HEALTH_10,<?=tonumber(string.match(time_maxhealth_10,"[+-]?%d+"))?>)
+	<?end?>
+    <?if time_maxmana_10 ~= nil then?>
+	call SaveInteger(Item,'<?=id?>',ITEM_SYSTEM_TIME_MAX_MANA_10,<?=tonumber(string.match(time_maxmana_10,"[+-]?%d+"))?>)
+	<?end?>
+    <?if time_gold_10 ~= nil then?>
+	call SaveInteger(Item,'<?=id?>',ITEM_SYSTEM_TIME_GOLD_10,<?=tonumber(string.match(time_gold_10,"[+-]?%d+"))?>)
+	<?end?>
+    <?if time_wood_10 ~= nil then?>
+	call SaveInteger(Item,'<?=id?>',ITEM_SYSTEM_TIME_WOOD_10,<?=tonumber(string.match(time_wood_10,"[+-]?%d+"))?>)
+	<?end?>
+    <?if kill_attack_10 ~= nil then?>
+	call SaveInteger(Item,'<?=id?>',ITEM_SYSTEM_KILL_ATTACK_10,<?=tonumber(string.match(kill_attack_10,"[+-]?%d+"))?>)
+	<?end?>
+    <?if kill_str_10 ~= nil then?>
+	call SaveInteger(Item,'<?=id?>',ITEM_SYSTEM_KILL_STR_10,<?=tonumber(string.match(kill_str_10,"[+-]?%d+"))?>)
+	<?end?>
+    <?if kill_agi_10 ~= nil then?>
+	call SaveInteger(Item,'<?=id?>',ITEM_SYSTEM_KILL_AGI_10,<?=tonumber(string.match(kill_agi_10,"[+-]?%d+"))?>)
+	<?end?>
+    <?if kill_int_10 ~= nil then?>
+	call SaveInteger(Item,'<?=id?>',ITEM_SYSTEM_KILL_INT_10,<?=tonumber(string.match(kill_int_10,"[+-]?%d+"))?>)
+	<?end?>
+    <?if kill_maxhealth_10 ~= nil then?>
+	call SaveInteger(Item,'<?=id?>',ITEM_SYSTEM_KILL_MAX_HEALTH_10,<?=tonumber(string.match(kill_maxhealth_10,"[+-]?%d+"))?>)
+	<?end?>
+    <?if kill_mana_10 ~= nil then?>
+	call SaveInteger(Item,'<?=id?>',ITEM_SYSTEM_KILL_MAX_MANA_10,<?=tonumber(string.match(kill_mana_10,"[+-]?%d+"))?>)
+	<?end?>
+    <?if kill_exp_10 ~= nil then?>
+	call SaveInteger(Item,'<?=id?>',ITEM_SYSTEM_KILL_EXP_10,<?=tonumber(string.match(kill_exp_10,"[+-]?%d+"))?>)
+	<?end?>
+    <?if kill_exp_p_10 ~= nil then?>
+	call SaveInteger(Item,'<?=id?>',ITEM_SYSTEM_KILL_EXP_PERCENT_10,<?=tonumber(string.match(kill_exp_p_10,"[+-]?%d+"))?>)
+	<?end?>
+    <?if kill_gold_10 ~= nil then?>
+	call SaveInteger(Item,'<?=id?>',ITEM_SYSTEM_KILL_GOLD_10,<?=tonumber(string.match(kill_gold_10,"[+-]?%d+"))?>)
+	<?end?>
+    <?if kill_gold_p_10 ~= nil then?>
+	call SaveInteger(Item,'<?=id?>',ITEM_SYSTEM_KILL_GOLD_PERCENT_10,<?=tonumber(string.match(kill_gold_p_10,"[+-]?%d+"))?>)
+	<?end?>
+    <?if kill_wood_10 ~= nil then?>
+	call SaveInteger(Item,'<?=id?>',ITEM_SYSTEM_KILL_WOOD_10,<?=tonumber(string.match(kill_wood_10,"[+-]?%d+"))?>)
+	<?end?>
+    <?if kill_wood_p_10 ~= nil then?>
+	call SaveInteger(Item,'<?=id?>',ITEM_SYSTEM_KILL_WOOD_PERCENT_10,<?=tonumber(string.match(kill_wood_p_10,"[+-]?%d+"))?>)
 	<?end?>
 	<?end?>
 
@@ -2817,6 +3014,28 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
     set Kill_Add_Wood[PlayerId] = Kill_Add_Wood[PlayerId] + LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_KILL_WOOD)
     set Kill_Add_Wood_Percent[PlayerId] = Kill_Add_Wood_Percent[PlayerId] + LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_KILL_WOOD_PERCENT)
 
+    set Time_Add_Attack_10[PlayerId] = Time_Add_Attack_10[PlayerId] + LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_TIME_ATTACK_10)
+    set Time_Add_Str_10[PlayerId] = Time_Add_Str_10[PlayerId] + LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_TIME_STR_10)
+    set Time_Add_Agi_10[PlayerId] = Time_Add_Agi_10[PlayerId] + LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_TIME_AGI_10)
+    set Time_Add_Int_10[PlayerId] = Time_Add_Int_10[PlayerId] + LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_TIME_INT_10)
+    set Time_Add_MaxHealth_10[PlayerId] = Time_Add_MaxHealth_10[PlayerId] + LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_TIME_MAX_HEALTH_10)
+    set Time_Add_MaxMana_10[PlayerId] = Time_Add_MaxMana_10[PlayerId] + LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_TIME_MAX_MANA_10)
+    set Time_Add_Gold_10[PlayerId] = Time_Add_Gold_10[PlayerId] + LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_TIME_GOLD_10)
+    set Time_Add_Wood_10[PlayerId] = Time_Add_Wood_10[PlayerId] + LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_TIME_WOOD_10)
+
+    set Kill_Add_Attack_10[PlayerId] = Kill_Add_Attack_10[PlayerId] + LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_KILL_ATTACK_10)
+    set Kill_Add_Str_10[PlayerId] = Kill_Add_Str_10[PlayerId] + LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_KILL_STR_10)
+    set Kill_Add_Agi_10[PlayerId] = Kill_Add_Agi_10[PlayerId] + LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_KILL_AGI_10)
+    set Kill_Add_Int_10[PlayerId] = Kill_Add_Int_10[PlayerId] + LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_KILL_INT_10)
+    set Kill_Add_MaxHealth_10[PlayerId] = Kill_Add_MaxHealth_10[PlayerId] + LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_KILL_MAX_HEALTH_10)
+    set Kill_Add_MaxMana_10[PlayerId] = Kill_Add_MaxMana_10[PlayerId] + LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_KILL_MAX_MANA_10)
+    set Kill_Add_Exp_10[PlayerId] = Kill_Add_Exp_10[PlayerId] + LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_KILL_EXP_10)
+    set Kill_Add_Exp_Percent_10[PlayerId] = Kill_Add_Exp_Percent_10[PlayerId] + LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_KILL_EXP_PERCENT_10)
+    set Kill_Add_Gold_10[PlayerId] = Kill_Add_Gold_10[PlayerId] + LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_KILL_GOLD_10)
+    set Kill_Add_Gold_Percent_10[PlayerId] = Kill_Add_Gold_Percent_10[PlayerId] + LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_KILL_GOLD_PERCENT_10)
+    set Kill_Add_Wood_10[PlayerId] = Kill_Add_Wood_10[PlayerId] + LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_KILL_WOOD_10)
+    set Kill_Add_Wood_Percent_10[PlayerId] = Kill_Add_Wood_Percent_10[PlayerId] + LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_KILL_WOOD_PERCENT_10)
+
     set Player_Physical_Critical_Value[PlayerId] = Player_Physical_Critical_Value[PlayerId] + LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_PHYSICAL_CRITICAL_STRIKE_VALUE)
     set Player_Physical_Critical_Percent[PlayerId] = Player_Physical_Critical_Percent[PlayerId] + LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_PHYSICAL_CRITICAL_STRIKE_PERCENT)
     set Player_Magic_Critical_Value[PlayerId] = Player_Magic_Critical_Value[PlayerId] + LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_MAGIC_CRITICAL_STRIKE_VALUE)
@@ -2846,8 +3065,6 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
     set Player_Normal_Magic_MultipliedValue[PlayerId] = ( 1 + (Player_Normal_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Magic_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
     set Player_Elite_Magic_MultipliedValue[PlayerId] = ( 1 + (Player_Elite_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Magic_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
     set Player_Boss_Magic_MultipliedValue[PlayerId] = ( 1 + (Player_Boss_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Magic_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
-
-
     endif
 
 	endfunction
@@ -3015,6 +3232,29 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
     set Kill_Add_Wood[PlayerId] = Kill_Add_Wood[PlayerId] - LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_KILL_WOOD)
     set Kill_Add_Wood_Percent[PlayerId] = Kill_Add_Wood_Percent[PlayerId] - LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_KILL_WOOD_PERCENT)
 
+    set Time_Add_Attack_10[PlayerId] = Time_Add_Attack_10[PlayerId] - LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_TIME_ATTACK_10)
+    set Time_Add_Str_10[PlayerId] = Time_Add_Str_10[PlayerId] - LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_TIME_STR_10)
+    set Time_Add_Agi_10[PlayerId] = Time_Add_Agi_10[PlayerId] - LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_TIME_AGI_10)
+    set Time_Add_Int_10[PlayerId] = Time_Add_Int_10[PlayerId] - LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_TIME_INT_10)
+    set Time_Add_MaxHealth_10[PlayerId] = Time_Add_MaxHealth_10[PlayerId] - LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_TIME_MAX_HEALTH_10)
+    set Time_Add_MaxMana_10[PlayerId] = Time_Add_MaxMana_10[PlayerId] - LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_TIME_MAX_MANA_10)
+    set Time_Add_Gold_10[PlayerId] = Time_Add_Gold_10[PlayerId] - LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_TIME_GOLD_10)
+    set Time_Add_Wood_10[PlayerId] = Time_Add_Wood_10[PlayerId] - LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_TIME_WOOD_10)
+
+    set Kill_Add_Attack_10[PlayerId] = Kill_Add_Attack_10[PlayerId] - LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_KILL_ATTACK_10)
+    set Kill_Add_Str_10[PlayerId] = Kill_Add_Str_10[PlayerId] - LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_KILL_STR_10)
+    set Kill_Add_Agi_10[PlayerId] = Kill_Add_Agi_10[PlayerId] - LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_KILL_AGI_10)
+    set Kill_Add_Int_10[PlayerId] = Kill_Add_Int_10[PlayerId] - LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_KILL_INT_10)
+    set Kill_Add_MaxHealth_10[PlayerId] = Kill_Add_MaxHealth_10[PlayerId] - LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_KILL_MAX_HEALTH_10)
+    set Kill_Add_MaxMana_10[PlayerId] = Kill_Add_MaxMana_10[PlayerId] - LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_KILL_MAX_MANA_10)
+    set Kill_Add_Exp_10[PlayerId] = Kill_Add_Exp_10[PlayerId] - LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_KILL_EXP_10)
+    set Kill_Add_Exp_Percent_10[PlayerId] = Kill_Add_Exp_Percent_10[PlayerId] - LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_KILL_EXP_PERCENT_10)
+    set Kill_Add_Gold_10[PlayerId] = Kill_Add_Gold_10[PlayerId] - LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_KILL_GOLD_10)
+    set Kill_Add_Gold_Percent_10[PlayerId] = Kill_Add_Gold_Percent_10[PlayerId] - LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_KILL_GOLD_PERCENT_10)
+    set Kill_Add_Wood_10[PlayerId] = Kill_Add_Wood_10[PlayerId] - LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_KILL_WOOD_10)
+    set Kill_Add_Wood_Percent_10[PlayerId] = Kill_Add_Wood_Percent_10[PlayerId] - LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_KILL_WOOD_PERCENT_10)
+
+
     set Player_Physical_Critical_Value[PlayerId] = Player_Physical_Critical_Value[PlayerId] - LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_PHYSICAL_CRITICAL_STRIKE_VALUE)
     set Player_Physical_Critical_Percent[PlayerId] = Player_Physical_Critical_Percent[PlayerId] - LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_PHYSICAL_CRITICAL_STRIKE_PERCENT)
     set Player_Magic_Critical_Value[PlayerId] = Player_Magic_Critical_Value[PlayerId] - LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_MAGIC_CRITICAL_STRIKE_VALUE)
@@ -3087,6 +3327,39 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
             if Kill_Add_Wood[GetPlayerId(pl)] > 0 then
                 call SetPlayerState(pl , PLAYER_STATE_RESOURCE_LUMBER , GetPlayerState(pl, PLAYER_STATE_RESOURCE_LUMBER) + Kill_Add_Wood[GetPlayerId(pl)] + ((Kill_Add_Wood[GetPlayerId(pl)] * Kill_Add_Wood_Percent[GetPlayerId(pl)])/100))
 			endif
+
+            if KillTimes[GetPlayerId(pl)] >= 10 then
+                set KillTimes[GetPlayerId(pl)] = 0
+                if Kill_Add_Attack_10[GetPlayerId(pl)] > 0 then
+                    call SetUnitState(tunit,ConvertUnitState(0x12),(GetUnitState(tunit,ConvertUnitState(0x12)) + Kill_Add_Attack_10[GetPlayerId(pl)]))
+                endif
+                if Kill_Add_Str_10[GetPlayerId(pl)] > 0 then
+                    call SetHeroStr(tunit , GetHeroStr( tunit , false ) + Kill_Add_Str_10[GetPlayerId(pl)] , false)
+                endif
+                if Kill_Add_Agi_10[GetPlayerId(pl)] > 0 then
+                    call SetHeroAgi(tunit , GetHeroAgi( tunit , false ) + Kill_Add_Agi_10[GetPlayerId(pl)] , false)
+                endif
+                if Kill_Add_Int_10[GetPlayerId(pl)] > 0 then
+                    call SetHeroInt(tunit , GetHeroInt( tunit , false ) + Kill_Add_Int_10[GetPlayerId(pl)] , false)
+                endif
+                if Kill_Add_MaxHealth_10[GetPlayerId(pl)] > 0 then
+                    call SetUnitState(tunit , UNIT_STATE_MAX_LIFE , (GetUnitState(tunit,UNIT_STATE_MAX_LIFE) + Kill_Add_MaxHealth_10[GetPlayerId(pl)]))
+                endif
+                if Kill_Add_MaxMana_10[GetPlayerId(pl)] > 0 then
+                    call SetUnitState(tunit , UNIT_STATE_MAX_LIFE , (GetUnitState(tunit,UNIT_STATE_MAX_LIFE) + Kill_Add_MaxMana_10[GetPlayerId(pl)]))
+                endif
+                if Kill_Add_Exp_10[GetPlayerId(pl)] > 0 then
+                    call AddHeroXP( tunit , Kill_Add_Exp_10[GetPlayerId(pl)] + ((Kill_Add_Exp_10[GetPlayerId(pl)] * Kill_Add_Exp_Percent_10[GetPlayerId(pl)])/100), true)
+			    endif
+                if Kill_Add_Gold_10[GetPlayerId(pl)] > 0 then
+                    call SetPlayerState(pl , PLAYER_STATE_RESOURCE_GOLD , GetPlayerState(pl, PLAYER_STATE_RESOURCE_GOLD) + Kill_Add_Gold_10[GetPlayerId(pl)]+ ((Kill_Add_Gold_10[GetPlayerId(pl)] * Kill_Add_Gold_Percent_10[GetPlayerId(pl)])/100))
+			    endif
+                if Kill_Add_Wood_10[GetPlayerId(pl)] > 0 then
+                    call SetPlayerState(pl , PLAYER_STATE_RESOURCE_LUMBER , GetPlayerState(pl, PLAYER_STATE_RESOURCE_LUMBER) + Kill_Add_Wood_10[GetPlayerId(pl)] + ((Kill_Add_Wood_10[GetPlayerId(pl)] * Kill_Add_Wood_Percent_10[GetPlayerId(pl)])/100))
+			    endif
+            else 
+                set KillTimes[GetPlayerId(pl)] = KillTimes[GetPlayerId(pl)] + 1
+            endif
         endif
 	endfunction
 
@@ -3097,6 +3370,7 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
 		///每秒事件，每秒加属性和每秒回血
         local integer Sy = 0
         local unit tunit 
+        set TimerRunTime = TimerRunTime + 1
 		loop
 			exitwhen Sy == 7
             set tunit = MMRAPI_TargetPlayer(Player(Sy))
@@ -3134,6 +3408,42 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
             endif
 			set Sy = Sy + 1
 		endloop
+
+        if TimerRunTime >= 10 then
+            set TimerRunTime = 1
+            set Sy = 0
+            loop
+			    exitwhen Sy == 7
+                set tunit = MMRAPI_TargetPlayer(Player(Sy))
+                if tunit != null then
+              	    if Time_Add_Attack_10[Sy] > 0 then
+                        call SetUnitState(tunit,ConvertUnitState(0x12),(GetUnitState(tunit,ConvertUnitState(0x12)) + Time_Add_Attack_10[Sy]))
+			        endif
+			        if Time_Add_Str_10[Sy] > 0 then
+                        call SetHeroStr(tunit , GetHeroStr( tunit , false ) + Time_Add_Str_10[Sy] , false)
+			        endif
+                    if Time_Add_Agi_10[Sy] > 0 then
+                        call SetHeroAgi(tunit , GetHeroAgi( tunit , false ) + Time_Add_Agi_10[Sy] , false)
+			        endif
+                    if Time_Add_Int_10[Sy] > 0 then
+                        call SetHeroInt(tunit , GetHeroInt( tunit , false ) + Time_Add_Int_10[Sy] , false)
+			        endif
+                    if Time_Add_MaxHealth_10[Sy] > 0 then
+                        call SetUnitState(tunit , UNIT_STATE_MAX_LIFE , (GetUnitState(tunit,UNIT_STATE_MAX_LIFE) + Time_Add_MaxHealth_10[Sy]))
+			        endif
+                    if Time_Add_MaxMana_10[Sy] > 0 then
+                        call SetUnitState(tunit , UNIT_STATE_MAX_MANA , (GetUnitState(tunit,UNIT_STATE_MAX_MANA) + Time_Add_MaxMana_10[Sy]))
+			        endif
+                    if Time_Add_Gold_10[Sy] > 0 then
+                        call SetPlayerState(Player(Sy) , PLAYER_STATE_RESOURCE_GOLD , GetPlayerState(Player(Sy), PLAYER_STATE_RESOURCE_GOLD) + Time_Add_Gold_10[Sy])
+			        endif
+                    if Time_Add_Wood_10[Sy] > 0 then
+                        call SetPlayerState(Player(Sy) , PLAYER_STATE_RESOURCE_LUMBER , GetPlayerState(Player(Sy), PLAYER_STATE_RESOURCE_LUMBER) + Time_Add_Wood_10[Sy])
+			        endif
+            endif
+			set Sy = Sy + 1
+		endloop
+        endif
 	endfunction
 
 	private function trg5Co takes nothing returns boolean
@@ -3786,6 +4096,451 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
 
     endfunction
 
+    function AddAttributeAsItemType takes integer itemtypei , player tplayer returns nothing
+	///获得物品触发器，攻击力 护甲 生命值 获得之后直接添加，其他的给操作物品单位绑定值
+		local real GJL = R2I(LoadInteger(Item,itemtypei,ITEM_SYSTEM_ATTACK))
+		local real GJLAD = R2I(LoadInteger(Item,itemtypei,ITEM_SYSTEM_ATTACK_APPEND))
+		local real HJ = R2I(LoadInteger(Item,itemtypei,ITEM_SYSTEM_ARMOR))
+		local real SMZ = R2I(LoadInteger(Item,itemtypei,ITEM_SYSTEM_MAX_HEALTH))
+		local real MFZ =R2I( LoadInteger(Item,itemtypei,ITEM_SYSTEM_MAX_MANA))
+        local real HJAD = R2I(LoadInteger(Item,itemtypei,ITEM_SYSTEM_ARMOR_APPEND))
+        local integer YDSD = R2I(LoadInteger(Item,itemtypei,ITEM_SYSTEM_MOVE_SPEED))
+        local integer STR = LoadInteger(Item,itemtypei,ITEM_SYSTEM_STR)
+        local integer AGI = LoadInteger(Item,itemtypei,ITEM_SYSTEM_AGI)
+        local integer INT = LoadInteger(Item,itemtypei,ITEM_SYSTEM_INT)
+		local integer STRADD = LoadInteger(Item,itemtypei,ITEM_SYSTEM_STR_APPEND)
+		local integer AGIADD = LoadInteger(Item,itemtypei,ITEM_SYSTEM_AGI_APPEND)
+		local integer INTADD = LoadInteger(Item,itemtypei,ITEM_SYSTEM_INT_APPEND)
+		local integer GJJL = LoadInteger(Item,itemtypei,ITEM_SYSTEM_ATTACK_FAR)
+		local integer GJJG = LoadInteger(Item,itemtypei,ITEM_SYSTEM_ATTACK_DELAY)
+		local integer GJSD = LoadInteger(Item,itemtypei,ITEM_SYSTEM_ATTACK_SPEED)
+		local unit GetItemUnit = MMRAPI_TargetPlayer(tplayer)
+		local integer PlayerId =  GetPlayerId(GetOwningPlayer(GetItemUnit))
+		local integer NeedSkillLevel = PlayerId +2
+		//拾取物品单位是英雄才增加
+	if IsUnitType(GetItemUnit, UNIT_TYPE_HERO) == true then
+
+		/// 攻击力
+		if GJL != 0. then
+			call SetUnitState(GetItemUnit,ConvertUnitState(0x12),(GetUnitState(GetItemUnit,ConvertUnitState(0x12)) + GJL))
+		endif
+		/// 攻击间隔
+		if GJJG != 0. then
+			call SetUnitState(GetItemUnit,ConvertUnitState(0x25),(GetUnitState(GetItemUnit,ConvertUnitState(0x25)) + (I2R(GJJG)/100)))
+		endif
+		/// 攻击速度
+		if GJSD != 0. then
+			call SetUnitState(GetItemUnit,ConvertUnitState(0x51),(GetUnitState(GetItemUnit,ConvertUnitState(0x51)) + (I2R(GJSD)/100)))
+		endif
+		/// 攻击距离
+		if GJJL != 0. then
+			call SetUnitState(GetItemUnit,ConvertUnitState(0x16),(GetUnitState(GetItemUnit,ConvertUnitState(0x16)) + I2R(GJJL)))
+			call SetUnitState(GetItemUnit,ConvertUnitState(0x52),(GetUnitState(GetItemUnit,ConvertUnitState(0x16))))
+		endif
+		/// 护甲
+		if HJ != 0. then
+			call SetUnitState(GetItemUnit,ConvertUnitState(0x20),(GetUnitState(GetItemUnit,ConvertUnitState(0x20)) + HJ))
+		endif
+		/// 生命值
+		if SMZ != 0. then
+			call SetUnitState(GetItemUnit,UNIT_STATE_MAX_LIFE,GetUnitState(GetItemUnit,UNIT_STATE_MAX_LIFE) + SMZ)
+			call SetUnitState(GetItemUnit,UNIT_STATE_LIFE,GetUnitState(GetItemUnit,UNIT_STATE_LIFE) + SMZ)
+		endif
+		/// 魔法值
+		if MFZ != 0. then
+			call SetUnitState(GetItemUnit,UNIT_STATE_MAX_MANA,GetUnitState(GetItemUnit,UNIT_STATE_MAX_MANA) + MFZ)
+			call SetUnitState(GetItemUnit,UNIT_STATE_MANA,GetUnitState(GetItemUnit,UNIT_STATE_MANA) + MFZ)
+		endif
+        //移动速度
+        if YDSD != 0. then
+            call SetUnitMoveSpeed( GetItemUnit , GetUnitMoveSpeed(GetItemUnit) + YDSD )
+        endif
+
+        if STR != 0 then
+            call SetHeroStr(GetItemUnit , GetHeroStr(GetItemUnit , false) + STR ,false)
+        endif
+        if AGI != 0 then
+            call SetHeroAgi(GetItemUnit , GetHeroAgi(GetItemUnit , false) + AGI ,false)
+        endif
+        if INT != 0 then
+            call SetHeroInt(GetItemUnit , GetHeroInt(GetItemUnit , false) + INT ,false)
+        endif
+
+
+		if GJLAD != 0 and GetUnitAbilityLevel(GetItemUnit, GreenValueSkill[1]) == NeedSkillLevel then
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[1]), NeedSkillLevel, 108, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[1]),NeedSkillLevel,108) + R2I(GJLAD))
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[1] , 1)
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[1] , NeedSkillLevel)
+		elseif GJLAD != 0 and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[1]) == 0 then
+		call UnitAddAbility(GetItemUnit, GreenValueSkill[1])
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[1]), NeedSkillLevel, 108, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[1]),NeedSkillLevel,108) + R2I(GJLAD))
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[1] , NeedSkillLevel)	
+		elseif GJLAD != 0 and (GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[1]) != NeedSkillLevel and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[1]) != 0 )then
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[1]), NeedSkillLevel, 108, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[1]),NeedSkillLevel,108) + R2I(GJLAD))
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[1] , NeedSkillLevel)	
+		endif	
+
+
+		if HJAD != 0 and GetUnitAbilityLevel(GetItemUnit, GreenValueSkill[2]) == NeedSkillLevel then
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[2]), NeedSkillLevel, 108, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[2]),NeedSkillLevel,108) + HJAD)
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[2] , 1)
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[2] , NeedSkillLevel)
+		elseif HJAD != 0 and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[2]) == 0 then
+		call UnitAddAbility(GetItemUnit, GreenValueSkill[2])
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[2]), NeedSkillLevel, 108, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[2]),NeedSkillLevel,108) + HJAD)
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[2] , NeedSkillLevel)	
+		elseif HJAD != 0 and (GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[2]) != NeedSkillLevel and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[2]) != 0 )then
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[2]), NeedSkillLevel, 108, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[2]),NeedSkillLevel,108) + HJAD)
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[2] , NeedSkillLevel)	
+		endif	
+
+
+		if STRADD != 0 and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[0]) == NeedSkillLevel then
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]), NeedSkillLevel, 110, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]),NeedSkillLevel,110) + R2I(STRADD))
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[0] , 1)
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[0] , NeedSkillLevel)
+		elseif STRADD != 0 and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[0]) == 0 then
+		call UnitAddAbility(GetItemUnit, GreenValueSkill[0])
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]), NeedSkillLevel, 110, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]),NeedSkillLevel,110) + R2I(STRADD))
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[0] , NeedSkillLevel)	
+		elseif STRADD != 0 and (GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[0]) != NeedSkillLevel and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[0]) != 0 )then
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]), NeedSkillLevel, 110, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]),NeedSkillLevel,110) + R2I(STRADD))
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[0] , NeedSkillLevel)	
+		endif
+		if AGIADD != 0 and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[0]) == NeedSkillLevel then
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]), NeedSkillLevel, 108, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]),NeedSkillLevel,108) + R2I(AGIADD))
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[0] , 1)
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[0] , NeedSkillLevel)
+		elseif AGIADD != 0 and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[0]) == 0 then
+		call UnitAddAbility(GetItemUnit, GreenValueSkill[0])
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]), NeedSkillLevel, 108, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]),NeedSkillLevel,108) + R2I(AGIADD))
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[0] , NeedSkillLevel)	
+		elseif AGIADD != 0 and (GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[0]) != NeedSkillLevel and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[0]) != 0 )then
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]), NeedSkillLevel, 108, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]),NeedSkillLevel,108) + R2I(AGIADD))
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[0] , NeedSkillLevel)	
+		endif
+		if INTADD != 0 and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[0]) == NeedSkillLevel then
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]), NeedSkillLevel, 109, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]),NeedSkillLevel,109) + R2I(INTADD))
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[0] , 1)
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[0] , NeedSkillLevel)
+		elseif INTADD != 0 and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[0]) == 0 then
+		call UnitAddAbility(GetItemUnit, GreenValueSkill[0])
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]), NeedSkillLevel, 109, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]),NeedSkillLevel,109) + R2I(INTADD))
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[0] , NeedSkillLevel)	
+		elseif INTADD != 0 and (GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[0]) != NeedSkillLevel and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[0]) != 0 )then
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]), NeedSkillLevel, 109, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]),NeedSkillLevel,109) + R2I(INTADD))
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[0] , NeedSkillLevel)	
+		endif
+
+	endif
+
+        //拾取物品单位是英雄才减少(分割一下上面写的太长了这部分是各种不是直接作用于本体而是单独储存的数据)
+	if IsUnitType(GetItemUnit, UNIT_TYPE_HERO) == true then
+    call MMRAPI_ChangeAttributePercent(GetOwningPlayer(GetItemUnit) , 1 , LoadInteger(Item,itemtypei,ITEM_SYSTEM_STR_PERCENT) , true)
+	call MMRAPI_ChangeAttributePercent(GetOwningPlayer(GetItemUnit) , 2 , LoadInteger(Item,itemtypei,ITEM_SYSTEM_AGI_PERCENT) , true)
+	call MMRAPI_ChangeAttributePercent(GetOwningPlayer(GetItemUnit) , 3 , LoadInteger(Item,itemtypei,ITEM_SYSTEM_INT_PERCENT) , true)
+	call MMRAPI_ChangeAttributePercent(GetOwningPlayer(GetItemUnit) , 5 , LoadInteger(Item,itemtypei,ITEM_SYSTEM_MAX_HEALTH_PERCENT) , true)
+	call MMRAPI_ChangeAttributePercent(GetOwningPlayer(GetItemUnit) , 6 , LoadInteger(Item,itemtypei,ITEM_SYSTEM_MAX_MANA_PERCENT) , true)
+
+    set Time_Add_Attack[PlayerId] = Time_Add_Attack[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_TIME_ATTACK)
+    set Time_Add_Str[PlayerId] = Time_Add_Str[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_TIME_STR)
+    set Time_Add_Agi[PlayerId] = Time_Add_Agi[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_TIME_AGI)
+    set Time_Add_Int[PlayerId] = Time_Add_Int[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_TIME_INT)
+    set Time_Add_MaxHealth[PlayerId] = Time_Add_MaxHealth[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_TIME_MAX_HEALTH)
+    set Time_Add_MaxMana[PlayerId] = Time_Add_MaxMana[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_TIME_MAX_MANA)
+    set Time_Add_Gold[PlayerId] = Time_Add_Gold[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_TIME_GOLD)
+    set Time_Add_Wood[PlayerId] = Time_Add_Wood[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_TIME_WOOD)
+    set Time_Add_Health[PlayerId] = Time_Add_Health[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_TIME_HEALTH)
+    set Time_Add_Mana[PlayerId] = Time_Add_Mana[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_TIME_MANA)
+
+    set Kill_Add_Attack[PlayerId] = Kill_Add_Attack[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_ATTACK)
+    set Kill_Add_Str[PlayerId] = Kill_Add_Str[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_STR)
+    set Kill_Add_Agi[PlayerId] = Kill_Add_Agi[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_AGI)
+    set Kill_Add_Int[PlayerId] = Kill_Add_Int[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_INT)
+    set Kill_Add_MaxHealth[PlayerId] = Kill_Add_MaxHealth[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_MAX_HEALTH)
+    set Kill_Add_MaxMana[PlayerId] = Kill_Add_MaxMana[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_MAX_MANA)
+    set Kill_Add_Exp[PlayerId] = Kill_Add_Exp[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_EXP)
+    set Kill_Add_Exp_Percent[PlayerId] = Kill_Add_Exp_Percent[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_EXP_PERCENT)
+    set Kill_Add_Gold[PlayerId] = Kill_Add_Gold[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_GOLD)
+    set Kill_Add_Gold_Percent[PlayerId] = Kill_Add_Gold_Percent[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_GOLD_PERCENT)
+    set Kill_Add_Wood[PlayerId] = Kill_Add_Wood[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_WOOD)
+    set Kill_Add_Wood_Percent[PlayerId] = Kill_Add_Wood_Percent[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_WOOD_PERCENT)
+
+    set Time_Add_Attack_10[PlayerId] = Time_Add_Attack_10[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_TIME_ATTACK_10)
+    set Time_Add_Str_10[PlayerId] = Time_Add_Str_10[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_TIME_STR_10)
+    set Time_Add_Agi_10[PlayerId] = Time_Add_Agi_10[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_TIME_AGI_10)
+    set Time_Add_Int_10[PlayerId] = Time_Add_Int_10[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_TIME_INT_10)
+    set Time_Add_MaxHealth_10[PlayerId] = Time_Add_MaxHealth_10[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_TIME_MAX_HEALTH_10)
+    set Time_Add_MaxMana_10[PlayerId] = Time_Add_MaxMana_10[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_TIME_MAX_MANA_10)
+    set Time_Add_Gold_10[PlayerId] = Time_Add_Gold_10[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_TIME_GOLD_10)
+    set Time_Add_Wood_10[PlayerId] = Time_Add_Wood_10[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_TIME_WOOD_10)
+
+    set Kill_Add_Attack_10[PlayerId] = Kill_Add_Attack_10[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_ATTACK_10)
+    set Kill_Add_Str_10[PlayerId] = Kill_Add_Str_10[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_STR_10)
+    set Kill_Add_Agi_10[PlayerId] = Kill_Add_Agi_10[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_AGI_10)
+    set Kill_Add_Int_10[PlayerId] = Kill_Add_Int_10[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_INT_10)
+    set Kill_Add_MaxHealth_10[PlayerId] = Kill_Add_MaxHealth_10[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_MAX_HEALTH_10)
+    set Kill_Add_MaxMana_10[PlayerId] = Kill_Add_MaxMana_10[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_MAX_MANA_10)
+    set Kill_Add_Exp_10[PlayerId] = Kill_Add_Exp_10[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_EXP_10)
+    set Kill_Add_Exp_Percent_10[PlayerId] = Kill_Add_Exp_Percent_10[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_EXP_PERCENT_10)
+    set Kill_Add_Gold_10[PlayerId] = Kill_Add_Gold_10[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_GOLD_10)
+    set Kill_Add_Gold_Percent_10[PlayerId] = Kill_Add_Gold_Percent_10[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_GOLD_PERCENT_10)
+    set Kill_Add_Wood_10[PlayerId] = Kill_Add_Wood_10[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_WOOD_10)
+    set Kill_Add_Wood_Percent_10[PlayerId] = Kill_Add_Wood_Percent_10[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_WOOD_PERCENT_10)
+
+    set Player_Physical_Critical_Value[PlayerId] = Player_Physical_Critical_Value[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_PHYSICAL_CRITICAL_STRIKE_VALUE)
+    set Player_Physical_Critical_Percent[PlayerId] = Player_Physical_Critical_Percent[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_PHYSICAL_CRITICAL_STRIKE_PERCENT)
+    set Player_Magic_Critical_Value[PlayerId] = Player_Magic_Critical_Value[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_MAGIC_CRITICAL_STRIKE_VALUE)
+    set Player_Magic_Critical_Percent[PlayerId] = Player_Magic_Critical_Percent[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_MAGIC_CRITICAL_STRIKE_PERCENT)
+    set Player_Skill_Damage_Percent[PlayerId] = Player_Skill_Damage_Percent[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_SKILL_DAMAGE_PERCENT)
+    set Player_Skill_Damage_Append[PlayerId] = Player_Skill_Damage_Append[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_SKILL_DAMAGE_APPEDN)
+    set Player_Attack_Damage_Append[PlayerId] = Player_Attack_Damage_Append[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_ATTACK_DAMAGE_APPEDN)
+
+    set Player_Physical_Damage_Percent[PlayerId] = Player_Physical_Damage_Percent[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_PHYSICAL_DAMAGE_PERCENT)
+    set Player_Magic_Damage_Percent[PlayerId] = Player_Magic_Damage_Percent[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_MAGIC_DAMAGE_PERCENT)
+    set Player_Last_Damage_Percent[PlayerId] = Player_Last_Damage_Percent[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_LAST_DAMAGE_PERCENT)
+    set Player_Normal_Damage_Percent[PlayerId] = Player_Normal_Damage_Percent[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_NORMAL_DAMAGE_PERCENT)
+    set Player_Elite_Damage_Percent[PlayerId] = Player_Elite_Damage_Percent[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_ELITE_DAMAGE_PERCENT)
+    set Player_Boss_Damage_Percent[PlayerId] = Player_Boss_Damage_Percent[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_BOSS_DAMAGE_PERCENT)
+
+    set Player_Skill_Cold_Donw[PlayerId] = Player_Skill_Cold_Donw[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_SKILL_COLD_DOWN)
+
+    set Player_Physical_Sucking[PlayerId] = Player_Physical_Sucking[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_PHYSICAL_BLOOD_SUCKING)
+    set Player_Magic_Sucking[PlayerId] = Player_Magic_Sucking[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_MAGIC_BLOOD_SUCKING)
+    set Player_Physical_LessDamage[PlayerId] = Player_Physical_LessDamage[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_PHYSICAL_PROTECT_PERCENT)
+    set Player_Magic_LessDamage[PlayerId] = Player_Magic_LessDamage[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_MAGIC_PROTECT_PERCENT)
+
+    set Player_Normal_Physical_MultipliedValue[PlayerId] = ( 1 + (Player_Normal_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Physical_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
+    set Player_Elite_Physical_MultipliedValue[PlayerId] = ( 1 + (Player_Elite_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Physical_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
+    set Player_Boss_Physical_MultipliedValue[PlayerId] = ( 1 + (Player_Boss_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Physical_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
+
+    set Player_Normal_Magic_MultipliedValue[PlayerId] = ( 1 + (Player_Normal_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Magic_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
+    set Player_Elite_Magic_MultipliedValue[PlayerId] = ( 1 + (Player_Elite_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Magic_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
+    set Player_Boss_Magic_MultipliedValue[PlayerId] = ( 1 + (Player_Boss_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Magic_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
+
+    endif
+
+	endfunction
+
+    function RemoveAttributeAsItemType takes integer itemtypei , player tplayer returns nothing
+    ///丢弃物品触发器，攻击力 护甲 生命值 获得之后直接减少，其他的给操作物品单位绑定值
+		local real GJL = I2R(LoadInteger(Item,itemtypei,ITEM_SYSTEM_ATTACK))
+		local real HJ = I2R(LoadInteger(Item,itemtypei,ITEM_SYSTEM_ARMOR))
+		local real SMZ = I2R(LoadInteger(Item,itemtypei,ITEM_SYSTEM_MAX_HEALTH))
+		local real MFZ = I2R(LoadInteger(Item,itemtypei,ITEM_SYSTEM_MAX_MANA))
+        local real GJLAD = I2R(LoadInteger(Item,itemtypei,ITEM_SYSTEM_ATTACK_APPEND))
+        local real HJAD = R2I(LoadInteger(Item,itemtypei,ITEM_SYSTEM_ARMOR_APPEND))
+        local integer YDSD = R2I(LoadInteger(Item,itemtypei,ITEM_SYSTEM_MOVE_SPEED))
+        local integer STR = LoadInteger(Item,itemtypei,ITEM_SYSTEM_STR)
+        local integer AGI = LoadInteger(Item,itemtypei,ITEM_SYSTEM_AGI)
+        local integer INT = LoadInteger(Item,itemtypei,ITEM_SYSTEM_INT)
+		local integer STRADD = LoadInteger(Item,itemtypei,ITEM_SYSTEM_STR_APPEND)
+		local integer AGIADD = LoadInteger(Item,itemtypei,ITEM_SYSTEM_AGI_APPEND)
+		local integer INTADD = LoadInteger(Item,itemtypei,ITEM_SYSTEM_INT_APPEND)
+		local integer GJJL = LoadInteger(Item,itemtypei,ITEM_SYSTEM_ATTACK_FAR)
+		local integer GJJG = LoadInteger(Item,itemtypei,ITEM_SYSTEM_ATTACK_DELAY)
+		local integer GJSD = LoadInteger(Item,itemtypei,ITEM_SYSTEM_ATTACK_SPEED)
+		local unit GetItemUnit =  MMRAPI_TargetPlayer(tplayer)
+		local integer PlayerId =  GetPlayerId(GetOwningPlayer(GetItemUnit))
+		local integer NeedSkillLevel = PlayerId +2
+
+		//拾取物品单位是英雄才减少
+	if IsUnitType(GetItemUnit, UNIT_TYPE_HERO) == true then
+
+		if GJL != 0. then
+			call SetUnitState(GetItemUnit,ConvertUnitState(0x12),(GetUnitState(GetItemUnit,ConvertUnitState(0x12)) - GJL))
+		endif
+		/// 攻击间隔
+		if GJJG != 0. then
+			call SetUnitState(GetItemUnit,ConvertUnitState(0x25),(GetUnitState(GetItemUnit,ConvertUnitState(0x25)) - (I2R(GJJG)/100)))
+		endif
+		/// 攻击速度
+		if GJSD != 0. then
+			call SetUnitState(GetItemUnit,ConvertUnitState(0x51),(GetUnitState(GetItemUnit,ConvertUnitState(0x51)) - (I2R(GJSD)/100)))
+		endif
+		/// 攻击距离
+		if GJJL != 0. then
+			call SetUnitState(GetItemUnit,ConvertUnitState(0x16),(GetUnitState(GetItemUnit,ConvertUnitState(0x16)) - I2R(GJJL)))
+			call SetUnitState(GetItemUnit,ConvertUnitState(0x52),(GetUnitState(GetItemUnit,ConvertUnitState(0x16))))
+		endif
+		if HJ != 0. then
+			call SetUnitState(GetItemUnit,ConvertUnitState(0x20),(GetUnitState(GetItemUnit,ConvertUnitState(0x20)) - HJ))
+		endif
+		if SMZ != 0. then
+			call SetUnitState(GetItemUnit,UNIT_STATE_MAX_LIFE,GetUnitState(GetItemUnit,UNIT_STATE_MAX_LIFE) - SMZ)
+		endif
+		if MFZ != 0. then
+			call SetUnitState(GetItemUnit,UNIT_STATE_MAX_MANA,GetUnitState(GetItemUnit,UNIT_STATE_MAX_MANA) - MFZ)
+		endif
+        //移动速度
+        if YDSD != 0. then
+        call SetUnitMoveSpeed( GetItemUnit , GetUnitMoveSpeed(GetItemUnit) - YDSD )
+        endif
+
+        if STR != 0 then
+            call SetHeroStr(GetItemUnit , GetHeroStr(GetItemUnit , false) - STR ,false)
+        endif
+        if AGI != 0 then
+            call SetHeroAgi(GetItemUnit , GetHeroAgi(GetItemUnit , false) - AGI ,false)
+        endif
+        if INT != 0 then
+            call SetHeroInt(GetItemUnit , GetHeroInt(GetItemUnit , false) - INT ,false)
+        endif
+
+		if GJLAD != 0 and GetUnitAbilityLevel(GetItemUnit , GreenValueSkill[1]) == NeedSkillLevel then
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[1]), NeedSkillLevel, 108, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[1]),NeedSkillLevel,108) - R2I(GJLAD))
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[1] , 1)
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[1] , NeedSkillLevel)
+		elseif GJLAD != 0 and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[1]) == 0 then
+		call UnitAddAbility(GetItemUnit, GreenValueSkill[1])
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[1]), NeedSkillLevel, 108, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[1]),NeedSkillLevel,108) - R2I(GJLAD))
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[1] , NeedSkillLevel)	
+		elseif GJLAD != 0 and (GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[1]) != NeedSkillLevel and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[1]) != 0 )then
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[1]), NeedSkillLevel, 108, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[1]),NeedSkillLevel,108) - R2I(GJLAD))
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[1] , NeedSkillLevel)	
+		endif	
+
+		if HJAD != 0 and GetUnitAbilityLevel(GetItemUnit, GreenValueSkill[2]) == NeedSkillLevel then
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[2]), NeedSkillLevel, 108, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[2]),NeedSkillLevel,108) - HJAD)
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[2] , 1)
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[2] , NeedSkillLevel)
+		elseif HJAD != 0 and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[2]) == 0 then
+		call UnitAddAbility(GetItemUnit, GreenValueSkill[2])
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[2]), NeedSkillLevel, 108, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[2]),NeedSkillLevel,108) - HJAD)
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[2] , NeedSkillLevel)	
+		elseif HJAD != 0 and (GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[2]) != NeedSkillLevel and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[2]) != 0 )then
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[2]), NeedSkillLevel, 108, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[2]),NeedSkillLevel,108) - HJAD)
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[2] , NeedSkillLevel)	
+		endif	
+
+
+		if STRADD != 0 and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[0]) == NeedSkillLevel then
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]), NeedSkillLevel, 110, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]),NeedSkillLevel,110) - R2I(STRADD))
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[0] , 1)
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[0] , NeedSkillLevel)
+		elseif STRADD != 0 and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[0]) == 0 then
+		call UnitAddAbility(GetItemUnit, GreenValueSkill[0])
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]), NeedSkillLevel, 110, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]),NeedSkillLevel,110) - R2I(STRADD))
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[0] , NeedSkillLevel)	
+		elseif STRADD != 0 and (GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[0]) != NeedSkillLevel and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[0]) != 0 )then
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]), NeedSkillLevel, 110, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]),NeedSkillLevel,110) - R2I(STRADD))
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[0] , NeedSkillLevel)	
+		endif
+		if AGIADD != 0 and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[0]) == NeedSkillLevel then
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]), NeedSkillLevel, 108, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]),NeedSkillLevel,108) - R2I(AGIADD))
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[0] , 1)
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[0] , NeedSkillLevel)
+		elseif AGIADD != 0 and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[0]) == 0 then
+		call UnitAddAbility(GetItemUnit, GreenValueSkill[0])
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]), NeedSkillLevel, 108, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]),NeedSkillLevel,108) - R2I(AGIADD))
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[0] , NeedSkillLevel)	
+		elseif AGIADD != 0 and (GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[0]) != NeedSkillLevel and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[0]) != 0 )then
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]), NeedSkillLevel, 108, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]),NeedSkillLevel,108) - R2I(AGIADD))
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[0] , NeedSkillLevel)	
+		endif
+		if INTADD != 0 and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[0]) == NeedSkillLevel then
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]), NeedSkillLevel, 109, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]),NeedSkillLevel,109) - R2I(INTADD))
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[0] , 1)
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[0] , NeedSkillLevel)
+		elseif INTADD != 0 and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[0]) == 0 then
+		call UnitAddAbility(GetItemUnit, GreenValueSkill[0])
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]), NeedSkillLevel, 109, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]),NeedSkillLevel,109) - R2I(INTADD))
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[0] , NeedSkillLevel)	
+		elseif INTADD != 0 and (GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[0]) != NeedSkillLevel and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[0]) != 0 )then
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]), NeedSkillLevel, 109, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]),NeedSkillLevel,109) - R2I(INTADD))
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[0] , NeedSkillLevel)	
+		endif
+
+	endif
+    	//拾取物品单位是英雄才减少(分割一下上面写的太长了这部分是各种不是直接作用于本体而是单独储存的数据)
+	if IsUnitType(GetItemUnit, UNIT_TYPE_HERO) == true then
+    call MMRAPI_ChangeAttributePercent(GetOwningPlayer(GetItemUnit) , 1 , LoadInteger(Item,itemtypei,ITEM_SYSTEM_STR_PERCENT) , false)
+	call MMRAPI_ChangeAttributePercent(GetOwningPlayer(GetItemUnit) , 2 , LoadInteger(Item,itemtypei,ITEM_SYSTEM_AGI_PERCENT) , false)
+	call MMRAPI_ChangeAttributePercent(GetOwningPlayer(GetItemUnit) , 3 , LoadInteger(Item,itemtypei,ITEM_SYSTEM_INT_PERCENT) , false)
+	call MMRAPI_ChangeAttributePercent(GetOwningPlayer(GetItemUnit) , 5 , LoadInteger(Item,itemtypei,ITEM_SYSTEM_MAX_HEALTH_PERCENT) , false)
+	call MMRAPI_ChangeAttributePercent(GetOwningPlayer(GetItemUnit) , 6 , LoadInteger(Item,itemtypei,ITEM_SYSTEM_MAX_MANA_PERCENT) , false)
+
+    set Time_Add_Attack[PlayerId] = Time_Add_Attack[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_TIME_ATTACK)
+    set Time_Add_Str[PlayerId] = Time_Add_Str[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_TIME_STR)
+    set Time_Add_Agi[PlayerId] = Time_Add_Agi[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_TIME_AGI)
+    set Time_Add_Int[PlayerId] = Time_Add_Int[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_TIME_INT)
+    set Time_Add_MaxHealth[PlayerId] = Time_Add_MaxHealth[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_TIME_MAX_HEALTH)
+    set Time_Add_MaxMana[PlayerId] = Time_Add_MaxMana[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_TIME_MAX_MANA)
+    set Time_Add_Gold[PlayerId] = Time_Add_Gold[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_TIME_GOLD)
+    set Time_Add_Wood[PlayerId] = Time_Add_Wood[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_TIME_WOOD)
+    set Time_Add_Health[PlayerId] = Time_Add_Health[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_TIME_HEALTH)
+    set Time_Add_Mana[PlayerId] = Time_Add_Mana[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_TIME_MANA)
+
+
+    set Kill_Add_Attack[PlayerId] = Kill_Add_Attack[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_ATTACK)
+    set Kill_Add_Str[PlayerId] = Kill_Add_Str[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_STR)
+    set Kill_Add_Agi[PlayerId] = Kill_Add_Agi[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_AGI)
+    set Kill_Add_Int[PlayerId] = Kill_Add_Int[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_INT)
+    set Kill_Add_MaxHealth[PlayerId] = Kill_Add_MaxHealth[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_MAX_HEALTH)
+    set Kill_Add_MaxMana[PlayerId] = Kill_Add_MaxMana[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_MAX_MANA)
+    set Kill_Add_Exp[PlayerId] = Kill_Add_Exp[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_EXP)
+    set Kill_Add_Exp_Percent[PlayerId] = Kill_Add_Exp_Percent[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_EXP_PERCENT)
+    set Kill_Add_Gold[PlayerId] = Kill_Add_Gold[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_GOLD)
+    set Kill_Add_Gold_Percent[PlayerId] = Kill_Add_Gold_Percent[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_GOLD_PERCENT)
+    set Kill_Add_Wood[PlayerId] = Kill_Add_Wood[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_WOOD)
+    set Kill_Add_Wood_Percent[PlayerId] = Kill_Add_Wood_Percent[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_WOOD_PERCENT)
+
+    set Time_Add_Attack_10[PlayerId] = Time_Add_Attack_10[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_TIME_ATTACK_10)
+    set Time_Add_Str_10[PlayerId] = Time_Add_Str_10[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_TIME_STR_10)
+    set Time_Add_Agi_10[PlayerId] = Time_Add_Agi_10[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_TIME_AGI_10)
+    set Time_Add_Int_10[PlayerId] = Time_Add_Int_10[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_TIME_INT_10)
+    set Time_Add_MaxHealth_10[PlayerId] = Time_Add_MaxHealth_10[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_TIME_MAX_HEALTH_10)
+    set Time_Add_MaxMana_10[PlayerId] = Time_Add_MaxMana_10[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_TIME_MAX_MANA_10)
+    set Time_Add_Gold_10[PlayerId] = Time_Add_Gold_10[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_TIME_GOLD_10)
+    set Time_Add_Wood_10[PlayerId] = Time_Add_Wood_10[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_TIME_WOOD_10)
+
+    set Kill_Add_Attack_10[PlayerId] = Kill_Add_Attack_10[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_ATTACK_10)
+    set Kill_Add_Str_10[PlayerId] = Kill_Add_Str_10[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_STR_10)
+    set Kill_Add_Agi_10[PlayerId] = Kill_Add_Agi_10[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_AGI_10)
+    set Kill_Add_Int_10[PlayerId] = Kill_Add_Int_10[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_INT_10)
+    set Kill_Add_MaxHealth_10[PlayerId] = Kill_Add_MaxHealth_10[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_MAX_HEALTH_10)
+    set Kill_Add_MaxMana_10[PlayerId] = Kill_Add_MaxMana_10[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_MAX_MANA_10)
+    set Kill_Add_Exp_10[PlayerId] = Kill_Add_Exp_10[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_EXP_10)
+    set Kill_Add_Exp_Percent_10[PlayerId] = Kill_Add_Exp_Percent_10[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_EXP_PERCENT_10)
+    set Kill_Add_Gold_10[PlayerId] = Kill_Add_Gold_10[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_GOLD_10)
+    set Kill_Add_Gold_Percent_10[PlayerId] = Kill_Add_Gold_Percent_10[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_GOLD_PERCENT_10)
+    set Kill_Add_Wood_10[PlayerId] = Kill_Add_Wood_10[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_WOOD_10)
+    set Kill_Add_Wood_Percent_10[PlayerId] = Kill_Add_Wood_Percent_10[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_KILL_WOOD_PERCENT_10)
+
+    set Player_Physical_Critical_Value[PlayerId] = Player_Physical_Critical_Value[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_PHYSICAL_CRITICAL_STRIKE_VALUE)
+    set Player_Physical_Critical_Percent[PlayerId] = Player_Physical_Critical_Percent[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_PHYSICAL_CRITICAL_STRIKE_PERCENT)
+    set Player_Magic_Critical_Value[PlayerId] = Player_Magic_Critical_Value[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_MAGIC_CRITICAL_STRIKE_VALUE)
+    set Player_Magic_Critical_Percent[PlayerId] = Player_Magic_Critical_Percent[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_MAGIC_CRITICAL_STRIKE_PERCENT)
+    set Player_Skill_Damage_Percent[PlayerId] = Player_Skill_Damage_Percent[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_SKILL_DAMAGE_PERCENT)
+    set Player_Skill_Damage_Append[PlayerId] = Player_Skill_Damage_Append[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_SKILL_DAMAGE_APPEDN)
+    set Player_Attack_Damage_Append[PlayerId] = Player_Attack_Damage_Append[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_ATTACK_DAMAGE_APPEDN)
+
+    set Player_Physical_Damage_Percent[PlayerId] = Player_Physical_Damage_Percent[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_PHYSICAL_DAMAGE_PERCENT)
+    set Player_Magic_Damage_Percent[PlayerId] = Player_Magic_Damage_Percent[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_MAGIC_DAMAGE_PERCENT)
+    set Player_Last_Damage_Percent[PlayerId] = Player_Last_Damage_Percent[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_LAST_DAMAGE_PERCENT)
+    set Player_Normal_Damage_Percent[PlayerId] = Player_Normal_Damage_Percent[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_NORMAL_DAMAGE_PERCENT)
+    set Player_Elite_Damage_Percent[PlayerId] = Player_Elite_Damage_Percent[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_ELITE_DAMAGE_PERCENT)
+    set Player_Boss_Damage_Percent[PlayerId] = Player_Boss_Damage_Percent[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_BOSS_DAMAGE_PERCENT)
+
+    set Player_Skill_Cold_Donw[PlayerId] = Player_Skill_Cold_Donw[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_SKILL_COLD_DOWN)
+
+    set Player_Physical_Sucking[PlayerId] = Player_Physical_Sucking[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_PHYSICAL_BLOOD_SUCKING)
+    set Player_Magic_Sucking[PlayerId] = Player_Magic_Sucking[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_MAGIC_BLOOD_SUCKING)
+    set Player_Physical_LessDamage[PlayerId] = Player_Physical_LessDamage[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_PHYSICAL_PROTECT_PERCENT)
+    set Player_Magic_LessDamage[PlayerId] = Player_Magic_LessDamage[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_MAGIC_PROTECT_PERCENT)
+
+    set Player_Normal_Physical_MultipliedValue[PlayerId] = ( 1 + (Player_Normal_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Physical_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
+    set Player_Elite_Physical_MultipliedValue[PlayerId] = ( 1 + (Player_Elite_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Physical_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
+    set Player_Boss_Physical_MultipliedValue[PlayerId] = ( 1 + (Player_Boss_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Physical_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
+
+    set Player_Normal_Magic_MultipliedValue[PlayerId] = ( 1 + (Player_Normal_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Magic_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
+    set Player_Elite_Magic_MultipliedValue[PlayerId] = ( 1 + (Player_Elite_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Magic_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
+    set Player_Boss_Magic_MultipliedValue[PlayerId] = ( 1 + (Player_Boss_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Magic_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
+	
+    endif
+
+    endfunction
+
     function GetPlayerSkillCoodDown takes unit wichunit returns real realcooldown
         local real recoldown = I2R(Player_Skill_Cold_Donw[GetPlayerId(GetOwningPlayer(wichunit))])
             if recoldown < -70 then
@@ -3892,6 +4647,46 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
             return MMRAPI_GetAttributePercent(Player(pid) , 5 )
         elseif wihcattribute == 46 then
             return MMRAPI_GetAttributePercent(Player(pid) , 6 )
+         elseif wihcattribute == 47 then
+            return Time_Add_Attack_10[pid]
+        elseif wihcattribute == 48 then
+            return Time_Add_Str_10[pid]
+        elseif wihcattribute == 49 then
+            return Time_Add_Agi_10[pid]
+        elseif wihcattribute == 50 then
+            return Time_Add_Int_10[pid]
+        elseif wihcattribute == 51 then
+            return Time_Add_MaxHealth_10[pid]
+        elseif wihcattribute == 52 then
+            return Time_Add_MaxMana_10[pid]
+        elseif wihcattribute == 53 then
+            return Time_Add_Gold_10[pid]
+        elseif wihcattribute == 54 then
+            return Time_Add_Wood_10[pid]
+        elseif wihcattribute == 55 then
+            return Kill_Add_Attack_10[pid]
+        elseif wihcattribute == 56 then
+            return Kill_Add_Str_10[pid]
+        elseif wihcattribute == 57 then
+            return Kill_Add_Agi_10[pid]
+        elseif wihcattribute == 58 then
+            return Kill_Add_Int_10[pid]
+        elseif wihcattribute == 59 then
+            return Kill_Add_MaxHealth_10[pid]
+        elseif wihcattribute == 60 then
+            return Kill_Add_MaxMana_10[pid]
+        elseif wihcattribute == 61 then
+            return Kill_Add_Exp_10[pid]
+        elseif wihcattribute == 62 then
+            return Kill_Add_Exp_Percent_10[pid]
+        elseif wihcattribute == 63 then
+            return Kill_Add_Gold_10[pid]
+        elseif wihcattribute == 64 then
+            return Kill_Add_Gold_Percent_10[pid]
+        elseif wihcattribute == 65 then
+            return Kill_Add_Wood_10[pid]
+        elseif wihcattribute == 66 then
+            return Kill_Add_Wood_Percent_10[pid] 
         endif
             return 0 
     endfunction
@@ -3990,6 +4785,46 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
             call MMRAPI_HeroPercentSet(Player(pid) , 5 , value )
         elseif wihcattribute == 46 then
             call MMRAPI_HeroPercentSet(Player(pid) , 6 , value )
+        elseif wihcattribute == 47 then
+            set Time_Add_Attack_10[pid] = value
+        elseif wihcattribute == 48 then
+            set Time_Add_Str_10[pid] = value
+        elseif wihcattribute == 49 then
+            set Time_Add_Agi_10[pid] = value
+        elseif wihcattribute == 50 then
+            set Time_Add_Int_10[pid] = value
+        elseif wihcattribute == 51 then
+            set Time_Add_MaxHealth_10[pid] = value
+        elseif wihcattribute == 52 then
+            set Time_Add_MaxMana_10[pid] = value
+        elseif wihcattribute == 53 then
+            set Time_Add_Gold_10[pid] = value
+        elseif wihcattribute == 54 then
+            set Time_Add_Wood_10[pid] = value
+        elseif wihcattribute == 55 then
+            set Kill_Add_Attack_10[pid] = value
+        elseif wihcattribute == 56 then
+            set Kill_Add_Str_10[pid] = value
+        elseif wihcattribute == 57 then
+            set Kill_Add_Agi_10[pid] = value
+        elseif wihcattribute == 58 then
+            set Kill_Add_Int_10[pid] = value
+        elseif wihcattribute == 59 then
+            set Kill_Add_MaxHealth_10[pid] = value
+        elseif wihcattribute == 60 then
+            set Kill_Add_MaxMana_10[pid] = value
+        elseif wihcattribute == 61 then
+            set Kill_Add_Exp_10[pid] = value
+        elseif wihcattribute == 62 then
+            set Kill_Add_Exp_Percent_10[pid] = value
+        elseif wihcattribute == 63 then
+            set Kill_Add_Gold_10[pid] = value
+        elseif wihcattribute == 64 then
+            set Kill_Add_Gold_Percent_10[pid] = value
+        elseif wihcattribute == 65 then
+            set Kill_Add_Wood_10[pid] = value
+        elseif wihcattribute == 66 then
+            set Kill_Add_Wood_Percent_10[pid] = value
         endif
     set Player_Normal_Physical_MultipliedValue[pid] = ( 1 + (Player_Normal_Damage_Percent[pid]/100)) * ( 1 + (Player_Physical_Damage_Percent[pid]/100)) * (1 + (Player_Last_Damage_Percent[pid]/100))
     set Player_Elite_Physical_MultipliedValue[pid] = ( 1 + (Player_Elite_Damage_Percent[pid]/100)) * ( 1 + (Player_Physical_Damage_Percent[pid]/100)) * (1 + (Player_Last_Damage_Percent[pid]/100))
@@ -4410,8 +5245,29 @@ library ChooseOneForThree  requires BzAPI , YDWEAbilityState , YDWEYDWEJapiScrip
         set AttributeString[42] = "敏捷百分比增加"
         set AttributeString[43] = "智力百分比增加"
         set AttributeString[44] = "攻击力百分比增加"
-        set AttributeString[45] = "最大生命百分比增加"
-        set AttributeString[46] = "最大魔法百分比增加"
+        set AttributeString[45] = "生命最大值百分比增加"
+        set AttributeString[46] = "魔法最大值百分比增加"
+        set AttributeString[47] = "每十秒增加攻击力"
+        set AttributeString[48] = "每十秒增加力量"
+        set AttributeString[49] = "每十秒增加敏捷"
+        set AttributeString[50] = "每十秒增加智力"
+        set AttributeString[51] = "每十秒增加最大生命值"
+        set AttributeString[52] = "每十秒增加最大魔法值"
+        set AttributeString[53] = "每十秒增加金币"
+        set AttributeString[54] = "每十秒增加木材"
+        set AttributeString[55] = "杀十敌获得攻击力"
+        set AttributeString[56] = "杀十敌获得力量"
+        set AttributeString[57] = "杀十敌获得敏捷"
+        set AttributeString[58] = "杀十敌获得智力"
+        set AttributeString[59] = "杀十敌获得最大生命值"
+        set AttributeString[60] = "杀十敌获得最大魔法值"
+        set AttributeString[61] = "杀十敌获得经验值"
+        set AttributeString[62] = "杀十敌获得经验值百分比加成"
+        set AttributeString[63] = "杀十敌获得金币"
+        set AttributeString[64] = "杀十敌获得金币百分比加成"
+        set AttributeString[65] = "杀十敌获得木材"
+        set AttributeString[66] = "杀十敌获得木材百分比加成"
+
 
         set AttributeString2[1] = ""
         set AttributeString2[2] = ""
@@ -4459,6 +5315,26 @@ library ChooseOneForThree  requires BzAPI , YDWEAbilityState , YDWEYDWEJapiScrip
         set AttributeString2[44] = "%"
         set AttributeString2[45] = "%"
         set AttributeString2[46] = "%"
+        set AttributeString2[47] = ""
+        set AttributeString2[48] = ""
+        set AttributeString2[49] = ""
+        set AttributeString2[50] = ""
+        set AttributeString2[51] = ""
+        set AttributeString2[52] = ""
+        set AttributeString2[53] = ""
+        set AttributeString2[54] = ""
+        set AttributeString2[55] = ""
+        set AttributeString2[56] = ""
+        set AttributeString2[57] = ""
+        set AttributeString2[58] = ""
+        set AttributeString2[59] = ""
+        set AttributeString2[60] = ""
+        set AttributeString2[61] = ""
+        set AttributeString2[62] = "%"
+        set AttributeString2[63] = ""
+        set AttributeString2[64] = "%"
+        set AttributeString2[65] = ""
+        set AttributeString2[66] = "%"
 
         set SyncDataTrigger = CreateTrigger()
         call DzTriggerRegisterSyncData( SyncDataTrigger ,SyncDataType ,false )
@@ -4694,3 +5570,562 @@ endlibrary
 #endif  /// YDWEAbilityStateIncluded
 
 
+#ifndef ItemUseBagIncluded 
+#define ItemUseBagIncluded 
+
+library ItemUseBag initializer ItemUseBag_Main requires optional FuncItemSystem , BagPackApi
+
+    globals
+        private integer array ItemUseBagFrame
+        private string ItemUseBagFrameBaseArtTexter = "ItemUseBag\\BagPackBaseUi.blp"
+        private string ItemUseBagFrameSoltNullArtTexter
+        private integer array WichItemInSolt
+        private real array SoltInX
+        private real array SoltInY
+    endglobals
+
+    function ItemUseBag_GetSoltId takes integer frame returns integer id
+        if frame == ItemUseBagFrame[10] then
+            return 1
+        elseif frame == ItemUseBagFrame[20] then
+            return 2
+        elseif frame == ItemUseBagFrame[30] then
+            return 3
+        elseif frame == ItemUseBagFrame[40] then
+            return 4
+        elseif frame == ItemUseBagFrame[50] then
+            return 5
+        elseif frame == ItemUseBagFrame[60] then
+            return 6
+        endif
+            return 0
+    endfunction
+
+    function ItemUseBag_GetNullSolt takes integer pid returns integer soltid
+        if GetPlayerId(GetLocalPlayer()) == pid then
+            if WichItemInSolt[1] == 0 or WichItemInSolt[1] == null or WichItemInSolt[1] == -1 then
+                return 1
+            elseif WichItemInSolt[2] == 0 or WichItemInSolt[2] == null or WichItemInSolt[2] == -1  then
+                return 2
+            elseif WichItemInSolt[3] == 0 or WichItemInSolt[3] == null or WichItemInSolt[3] == -1  then
+                return 3
+            elseif WichItemInSolt[4] == 0 or WichItemInSolt[4] == null or WichItemInSolt[4] == -1  then
+                return 4
+            elseif WichItemInSolt[5] == 0 or WichItemInSolt[5] == null or WichItemInSolt[5] == -1  then
+                return 5
+            elseif WichItemInSolt[6] == 0 or WichItemInSolt[6] == null or WichItemInSolt[6] == -1  then
+                return 6 
+            endif            
+        endif
+        return 0
+    endfunction
+
+    function ItemUseBag_ReArt takes nothing returns nothing
+        local integer loopa = 1
+        loop
+            exitwhen loopa > 6
+            if GetLocalPlayer() == GetLocalPlayer() then
+                if WichItemInSolt[loopa] != 0 and WichItemInSolt[loopa] != null and  WichItemInSolt[loopa] != -1 then
+                    call DzFrameShow( ItemUseBagFrame[loopa], true )
+                    call DzFrameSetTexture( ItemUseBagFrame[loopa],YDWEGetObjectPropertyString(YDWE_OBJECT_TYPE_ITEM, WichItemInSolt[loopa], "Art"), 0 )
+                    call DzFrameShow( ItemUseBagFrame[(loopa*10)], true )  
+                else
+                    call DzFrameShow( ItemUseBagFrame[loopa], false )
+                    call DzFrameShow( ItemUseBagFrame[(loopa*10)], false )  
+                endif    
+            endif
+            set loopa = loopa + 1
+        endloop
+    endfunction
+
+    function ItemUseBag_AddItmeToItemUseBag takes integer itemid returns nothing
+        if WichItemInSolt[1] == 0 or WichItemInSolt[1] == null or WichItemInSolt[1] == -1 then
+            set WichItemInSolt[1] = itemid
+            call ItemUseBag_ReArt()
+            return
+        elseif WichItemInSolt[2] == 0 or WichItemInSolt[2] == null or WichItemInSolt[2] == -1  then
+            set WichItemInSolt[2] = itemid
+            call ItemUseBag_ReArt()
+            return
+        elseif WichItemInSolt[3] == 0 or WichItemInSolt[3] == null or WichItemInSolt[3] == -1  then
+            set WichItemInSolt[3] = itemid
+            call ItemUseBag_ReArt()
+            return
+        elseif WichItemInSolt[4] == 0 or WichItemInSolt[4] == null or WichItemInSolt[4] == -1  then
+            set WichItemInSolt[4] = itemid
+            call ItemUseBag_ReArt()
+            return
+        elseif WichItemInSolt[5] == 0 or WichItemInSolt[5] == null or WichItemInSolt[5] == -1  then
+            set WichItemInSolt[5] = itemid
+            call ItemUseBag_ReArt()
+            return
+        elseif WichItemInSolt[6] == 0 or WichItemInSolt[6] == null or WichItemInSolt[6] == -1  then
+            set WichItemInSolt[6] = itemid
+            call ItemUseBag_ReArt()
+            return
+        endif
+    endfunction
+
+    private function ItemUseBag_RemoveItem takes integer soltid returns nothing
+        set WichItemInSolt[soltid] = 0
+        call ItemUseBag_ReArt()
+    endfunction
+
+    private function ItemUseBag_WhneMouseInSolt takes nothing returns nothing
+        local integer Infarm = DzGetTriggerUIEventFrame()
+        local integer pid = GetPlayerId(GetLocalPlayer())
+        local integer soltid = ItemUseBag_GetSoltId(Infarm)
+        local integer needChangeType
+        local string needshowstr
+        if WichItemInSolt[soltid] != 0 and WichItemInSolt[soltid] != null and  WichItemInSolt[soltid] != -1 then
+            set needshowstr = YDWEGetObjectPropertyString(YDWE_OBJECT_TYPE_ITEM, WichItemInSolt[soltid], "Tip") + "|n"
+            set needshowstr = needshowstr + YDWEGetObjectPropertyString(YDWE_OBJECT_TYPE_ITEM, WichItemInSolt[soltid], "Ubertip") + "|n"
+            //set needshowstr = needshowstr + I2S(newRandom.GetRandomItemTimeid()) +"掉落时间戳"
+            //call BJDebugMsg("In" + I2S(soltid))
+            call DzFrameSetText(ItemUseBagFrame[9] , needshowstr)
+            call DzFrameSetTexture( ItemUseBagFrame[8], YDWEGetObjectPropertyString(YDWE_OBJECT_TYPE_ITEM, WichItemInSolt[soltid], "Art"), 0 )
+            //call DzFrameSetPoint( ItemUseBagFrame[7], 2 , ItemUseBagFrame[0] , 0 , SoltInX[soltid]-0.05, SoltInY[soltid] )
+            call DzFrameShow(ItemUseBagFrame[7] , true)
+            call DzFrameShow(ItemUseBagFrame[8] , true)
+            call DzFrameShow(ItemUseBagFrame[9] , true)
+        endif
+    endfunction
+    private function ItemUseBag_WhneMouseOutSolt takes nothing returns nothing
+        call DzFrameShow(ItemUseBagFrame[7] , false)
+        call DzFrameShow(ItemUseBagFrame[8] , false)
+        call DzFrameShow(ItemUseBagFrame[9] , false)
+    endfunction
+    private function ItemUseBag_WhneMouseKick takes nothing returns nothing
+        local integer Infarm = DzGetTriggerUIEventFrame()
+        local integer pid = GetPlayerId(GetLocalPlayer())
+        local integer soltid = ItemUseBag_GetSoltId(Infarm)
+        local integer itemtypel = WichItemInSolt[soltid]
+        call DzSyncData("ItemUseBag_Remove" , I2S(GetPlayerId(DzGetTriggerUIEventPlayer())) + I2S(itemtypel))
+        call ItemUseBag_RemoveItem(soltid)
+    endfunction
+
+    private function ItemUseBag_RemoveAbAndRemoveItemF takes nothing returns nothing
+        local string basedata = DzGetTriggerSyncData()
+        local integer pid = S2I( SubStringBJ(basedata, 1 , 1) )
+        local integer itemtypeinteger = S2I( SubStringBJ(basedata , 2 , 20) )  
+        
+        call BagPackApi_SetItemTypeToBag(Player(pid) , itemtypeinteger )
+
+        if Player(pid) == GetLocalPlayer() then
+            call RemoveAttributeAsItemType(itemtypeinteger , Player(pid) )
+        endif
+    endfunction
+
+    private function ItemUseBag_AddAbToUnitF takes nothing returns nothing
+        local string basedata = DzGetTriggerSyncData()
+        local integer pid = S2I( SubStringBJ(basedata, 1 , 1) )
+        local integer itemtypeinteger = S2I( SubStringBJ(basedata , 2 , 20) )
+        call AddAttributeAsItemType(itemtypeinteger , Player(pid) )
+        
+        if Player(pid) == GetLocalPlayer() then
+            call ItemUseBag_AddItmeToItemUseBag(itemtypeinteger)
+        endif
+    endfunction
+
+    private function ItemUseBag_Main takes nothing returns nothing
+        local integer loopa = 1
+        local trigger newtrigger
+
+        if IsCanUseBagOn == true then
+            /*基础底图创建*/
+            set ItemUseBagFrame[0] = DzCreateFrameByTagName("BACKDROP", "name", DzGetGameUI(), "template", 0)
+            call DzFrameSetAbsolutePoint( ItemUseBagFrame[0], 4, 0.41, 0.42 )
+            call DzFrameSetSize( ItemUseBagFrame[0], 0.1, 0.15 )
+            call DzFrameSetTexture( ItemUseBagFrame[0], ItemUseBagFrameBaseArtTexter, 0 )
+            call DzFrameShow( ItemUseBagFrame[0], false )
+            /*提示说明*/
+            set ItemUseBagFrame[7] = DzCreateFrameByTagName("BACKDROP", "name", ItemUseBagFrame[0], "template", 0)
+            call DzFrameSetPoint( ItemUseBagFrame[7], 2 , ItemUseBagFrame[0] , 0 , -0.003, 0.05 )
+            call DzFrameSetSize( ItemUseBagFrame[7], 0.1, 0.2 )
+            call DzFrameSetTexture( ItemUseBagFrame[7], "UI\\Widgets\\ToolTips\\Human\\human-tooltip-background.blp", 0 )
+            call DzFrameShow( ItemUseBagFrame[7], false )
+            set ItemUseBagFrame[8] = DzCreateFrameByTagName("BACKDROP", "name", ItemUseBagFrame[7], "template", 0)
+            call DzFrameSetPoint( ItemUseBagFrame[8], 0 , ItemUseBagFrame[7] , 0 , 0.003, -0.005 )
+            call DzFrameSetSize( ItemUseBagFrame[8], 0.04, 0.04 )
+            call DzFrameSetTexture( ItemUseBagFrame[8], "ReplaceableTextures\\CommandButtons\\BTNClawsOfAttack.blp", 0 )
+            call DzFrameShow( ItemUseBagFrame[8], false )
+            set ItemUseBagFrame[9] = DzCreateFrameByTagName("TEXT", "name", ItemUseBagFrame[7], "template", 0)
+            call DzFrameSetPoint( ItemUseBagFrame[9], 0 , ItemUseBagFrame[8] , 6 , 0, -0.005 )
+            call DzFrameSetSize( ItemUseBagFrame[9], 0.08, 0.08 )
+            call DzFrameSetFont(ItemUseBagFrame[9] , "", 0.01, 0)
+            call DzFrameShow( ItemUseBagFrame[9], false )
+
+            /*6个格子底图*/
+            set SoltInX[1] = 0.004
+            set SoltInX[2] = 0.055
+            set SoltInX[3] = 0.004
+            set SoltInX[4] = 0.055
+            set SoltInX[5] = 0.004
+            set SoltInX[6] = 0.055
+
+            set SoltInY[1] = -0.006
+            set SoltInY[2] = -0.006
+            set SoltInY[3] = -0.056
+            set SoltInY[4] = -0.056
+            set SoltInY[5] = -0.106
+            set SoltInY[6] = -0.106
+            loop
+                exitwhen loopa > 6
+                set ItemUseBagFrame[loopa] = DzCreateFrameByTagName("BACKDROP", "name", ItemUseBagFrame[0], "template", 0)
+                call DzFrameSetPoint( ItemUseBagFrame[loopa], 0 , ItemUseBagFrame[0] , 0 , SoltInX[loopa], SoltInY[loopa] )
+                call DzFrameSetSize( ItemUseBagFrame[loopa], 0.04, 0.04 )
+                call DzFrameShow( ItemUseBagFrame[loopa], false )
+                call DzFrameSetTexture( ItemUseBagFrame[loopa], "UI\\Widgets\\ToolTips\\Human\\human-tooltip-background.blp", 0 )
+                set ItemUseBagFrame[(loopa*10)] = DzCreateFrameByTagName("BUTTON", "name", ItemUseBagFrame[loopa], "template", 0)
+                call DzFrameSetPoint( ItemUseBagFrame[loopa*10], 4 , ItemUseBagFrame[loopa] , 4 , 0, 0 )
+                call DzFrameSetSize( ItemUseBagFrame[loopa*10], 0.04, 0.04 )
+                call DzFrameShow( ItemUseBagFrame[(loopa*10)], false )
+                if GetLocalPlayer() == GetLocalPlayer() then
+                    call DzFrameSetScriptByCode(ItemUseBagFrame[(loopa*10)] , 2 , function ItemUseBag_WhneMouseInSolt , false)
+                    call DzFrameSetScriptByCode(ItemUseBagFrame[(loopa*10)] , 3 , function ItemUseBag_WhneMouseOutSolt , false)
+                    call DzFrameSetScriptByCode(ItemUseBagFrame[(loopa*10)] , 1 , function ItemUseBag_WhneMouseKick , false)
+                endif
+                set loopa = loopa + 1
+            endloop
+            //call TimerStart(CreateTimer() , 0.03 ,true , function ItemUseBag_ReArt)
+
+            set newtrigger = CreateTrigger()
+            call DzTriggerRegisterSyncData(newtrigger , "ItemUseBag_Remove" , false)
+            call TriggerAddAction(newtrigger , function ItemUseBag_RemoveAbAndRemoveItemF)
+            set newtrigger = CreateTrigger()
+            call DzTriggerRegisterSyncData(newtrigger , "ItemUseBag_AddAB" , false)
+            call TriggerAddAction(newtrigger , function ItemUseBag_AddAbToUnitF)  
+        endif
+    endfunction
+
+    function ItemUseBag_ShowUseBag takes player showp returns nothing
+        if showp == GetLocalPlayer() then
+            if DzFrameIsVisible(ItemUseBagFrame[0]) == false then
+                call DzFrameShow( ItemUseBagFrame[0], true ) 
+            else
+                call DzFrameShow( ItemUseBagFrame[0], false ) 
+            endif
+        endif
+    endfunction
+
+endlibrary
+
+#endif
+
+#ifndef WareHouseUiSystemIncluded
+#define WareHouseUiSystemIncluded 
+
+library WareHouseUiSystem  
+	globals
+		private integer array WareHouseFrame
+		private hashtable ItemSolt
+		private itempool array WareHouseItemPool
+		private integer maxlevel
+		private unit array targetunit
+		private boolean Auto = false
+
+		private string BaseTexter = "WareHouseUiSystem\\BaseTexter.tga"
+		private string BaseShowTexter = "WareHouseUiSystem\\BaseShowTexter.tga"
+		private string BottonTexter = "WareHouseUiSystem\\BottonTexterOn.tga"
+		private string AutoBottonTexterOn = "WareHouseUiSystem\\AutoBottonTexterOn.tga"
+		private string AutoBottonTexterOff = "WareHouseUiSystem\\AutoBottonTexterOff.tga"
+	endglobals
+////本地事件
+	///鼠标事件
+		////鼠标进入背包格子
+	private function WareHouseUiSystem_MouseInFrame takes nothing returns nothing
+		local integer itemtypeinwarehouse = LoadInteger(ItemSolt, DzGetTriggerUIEventFrame() , 0)
+		if itemtypeinwarehouse != 0 and itemtypeinwarehouse != -1 then
+			call DzFrameSetTexture(WareHouseFrame[2] , YDWEGetObjectPropertyString(YDWE_OBJECT_TYPE_ITEM, itemtypeinwarehouse , "Art") ,  0 )
+			call DzFrameSetText( WareHouseFrame[3], (YDWEGetObjectPropertyString(YDWE_OBJECT_TYPE_ITEM, itemtypeinwarehouse , "Tip")) + "|n|n" + (YDWEGetObjectPropertyString(YDWE_OBJECT_TYPE_ITEM, itemtypeinwarehouse , "Ubertip")))
+			call DzFrameShow( WareHouseFrame[1], true )
+			call DzFrameShow( WareHouseFrame[2], true )
+			call DzFrameShow( WareHouseFrame[3], true )
+		endif
+	endfunction
+		////鼠标离开背包格子
+	private function WareHouseUiSystem_MouseOutFrame takes nothing returns nothing
+		call DzFrameShow( WareHouseFrame[1], false )
+		call DzFrameShow( WareHouseFrame[2], false )
+		call DzFrameShow( WareHouseFrame[3], false )
+	endfunction
+		////鼠标点击背包格子
+	private function WareHouseUiSystem_MouseKickSoltFrame takes nothing returns nothing
+		local integer itemtypeinwarehouse = LoadInteger(ItemSolt, DzGetTriggerUIEventFrame() , 0)
+		local integer pid = GetPlayerId(GetLocalPlayer())
+		if itemtypeinwarehouse != 0 and itemtypeinwarehouse != -1 then
+			call DzSyncData ( "WHUS_KICKSOLT" ,  I2S(pid) + I2S(itemtypeinwarehouse))
+			call SaveInteger(ItemSolt , DzGetTriggerUIEventFrame() , 0 , 0 )
+			call DzFrameSetTexture( LoadInteger(ItemSolt ,  DzGetTriggerUIEventFrame() , 1 ) ,"UI\\Widgets\\Console\\Human\\human-inventory-slotfiller.blp", 0 )
+		endif
+
+	endfunction
+		///装备自动合成关闭
+
+	///本地玩家仓库增加事件
+		////为指定玩家增加一个物品
+	function WareHouseUiSystem_AddItmeToWareHouse takes integer itemtypevalue , player p returns boolean issc
+		local integer loopa = 1
+
+		if p == GetLocalPlayer() then
+			loop
+				exitwhen loopa > LoadInteger(ItemSolt , 0 , 0)
+			 	if LoadInteger( ItemSolt , LoadInteger(ItemSolt , 0 , loopa) , 0 ) == 0 or LoadInteger( ItemSolt , LoadInteger(ItemSolt , 0 , loopa) , 0 ) == -1 then
+			 		call SaveInteger(ItemSolt , LoadInteger(ItemSolt , 0 , loopa) , 0 , itemtypevalue)
+			 		call DzFrameSetTexture( LoadInteger(ItemSolt , LoadInteger(ItemSolt , 0 , loopa)  , 1 ) , YDWEGetObjectPropertyString(YDWE_OBJECT_TYPE_ITEM, itemtypevalue , "Art"), 0 )
+					return true 
+			 	endif
+			set loopa = loopa + 1
+			endloop	
+            call DzSyncData ( "WHUS_KICKSOLT" ,  I2S(GetPlayerId(p)) + I2S(itemtypevalue))
+            return false
+		endif
+
+		return false
+	endfunction
+		////为指定玩家移除一个物品
+	private function WareHouseUiSystem_RemoveItmeToWareHouse takes integer itemsolt , player p returns boolean issc
+		if p == GetLocalPlayer() then
+			if LoadInteger( ItemSolt , LoadInteger(ItemSolt , 0 , itemsolt) , 0 ) != 0 and LoadInteger( ItemSolt , LoadInteger(ItemSolt , 0 , itemsolt) , 0 ) != -1 then
+				call SaveInteger(ItemSolt , LoadInteger(ItemSolt , 0 , itemsolt) , 0 , 0)
+				call DzFrameSetTexture( LoadInteger(ItemSolt , LoadInteger(ItemSolt , 0 , itemsolt)  , 1 ) ,"UI\\Widgets\\Console\\Human\\human-inventory-slotfiller.blp", 0 )
+				return true
+			endif	
+		endif
+		return false
+	endfunction
+		////仓库删除2个相同物品
+	private function WareHouseUiSystem_RemoveSameItemOfTwoOnce takes integer itemsolt , player p returns integer itemtypeid
+		local integer loopa = itemsolt + 1
+		local integer itemsoltitem = LoadInteger( ItemSolt , LoadInteger(ItemSolt , 0 , itemsolt) , 0 )
+		if p == GetLocalPlayer() then
+			loop
+				exitwhen loopa > LoadInteger(ItemSolt , 0 , 0)
+			 	if itemsoltitem != 0 and itemsoltitem != -1 then
+			 		if itemsoltitem == LoadInteger( ItemSolt , LoadInteger(ItemSolt , 0 , loopa) , 0 ) then
+						call WareHouseUiSystem_RemoveItmeToWareHouse( itemsolt , p )
+						call WareHouseUiSystem_RemoveItmeToWareHouse( loopa , p )
+						return itemsoltitem
+					endif
+				endif
+			set loopa = loopa + 1
+			endloop
+		endif
+		return 0	
+	endfunction
+		/////仓库删除2个相同物品并添加一个新物品
+	private function WareHouseUiSystem_RemoveSameItemOfTwoOnceAndAddNewItem takes integer itemsolt , integer newitem ,player p returns boolean issc
+		local integer itemtpid
+		local integer itemtypelevel = YDWEGetObjectPropertyInteger(YDWE_OBJECT_TYPE_ITEM, LoadInteger( ItemSolt , LoadInteger(ItemSolt , 0 , itemsolt) , 0 ), "Level")
+		if  itemtypelevel <= maxlevel then
+			set itemtpid = WareHouseUiSystem_RemoveSameItemOfTwoOnce(itemsolt , p)
+			if itemtpid != 0 then
+				call DzSyncData ( "WHUS_CITEMTWH" ,  I2S(GetPlayerId(p)) + I2S(itemtypelevel))
+				return true
+			endif 
+		endif
+		return false
+	endfunction
+		///仓库一键合成
+	private function WareHouseUiSystem_RSItemTNewItem_AllWareHouse takes player p returns nothing
+		local integer loopa = 1
+		loop
+			exitwhen loopa > LoadInteger(ItemSolt , 0 , 0)
+			call WareHouseUiSystem_RemoveSameItemOfTwoOnceAndAddNewItem(loopa , 'rag1', p )
+			set loopa = loopa + 1
+		endloop
+	endfunction
+		///鼠标点击装备一件合成
+	private function WareHouseUiSystem_MouseKickHcBotton takes nothing returns nothing
+		call WareHouseUiSystem_RSItemTNewItem_AllWareHouse(GetLocalPlayer())
+	endfunction
+		///切换自动合成
+	private function WareHouseUiSystem_MouseKickAutoBotton takes nothing returns nothing
+		if Auto then
+			set Auto = false
+			call DzFrameSetTexture( WareHouseFrame[6],AutoBottonTexterOff, 0 )
+            call DzFrameSetText( WareHouseFrame[8], "自动合成[关]")
+		else
+			set Auto = true
+			call DzFrameSetTexture( WareHouseFrame[6],AutoBottonTexterOn, 0 )
+            call DzFrameSetText( WareHouseFrame[8], "自动合成[开]")
+		endif
+	endfunction
+	///切换显示
+	function WareHouseUiSystem_ShowToLoaclPlayer takes player p returns nothing
+		if p == GetLocalPlayer() then
+			if DzFrameIsVisible(WareHouseFrame[0])  == true then
+				call DzFrameShow( WareHouseFrame[0], false )
+			else
+				call DzFrameShow( WareHouseFrame[0], true )
+			endif
+		endif
+	endfunction
+
+//全局事件
+	//为玩家创建物品
+	function WareHouseUiSystem_CreateItemToPlayer takes nothing returns nothing
+		local integer pid = S2I( SubString(DzGetTriggerSyncData(), 0, 1) )
+		local integer itemtypeid = S2I( SubString(DzGetTriggerSyncData(), 1, 20) )
+		local item citem
+		if DzGetTriggerSyncPrefix() == "WHUS_CITEMTWH" then
+		set citem  =  PlaceRandomItem(WareHouseItemPool[itemtypeid] , GetUnitX(targetunit[pid]) , GetUnitY(targetunit[pid]) )
+		call WareHouseUiSystem_AddItmeToWareHouse(GetItemTypeId(citem) ,Player(pid))
+		call RemoveItem(citem)
+		elseif DzGetTriggerSyncPrefix() == "WHUS_KICKSOLT" then
+		set citem = CreateItem(itemtypeid ,GetUnitX(targetunit[pid]) , GetUnitY(targetunit[pid]) )
+		call UnitAddItem(targetunit[pid] , citem)
+		endif	
+
+	endfunction
+	//所有玩家创建背包格子
+	private function WareHouseUiSystem_CreateLine takes integer linenumber returns nothing
+		local integer loopa = 0
+			loop
+				exitwhen loopa > 7
+				set WareHouseFrame[(linenumber*100) + loopa] = DzCreateFrameByTagName("BACKDROP", "name", WareHouseFrame[0], "template", 0)
+            	call DzFrameSetPoint( WareHouseFrame[(linenumber*100) + loopa], 0 , WareHouseFrame[0] , 0 , 0.007 + (loopa * 0.021) , -0.01 + (linenumber* -0.025) )
+            	call DzFrameSetSize( WareHouseFrame[(linenumber*100) + loopa], 0.02, 0.02 )
+            	call DzFrameSetTexture( WareHouseFrame[(linenumber*100) + loopa], "UI\\Widgets\\Console\\Human\\human-inventory-slotfiller.blp", 0 )
+            	call DzFrameShow( WareHouseFrame[(linenumber*100) + loopa], true )	
+            	set WareHouseFrame[(linenumber*100) + loopa + 10] = DzCreateFrameByTagName("GLUETEXTBUTTON", "name", WareHouseFrame[(linenumber*100) + loopa], "template", 0)
+            	call DzFrameSetSize(WareHouseFrame[(linenumber*100) + loopa + 10], 0.02, 0.02 )
+            	call DzFrameSetPoint(WareHouseFrame[(linenumber*100) + loopa + 10], 4, WareHouseFrame[(linenumber*100) + loopa], 4,0,0)
+
+				call SaveInteger(ItemSolt , 0 , 0 , LoadInteger(ItemSolt , 0 , 0) + 1)
+				call SaveInteger(ItemSolt , 0 , LoadInteger(ItemSolt , 0 , 0) , WareHouseFrame[(linenumber*100) + loopa + 10] )
+
+				call SaveInteger(ItemSolt , WareHouseFrame[(linenumber*100) + loopa + 10] , 0 , 0)
+				call SaveInteger(ItemSolt , WareHouseFrame[(linenumber*100) + loopa + 10] , 1 , WareHouseFrame[(linenumber*100) + loopa ])
+				    if GetLocalPlayer() == GetLocalPlayer() then
+                		call DzFrameSetScriptByCode(WareHouseFrame[(linenumber*100) + loopa + 10] , 2 , function WareHouseUiSystem_MouseInFrame , false)
+						call DzFrameSetScriptByCode(WareHouseFrame[(linenumber*100) + loopa + 10] , 3 , function WareHouseUiSystem_MouseOutFrame , false)
+						call DzFrameSetScriptByCode(WareHouseFrame[(linenumber*100) + loopa + 10] , 1 , function WareHouseUiSystem_MouseKickSoltFrame , false)
+            		endif
+				set loopa = loopa + 1
+			endloop
+	endfunction
+	//所有玩家创建背包
+	private function WareHouseUiSystem_Create takes nothing returns nothing
+		local integer loopa = 1
+		    /*基础底图创建*/
+            set WareHouseFrame[0] = DzCreateFrameByTagName("BACKDROP", "name", DzGetGameUI(), "template", 0)
+            call DzFrameSetPoint( WareHouseFrame[0], 3 , DzGetGameUI() , 3 , 0.01 , 0 )
+            call DzFrameSetSize( WareHouseFrame[0], 0.18, 0.28 )
+            call DzFrameSetTexture( WareHouseFrame[0], BaseTexter, 0 )
+            call DzFrameShow( WareHouseFrame[0], false )
+			//装备说明
+			set WareHouseFrame[1] = DzCreateFrameByTagName("BACKDROP", "name", WareHouseFrame[0], "template", 0)
+            call DzFrameSetPoint( WareHouseFrame[1], 0 ,  WareHouseFrame[0] , 2 , 0.005 , 0 )
+            call DzFrameSetSize( WareHouseFrame[1], 0.09, 0.18 )
+            call DzFrameSetTexture( WareHouseFrame[1], BaseShowTexter, 0 )
+            call DzFrameShow( WareHouseFrame[1], false )
+
+			set WareHouseFrame[2] = DzCreateFrameByTagName("BACKDROP", "name", WareHouseFrame[1], "template", 0)
+            call DzFrameSetPoint( WareHouseFrame[2], 0 ,  WareHouseFrame[1] , 0 , 0.005 , -0.005 )
+            call DzFrameSetSize( WareHouseFrame[2], 0.03, 0.03 )
+            call DzFrameSetTexture( WareHouseFrame[2], "", 0 )
+            call DzFrameShow( WareHouseFrame[2], false )
+
+			set WareHouseFrame[3] = DzCreateFrameByTagName("TEXT", "name", WareHouseFrame[2], "template", 0)
+            call DzFrameSetPoint( WareHouseFrame[3], 0 ,  WareHouseFrame[2] , 6 , 0.0 , -0.005 )
+            call DzFrameSetSize( WareHouseFrame[3], 0.08, 0.15 )
+            call DzFrameSetText( WareHouseFrame[3], "一串很长很长很长很长很长一串很长很长很长很长很长一串很长很长很长很长很长一串很长很长很长很长很长一串很长很长很长很长很长")
+            call DzFrameShow( WareHouseFrame[3], false )
+
+			//一键合成
+			set WareHouseFrame[4] = DzCreateFrameByTagName("BACKDROP", "name", WareHouseFrame[0], "template", 0)
+            call DzFrameSetPoint( WareHouseFrame[4], 6 , WareHouseFrame[0] , 6 , 0.01 , 0.02 )
+            call DzFrameSetSize( WareHouseFrame[4], 0.06, 0.04 )
+            call DzFrameSetTexture( WareHouseFrame[4], BottonTexter, 0 )
+            call DzFrameShow( WareHouseFrame[4], true )
+
+            set WareHouseFrame[9] = DzCreateFrameByTagName("TEXT", "name", WareHouseFrame[4], "template", 0)
+            call DzFrameSetSize(WareHouseFrame[9], 0.06, 0.04 )
+            call DzFrameSetPoint(WareHouseFrame[9], 0, WareHouseFrame[4], 4,-0.02,0.005)
+			call DzFrameShow( WareHouseFrame[9], true )
+            call DzFrameSetText( WareHouseFrame[9], "一键合成")
+
+            set WareHouseFrame[5] = DzCreateFrameByTagName("GLUETEXTBUTTON", "name", WareHouseFrame[4], "template", 0)
+            call DzFrameSetSize(WareHouseFrame[5], 0.06, 0.04 )
+            call DzFrameSetPoint(WareHouseFrame[5], 4, WareHouseFrame[4], 4,0,0)
+			call DzFrameShow( WareHouseFrame[5], true )
+			if GetLocalPlayer() == GetLocalPlayer() then
+                call DzFrameSetScriptByCode(WareHouseFrame[5] , 1 , function WareHouseUiSystem_MouseKickHcBotton , false)
+            endif
+
+			//自动合成
+			set WareHouseFrame[6] = DzCreateFrameByTagName("BACKDROP", "name", WareHouseFrame[0], "template", 0)
+            call DzFrameSetPoint( WareHouseFrame[6], 8 , WareHouseFrame[0] , 8 , -0.01 , 0.02 )
+            call DzFrameSetSize( WareHouseFrame[6], 0.06, 0.04 )
+            call DzFrameShow( WareHouseFrame[6], true )
+
+            set WareHouseFrame[8] = DzCreateFrameByTagName("TEXT", "name", WareHouseFrame[6], "template", 0)
+            call DzFrameSetSize(WareHouseFrame[8], 0.06, 0.04 )
+            call DzFrameSetPoint(WareHouseFrame[8], 0, WareHouseFrame[6], 4,-0.025,0.005)
+			call DzFrameShow( WareHouseFrame[8], true )
+            call DzFrameSetText( WareHouseFrame[8], "自动合成")
+            if Auto then
+                call DzFrameSetTexture( WareHouseFrame[6], AutoBottonTexterOn, 0 )
+                call DzFrameSetText( WareHouseFrame[8], "自动合成[开]")
+            else
+                call DzFrameSetTexture( WareHouseFrame[6], AutoBottonTexterOff, 0 )
+                call DzFrameSetText( WareHouseFrame[8], "自动合成[关]")
+            endif
+            set WareHouseFrame[7] = DzCreateFrameByTagName("GLUETEXTBUTTON", "name", WareHouseFrame[6], "template", 0)
+            call DzFrameSetSize(WareHouseFrame[7], 0.06, 0.04 )
+            call DzFrameSetPoint(WareHouseFrame[7], 4, WareHouseFrame[6], 4,0,0)
+			call DzFrameShow( WareHouseFrame[7], true )
+			if GetLocalPlayer() == GetLocalPlayer() then
+                call DzFrameSetScriptByCode(WareHouseFrame[7] , 1 , function WareHouseUiSystem_MouseKickAutoBotton , false)
+            endif
+			//创建UI行
+			loop
+				exitwhen loopa > 7
+				call WareHouseUiSystem_CreateLine(loopa)
+				set loopa = loopa + 1
+			endloop
+	endfunction
+
+	//自动合成计时器运行函数
+	function WareHouseUiSystem_AutoTimerAction takes nothing returns nothing
+		if Auto then
+			call WareHouseUiSystem_RSItemTNewItem_AllWareHouse(GetLocalPlayer())
+		endif
+	endfunction
+
+	//入口函数
+	function WareHouseUiSystem_Main takes nothing returns nothing
+		local trigger synctrigger
+
+		set synctrigger = CreateTrigger()
+		call DzTriggerRegisterSyncData(synctrigger , "WHUS_CITEMTWH" , false )
+		call TriggerAddAction( synctrigger , function WareHouseUiSystem_CreateItemToPlayer )
+		set synctrigger = null
+
+		set synctrigger = CreateTrigger()
+		call DzTriggerRegisterSyncData(synctrigger , "WHUS_KICKSOLT" , false )
+		call TriggerAddAction( synctrigger , function WareHouseUiSystem_CreateItemToPlayer )
+		set synctrigger = null
+		
+		set ItemSolt = InitHashtable()
+		set maxlevel = 0
+		call WareHouseUiSystem_Create()
+
+		call TimerStart(CreateTimer(), 3 ,true, function WareHouseUiSystem_AutoTimerAction)
+	endfunction
+
+	function WareHouseUiSystem_SetItemPool takes integer itempoollevel , itempool needset returns nothing
+		set WareHouseItemPool[itempoollevel] = needset
+		if maxlevel < itempoollevel then
+			set maxlevel = itempoollevel
+		endif
+	endfunction
+
+	function WareHouseUiSystem_SetTargetUnit takes player p , unit u returns nothing
+		set targetunit[GetPlayerId(p)] = u 
+	endfunction
+endlibrary
+
+
+#endif

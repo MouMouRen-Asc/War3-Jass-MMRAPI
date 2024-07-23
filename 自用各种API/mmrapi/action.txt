@@ -366,3 +366,53 @@ category = TC_MMRDPS
 [[.args]]
 type = player
 default = "GetTriggerPlayer"
+
+[WareHouseUiSystem_SetItemPool]
+title = "传入一个物品池给仓库[某某人仓库UI]"
+description = "传入一个物品池等级：${玩家} 物品池：${玩家} "
+comment = "传入一个物品池给仓库根据"
+category = TC_WHUS
+[[.args]]
+type = integer
+default = "物品池等级"
+[[.args]]
+type = itempool
+default = "传入的物品池"
+
+[WareHouseUiSystem_SetTargetUnit]
+title = "设置仓库返回的单位[某某人仓库UI]"
+description = "设置仓库返回的单位——玩家：${玩家} 单位：${单位} "
+comment = "仓库左键提取出来的物品传给谁"
+category = TC_WHUS
+[[.args]]
+type = player
+default = "GetTriggerPlayer()"
+[[.args]]
+type = unit
+default = "GetTriggerUnit()"
+
+[WareHouseUiSystem_AddItmeToWareHouse]
+title = "给指定玩家仓库增加一个物品[某某人仓库UI]"
+description = "给指定玩家仓库增加一个物品——物品类型${物品类型} 玩家：${那个玩家} "
+comment = ""
+category = TC_WHUS
+[[.args]]
+type = itemcode
+[[.args]]
+type = player
+default = "GetTriggerPlayer()"
+
+[WareHouseUiSystem_Main]
+title = "初始化加载仓库UI[某某人仓库UI]"
+description = "初始化加载仓库UI"
+comment = ""
+category = TC_WHUS
+
+[WareHouseUiSystem_ShowToLoaclPlayer]
+title = "切换指定玩家仓库UI显示[某某人仓库UI]"
+description = "切换指定玩家仓库UI显示-玩家：${那个玩家} "
+comment = ""
+category = TC_WHUS
+[[.args]]
+type = player
+default = "GetTriggerPlayer()"
