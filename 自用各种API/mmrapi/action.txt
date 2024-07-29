@@ -416,3 +416,11 @@ category = TC_WHUS
 [[.args]]
 type = player
 default = "GetTriggerPlayer()"
+
+[InHashByCode_Shop]
+title = "商城相关哈希表载入[某某人快速哈希表]"
+description = "商城相关哈希表载入：${需要操作的哈希表} "
+comment = "不需要创建，执行自动会创建"
+category = TC_HXB
+[[.args]]
+type = hashtable

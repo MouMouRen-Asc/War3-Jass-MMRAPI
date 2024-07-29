@@ -85,6 +85,19 @@ returns = real
 type = unit
 default = "GetTriggerUnit"
 
+[GetAttributeForPlayerAsStr]
+title = "返回指定玩家的目标ID的属性以及说明"
+description = "需要返回的目标单位：${玩家} 目标属性: ${属性ID}"
+comment = "返回指定玩家的目标ID的属性以及说明需要开启伤害系统"
+category = TC_MMRAPI
+returns = string
+[[.args]]
+type = player
+default = "GetTriggerPlayer"
+[[.args]]
+type = integer
+default = "0"
+
 
 [GetAttributeForPlayer]
 title = "查询指定玩家的指定属性"
