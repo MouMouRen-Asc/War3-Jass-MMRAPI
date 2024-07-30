@@ -1,0 +1,126 @@
+﻿[createBuffTypeXw]
+title = "新建BuffType[小为][Buff]"
+description = "新建一个名称为 ${name} 心动周期为 ${time} 是否为可叠加 ${flag}"
+comment = "构造一个Buff的类型出来,构造出来后就可以通过给Buff类型注册添加事件，移除事件，周期事件来控制Buff添加时的动作. Br作者:小为"
+category = TC_Buff
+[[.args]]
+type = string
+[[.args]]
+type = real
+default = "0.02"
+[[.args]]
+type = boolean
+default = "false"
+
+[createBuffXw]
+title = "添加Buff[小为][Buff]"
+description = "命令 ${Source} 向 ${Target} 添加名称为 ${name} 的BuffType 持续时间为 ${time} Buff层数为${time}"
+comment = "命令单位给指定的单位施加一个指定的BuffType."
+category = TC_Buff
+[[.args]]
+type = unit
+default = "GetEventDamageSource"
+[[.args]]
+type = unit
+default = "GetTriggerUnit"
+[[.args]]
+type = string
+[[.args]]
+type = real
+default = "1.0"
+[[.args]]
+type = integer
+default = "1"
+
+[onAddEventBuffTypeXw]
+title = "给BuffType注册添加时触发的动作[小为][Buff]"
+description = "给 ${buffType} 注册一个触发添加Buff时响应的 ${trig} 动作"
+comment = "给当前Buff类型注册一个添加事件回调. Br作者:小为"
+category = TC_Buff
+[[.args]]
+type = integer
+default = "getLastCreatedBuffType"
+[[.args]]
+type = trigger
+default = "GetTriggeringTrigger"
+
+[onRemoveEventBuffTypeXw]
+title = "给BuffType注册移除时触发的动作[小为][Buff]"
+description = "给 ${buffType} 注册一个触发移除Buff时响应的 ${trig} 动作"
+comment = "给当前Buff类型注册一个移除事件回调. Br作者:小为"
+category = TC_Buff
+[[.args]]
+type = integer
+default = "getLastCreatedBuffType"
+[[.args]]
+type = trigger
+default = "GetTriggeringTrigger"
+
+[onUpdateEventBuffTypeXw]
+title = "给BuffType注册周期时触发的动作[小为][Buff]"
+description = "给 ${buffType} 注册一个触发心跳周期Buff时响应的 ${trig} 动作"
+comment = "给当前Buff类型注册一个周期事件回调. Br作者:小为"
+category = TC_Buff
+[[.args]]
+type = integer
+default = "getLastCreatedBuffType"
+[[.args]]
+type = trigger
+default = "GetTriggeringTrigger"
+
+[setTimeBuffXw]
+title = "修改Buff持续时间[小为][Buff]"
+description = "修改 ${Buff} 的持续时间为 ${time}"
+comment = "修改指定Buff的持续时间. Br作者:小为"
+category = TC_Buff
+[[.args]]
+type = integer
+default = "getTriggerBuff"
+[[.args]]
+type = real
+default = "1.0"
+
+[addTimeBuffXw]
+title = "添加Buff持续时间[小为][Buff]"
+description = "添加 ${Buff} 的持续时间为 ${time}"
+comment = "添加指定Buff的持续时间. Br作者:小为"
+category = TC_Buff
+[[.args]]
+type = integer
+default = "getTriggerBuff"
+[[.args]]
+type = real
+default = "1.0"
+
+[addBuffNumber]
+title = "添加Buff层数[小为][Buff]"
+description = "添加 ${Buff} 的层数 ${number}"
+comment = "添加指定Buff的层数. Br作者:小为"
+category = TC_Buff
+[[.args]]
+type = integer
+default = "getTriggerBuff"
+[[.args]]
+type = integer
+default = "1"
+
+[subTimeBuffXw]
+title = "减少Buff持续时间[小为][Buff]"
+description = "减少 ${Buff} 的持续时间为 ${time}"
+comment = "减少指定Buff的持续时间. Br作者:小为"
+category = TC_Buff
+[[.args]]
+type = integer
+default = "getTriggerBuff"
+[[.args]]
+type = real
+default = "1.0"
+
+[endTimeBuffXw]
+title = "终止Buff[小为][Buff]"
+description = "终止 ${Buff} "
+comment = "终止指定Buff. 会触发移除事件 Br作者:小为"
+category = TC_Buff
+[[.args]]
+type = integer
+default = "getTriggerBuff"

@@ -1,0 +1,13 @@
+[newCentralTimerEvent]
+title = "游戏计时事件[小为][中心计时器]"
+description = "游戏逝去 ${time} 秒 模式 ${boolean} 计时器标签名 ${string}"
+comment = "从事件开始的那一刻开始计时. 通过标签名来定位当前触发器,注意:每个标签只能创建一个. Br作者:小为"
+category = TC_TIME
+[[.args]]
+type = real
+default = "5"
+[[.args]]
+type = periodicoption
+default = "PeriodicOptionOneTime"
+[[.args]]
+type = string

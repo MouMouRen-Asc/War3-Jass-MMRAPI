@@ -1,0 +1,3 @@
+[TriggerCategories]
+TC_Buff=小为{Buff},ReplaceableTextures\CommandButtons\BTNTome.blp
+ 

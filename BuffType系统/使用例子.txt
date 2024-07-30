@@ -1,0 +1,9 @@
+YDWE1.31编辑器(包含官方平台编辑器)
+把BuffTypeJass文件夹放到编辑器jass目录内
+把BuffTypeMPQ文件夹放到编辑器share\mpq目录内
+然后修改share\mpq目录内的config文件,在里面空行加上BuffTypeMPQ
+
+YDWE1.32编辑器(包含11平台编辑器)
+把BuffTypeJass文件夹放到编辑器ui\ydwe\jass目录内
+把BuffTypeMPQ文件夹放到编辑器ui目录内
+然后修改ui目录内的config文件,在里面空行加上BuffTypeMPQ

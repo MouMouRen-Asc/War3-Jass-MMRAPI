@@ -1,0 +1,126 @@
+﻿[createBuffTypeXw]
+title = "新建BuffType[小为][Buff]"
+description = "新建一个名称为 ${name} 心动周期为 ${time} 是否为可叠加 ${flag}"
+comment = "构造一个Buff的类型出来,构造出来后就可以通过给Buff类型注册添加事件，移除事件，周期事件来控制Buff添加时的动作. Br作者:小为"
+category = TC_Buff
+returns = integer
+[[.args]]
+type = string
+[[.args]]
+type = real
+default = "0.02"
+[[.args]]
+type = boolean
+default = "false"
+
+[getTriggerBuff]
+title = "获取触发的Buff[小为][Buff]"
+description = "获取触发的Buff"
+comment = "可以获取响应事件时触发的Buff."
+category = TC_Buff
+returns = integer
+
+[getLastCreatedBuffType]
+title = "获取最后创建的BuffType[小为][Buff]"
+description = "获取最后创建的BuffType"
+comment = "可以获取最后创建的BuffType."
+category = TC_Buff
+returns = integer
+
+[createBuffXw]
+title = "添加Buff[小为][Buff]"
+description = "命令 ${Source} 向 ${Target} 添加名称为 ${name} 的BuffType 持续时间为 ${time}"
+comment = "命令单位给指定的单位施加一个指定的BuffType."
+category = TC_Buff
+returns = integer
+[[.args]]
+type = unit
+default = "GetEventDamageSource"
+[[.args]]
+type = unit
+default = "GetTriggerUnit"
+[[.args]]
+type = string
+[[.args]]
+type = real
+default = "1.0"
+
+[buffToIntegerXw]
+title = "转换Buff为整数地址[小为][Buff]"
+description = "转换 ${Buff} 为一个整数地址"
+comment = "可以用来给Buff绑定信息."
+category = TC_Buff
+returns = integer
+[[.args]]
+type = integer
+default = "getTriggerBuff"
+
+[getSourceBuffXw]
+title = "获取Buff来源[小为][Buff]"
+description = "获取 ${Buff} 的施法来源单位"
+comment = "可以在BuffType注册的触发器回调内获取使用."
+category = TC_Buff
+returns = unit
+[[.args]]
+type = integer
+default = "getTriggerBuff"
+
+[getTargetBuffXw]
+title = "获取Buff目标[小为][Buff]"
+description = "获取 ${Buff} 的目标单位"
+comment = "可以在BuffType注册的触发器回调内获取使用."
+category = TC_Buff
+returns = unit
+[[.args]]
+type = integer
+default = "getTriggerBuff"
+
+[getTimeBuffXw]
+title = "获取Buff持续时间[小为][Buff]"
+description = "获取 ${Buff} 的持续时间"
+comment = "可以在BuffType注册的触发器回调内获取使用."
+category = TC_Buff
+returns = real
+[[.args]]
+type = integer
+default = "getTriggerBuff"
+
+[IsFlagBuffXw]
+title = "当前Buff是否为可叠加[小为][Buff]"
+description = "获取 ${Buff} 是否为可叠加"
+comment = "可以在BuffType注册的触发器回调内获取使用."
+category = TC_Buff
+returns = boolean
+[[.args]]
+type = integer
+default = "getTriggerBuff"
+
+[IsRepeatBuffXw]
+title = "当前Buff是否为重复添加[小为][Buff]"
+description = "获取当前触发的 ${Buff} 是否为重复添加的"
+comment = "可以在BuffType注册的触发器回调内获取使用."
+category = TC_Buff
+returns = boolean
+[[.args]]
+type = integer
+default = "getTriggerBuff"
+
+[getBuffNumber]
+title = "当前Buff层数[小为][Buff]"
+description = "获取当前触发的 ${Buff} 当前层数"
+comment = "可以在BuffType注册的触发器回调内获取使用."
+category = TC_Buff
+returns = integer
+[[.args]]
+type = integer
+default = "getTriggerBuff"
+
+[getRepeatTimeBuffXw]
+title = "获取重复添加的Buff持续时间[小为][Buff]"
+description = "获取重复添加的 ${Buff} 的Buff持续时间"
+comment = "可以在BuffType注册的触发器回调内获取使用."
+category = TC_Buff
+returns = real
+[[.args]]
+type = integer
+default = "getTriggerBuff"
