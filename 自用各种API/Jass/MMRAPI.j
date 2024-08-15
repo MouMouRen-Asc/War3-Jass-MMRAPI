@@ -1375,6 +1375,7 @@ library BagPackApi requires BzAPI , YDWEYDWEJapiScript , MmrApi
         integer array TypeValue[6]
         integer array Value[6]
         integer TimeId
+        integer KKid
 
         method SetRandomItemBaseItemType takes integer thisitembasetype returns nothing
             set this.BaseItem = thisitembasetype
@@ -1407,6 +1408,14 @@ library BagPackApi requires BzAPI , YDWEYDWEJapiScript , MmrApi
         method GetRandomItemTimeid takes nothing returns integer Tid
             return this.TimeId
         endmethod
+
+        method SetItemInKKid takes integer kkid returns nothing
+            set this.KKid = kkid
+        endmethod
+
+        method GetItemInKKid takes nothing returns integer kkidd
+            return this.KKid
+        endmethod
     endstruct
 
     globals
@@ -1417,6 +1426,8 @@ library BagPackApi requires BzAPI , YDWEYDWEJapiScript , MmrApi
     private integer array BackPackItemValue
     private integer array PlayerChoosePage
     private integer array MouseInBagUi
+    private integer array DeleteBottom
+    private integer array ChooseItemSolt
 
     private boolean array PlayerBagCanUse_2
     private boolean array PlayerBagCanUse_3
@@ -1428,6 +1439,8 @@ library BagPackApi requires BzAPI , YDWEYDWEJapiScript , MmrApi
     private string BaseBagPackInmageSolt = "UI\\Widgets\\Console\\Human\\human-inventory-slotfiller.blp"
     private string BagPack_ChooseBagBottomOn = "ReplaceableTextures\\CommandButtons\\BTNMoonKey.blp"
     private string BagPack_ChooseBagBottomOFF = "ReplaceableTextures\\CommandButtons\\BTNGlyph.blp"
+    private string BagPakc_DelteItemBottomYes = "WareHouseUiSystem\\BottonTexterOn.tga"
+    private string BagPakc_DelteItemBottomNo = "WareHouseUiSystem\\BottonTexterOff.tga"
 
     boolean IsCanUseBagOn = true
 
@@ -1503,12 +1516,12 @@ library BagPackApi requires BzAPI , YDWEYDWEJapiScript , MmrApi
 
     private function BagPackApi_WhenRigthMouseKickUnitBackPackItem takes nothing returns nothing
         local RandomItem removeitem = LoadInteger(BackPackHash[GetPlayerId(GetLocalPlayer())], PlayerChoosePage[GetPlayerId(GetLocalPlayer())] , MouseInBagUi[GetPlayerId(GetLocalPlayer())])
-
-        if MouseInBagUi[GetPlayerId(GetLocalPlayer())] > 0 and DzGetTriggerKeyPlayer() == GetLocalPlayer() and removeitem.GetRandomItemBaseItemType() != 0 then
-            call DzSyncData("BagPackApi_DeleteItem" , I2S(GetPlayerId(GetLocalPlayer())) + I2S(MouseInBagUi[GetPlayerId(GetLocalPlayer())]))    
-            call removeitem.destroy()
-            call SaveInteger(BackPackHash[GetPlayerId(GetLocalPlayer())] ,PlayerChoosePage[GetPlayerId(GetLocalPlayer())] ,MouseInBagUi[GetPlayerId(GetLocalPlayer())], -1 )
-            call BagPackApi_ChangeBagPackLineTexter(PlayerChoosePage[GetPlayerId(GetLocalPlayer())] , MouseInBagUi[GetPlayerId(GetLocalPlayer())] , GetPlayerId(GetLocalPlayer()))
+        if MouseInBagUi[GetPlayerId(GetLocalPlayer())] > 0 and DzGetTriggerKeyPlayer() == GetLocalPlayer() and removeitem.GetRandomItemBaseItemType() != 0  and ChooseItemSolt[GetPlayerId(GetLocalPlayer())] == 0 then
+            set ChooseItemSolt[GetPlayerId(GetLocalPlayer())] = MouseInBagUi[GetPlayerId(GetLocalPlayer())]
+            if DzFrameIsVisible(DeleteBottom[0]) == true then
+            else
+                call DzFrameShow(DeleteBottom[0] , true)
+            endif
         endif
     endfunction
 
@@ -1519,6 +1532,25 @@ library BagPackApi requires BzAPI , YDWEYDWEJapiScript , MmrApi
             set MouseInBagUi[GetPlayerId(GetLocalPlayer())] = -1
     endfunction
 
+    private function BagPackApi_DeleteBottomYes takes nothing returns nothing
+        local RandomItem removeitem = LoadInteger(BackPackHash[GetPlayerId(GetLocalPlayer())], PlayerChoosePage[GetPlayerId(GetLocalPlayer())] , ChooseItemSolt[GetPlayerId(GetLocalPlayer())])
+
+        if ChooseItemSolt[GetPlayerId(GetLocalPlayer())] > 0 and DzGetTriggerUIEventPlayer() == GetLocalPlayer() and removeitem.GetRandomItemBaseItemType() != 0 then
+            call DzSyncData("BagPackApi_DeleteItem" , I2S(GetPlayerId(GetLocalPlayer())) + I2S(removeitem.GetItemInKKid()))    
+            call removeitem.destroy()
+            call SaveInteger(BackPackHash[GetPlayerId(GetLocalPlayer())] ,PlayerChoosePage[GetPlayerId(GetLocalPlayer())] ,ChooseItemSolt[GetPlayerId(GetLocalPlayer())], -1 )
+            call BagPackApi_ChangeBagPackLineTexter(PlayerChoosePage[GetPlayerId(GetLocalPlayer())] , ChooseItemSolt[GetPlayerId(GetLocalPlayer())] , GetPlayerId(GetLocalPlayer()))
+        endif
+        call DzFrameShow(DeleteBottom[0] , false)
+        set ChooseItemSolt[GetPlayerId(GetLocalPlayer())] = 0
+    endfunction
+
+    private function BagPackApi_DeleteBottomNo takes nothing returns nothing
+        if DzGetTriggerUIEventPlayer() == GetLocalPlayer() then
+            call DzFrameShow(DeleteBottom[0] , false)
+        endif
+        set ChooseItemSolt[GetPlayerId(GetLocalPlayer())] = 0
+    endfunction
 
     private function BagPackApi_CreateBagPackLine takes integer LineNumber returns nothing
         local integer looptimeB = 1
@@ -1551,10 +1583,11 @@ library BagPackApi requires BzAPI , YDWEYDWEJapiScript , MmrApi
     endfunction
 
 
-    private function BagPackApi_ItemToBagPack takes player wichplayer , integer page , integer solt  , integer initemtype , integer timevalue returns nothing
+    private function BagPackApi_ItemToBagPack takes player wichplayer , integer page , integer solt  , integer initemtype , integer timevalue , integer inkkid returns nothing
         local RandomItem needsaveitem = RandomItem.create()
         call needsaveitem.SetRandomItemBaseItemType(initemtype)
         call needsaveitem.SetRandomItemTimeId(timevalue)
+        call needsaveitem.SetItemInKKid(inkkid)
         call SaveInteger(BackPackHash[GetPlayerId(wichplayer)] , page , solt , needsaveitem)
         if wichplayer == GetLocalPlayer() then
     	    call BagPackApi_ChangeBagPackLineTexter(page , solt , GetPlayerId(wichplayer))
@@ -1602,7 +1635,34 @@ library BagPackApi requires BzAPI , YDWEYDWEJapiScript , MmrApi
             set pager = 4
         endif
         if nullsolt != 0 then
-            call BagPackApi_ItemToBagPack(wichplayer , pager , nullsolt , itemtypeid , 1)
+            call BagPackApi_ItemToBagPack(wichplayer , pager , nullsolt , itemtypeid , 1, 0)
+            call RemoveItem(wichitem)
+        else
+            call DisplayTextToPlayer(GetLocalPlayer() ,0 , 0 , "装备背包已经满了")
+        endif
+    endfunction
+
+    function BagPackApi_SetItemToBagWithKK takes player wichplayer , item wichitem , integer kkid returns nothing
+        local integer nullsolt = 0
+        local integer itemtypeid = GetItemTypeId(wichitem)
+        local integer pager = 1
+
+        set nullsolt = BagPackApi_GetNullBag(wichplayer , 1 )
+
+        if PlayerBagCanUse_2[GetPlayerId(wichplayer)] and nullsolt == 0 then
+            set nullsolt = BagPackApi_GetNullBag(wichplayer , 2 )
+            set pager = 2
+        endif
+        if PlayerBagCanUse_3[GetPlayerId(wichplayer)] and nullsolt == 0 then
+            set nullsolt = BagPackApi_GetNullBag(wichplayer , 3 )
+            set pager = 3
+        endif
+        if PlayerBagCanUse_4[GetPlayerId(wichplayer)] and nullsolt == 0 then
+            set nullsolt = BagPackApi_GetNullBag(wichplayer , 4 )
+            set pager = 4
+        endif
+        if nullsolt != 0 then
+            call BagPackApi_ItemToBagPack(wichplayer , pager , nullsolt , itemtypeid , 1, kkid)
             call RemoveItem(wichitem)
         else
             call DisplayTextToPlayer(GetLocalPlayer() ,0 , 0 , "装备背包已经满了")
@@ -1628,7 +1688,32 @@ library BagPackApi requires BzAPI , YDWEYDWEJapiScript , MmrApi
             set pager = 4
         endif
         if nullsolt != 0 then
-            call BagPackApi_ItemToBagPack(wichplayer , pager , nullsolt , wichitemtype , 1)
+            call BagPackApi_ItemToBagPack(wichplayer , pager , nullsolt , wichitemtype , 1 , 0)
+        else
+            call DisplayTextToPlayer(GetLocalPlayer() ,0 , 0 , "装备背包已经满了")
+        endif
+    endfunction
+
+    function BagPackApi_SetItemTypeToBagWithKK takes player wichplayer , integer wichitemtype , integer kid returns nothing
+        local integer nullsolt = 0
+        local integer pager = 1
+
+        set nullsolt = BagPackApi_GetNullBag(wichplayer , 1 )
+
+        if PlayerBagCanUse_2[GetPlayerId(wichplayer)] and nullsolt == 0 then
+            set nullsolt = BagPackApi_GetNullBag(wichplayer , 2 )
+            set pager = 2
+        endif
+        if PlayerBagCanUse_3[GetPlayerId(wichplayer)] and nullsolt == 0 then
+            set nullsolt = BagPackApi_GetNullBag(wichplayer , 3 )
+            set pager = 3
+        endif
+        if PlayerBagCanUse_4[GetPlayerId(wichplayer)] and nullsolt == 0 then
+            set nullsolt = BagPackApi_GetNullBag(wichplayer , 4 )
+            set pager = 4
+        endif
+        if nullsolt != 0 then
+            call BagPackApi_ItemToBagPack(wichplayer , pager , nullsolt , wichitemtype , 1 , kid)
         else
             call DisplayTextToPlayer(GetLocalPlayer() ,0 , 0 , "装备背包已经满了")
         endif
@@ -1689,6 +1774,7 @@ library BagPackApi requires BzAPI , YDWEYDWEJapiScript , MmrApi
         local integer page = PlayerChoosePage[pid]
         local RandomItem needcitem
         local integer itemtypeid
+        local integer itemkkid
         local item createitem
 
         if IsCanUseBagOn == true then
@@ -1704,8 +1790,14 @@ library BagPackApi requires BzAPI , YDWEYDWEJapiScript , MmrApi
                     set needcitem = LoadInteger(BackPackHash[pid], page , solt )
                     if needcitem.GetRandomItemBaseItemType() != 0 and  needcitem.GetRandomItemBaseItemType() != null then
                         set itemtypeid = needcitem.GetRandomItemBaseItemType()
+                        set itemkkid = needcitem.GetItemInKKid()
                         call BagPackApi_RemoveItemFormBagPack(DzGetTriggerSyncPlayer() , page , solt)
-                        call DzSyncData("ItemUseBag_AddAB" , I2S(GetPlayerId(DzGetTriggerSyncPlayer())) + I2S(itemtypeid))    
+                        if itemkkid < 10 then
+                            call DzSyncData("ItemUseBag_AddAB" , I2S(GetPlayerId(DzGetTriggerSyncPlayer())) + "0" +I2S(itemkkid) + I2S(itemtypeid))
+                        else
+                            call DzSyncData("ItemUseBag_AddAB" , I2S(GetPlayerId(DzGetTriggerSyncPlayer())) + I2S(itemkkid) + I2S(itemtypeid))    
+                        endif
+                        
                     endif
 
                     //set createitem = CreateItem(itemtypeid , 0 , 0 )
@@ -1895,6 +1987,53 @@ library BagPackApi requires BzAPI , YDWEYDWEJapiScript , MmrApi
         call DzFrameShow(BackPackUi[5] , false)
         call DzFrameShow(BackPackUi[6] , false)
         call DzFrameShow(BackPackUi[7] , false)
+
+        set DeleteBottom[0] = DzCreateFrameByTagName("BACKDROP", "name", DzGetGameUI(), "template", 0)
+        call DzFrameSetPoint( DeleteBottom[0], 4, DzGetGameUI(), 4, 0, 0 )
+        call DzFrameSetSize( DeleteBottom[0], 0.2, 0.1 )
+        call DzFrameSetTexture( DeleteBottom[0], "UI\\Widgets\\ToolTips\\Human\\human-tooltip-background.blp", 0 )
+        call DzFrameShow( DeleteBottom[0], false )
+        set DeleteBottom[1] = DzCreateFrameByTagName("TEXT", "name", DeleteBottom[0], "template", 0)
+        call DzFrameSetPoint( DeleteBottom[1], 1, DeleteBottom[0], 1, 0, -0.015 )
+        call DzFrameSetSize( DeleteBottom[1], 0.09, 0.18 )
+        call DzFrameSetFont( DeleteBottom[1], "war3mapImported\\fonts.ttf", 0.013, 0 )
+        call DzFrameSetText(DeleteBottom[1] , "是否要删除这件装备")
+
+        set DeleteBottom[2] = DzCreateFrameByTagName("BACKDROP", "name", DeleteBottom[0], "template", 0)
+        call DzFrameSetPoint( DeleteBottom[2], 6, DeleteBottom[0], 6, 0.015, 0.015 )
+        call DzFrameSetSize( DeleteBottom[2], 0.08, 0.04 )
+        call DzFrameSetTexture( DeleteBottom[2], BagPakc_DelteItemBottomYes, 0 )
+        call DzFrameShow( DeleteBottom[2], true )
+        set DeleteBottom[3] = DzCreateFrameByTagName("TEXT", "name", DeleteBottom[2], "template", 0)
+        call DzFrameSetPoint( DeleteBottom[3], 0, DeleteBottom[2], 4, -0.01 , 0.01 )
+        call DzFrameSetSize( DeleteBottom[3], 0.05, 0.025 )
+        call DzFrameSetFont( DeleteBottom[3], "war3mapImported\\fonts.ttf", 0.04, 0 )
+        call DzFrameSetText(DeleteBottom[3] , "是")
+        set DeleteBottom[4] = DzCreateFrameByTagName("GLUETEXTBUTTON", "name", DeleteBottom[2], "template", 0)
+        call DzFrameSetPoint( DeleteBottom[4], 6 , DeleteBottom[2] , 6 , 0, 0 )
+        call DzFrameSetSize( DeleteBottom[4], 0.08, 0.04 )
+
+
+        set DeleteBottom[5] = DzCreateFrameByTagName("BACKDROP", "name", DeleteBottom[0], "template", 0)
+        call DzFrameSetPoint( DeleteBottom[5], 8, DeleteBottom[0], 8, -0.015, 0.015 )
+        call DzFrameSetSize( DeleteBottom[5], 0.08, 0.04 )
+        call DzFrameSetTexture( DeleteBottom[5], BagPakc_DelteItemBottomYes, 0 )
+        call DzFrameShow( DeleteBottom[5], true )
+        set DeleteBottom[6] = DzCreateFrameByTagName("TEXT", "name", DeleteBottom[5], "template", 0)
+        call DzFrameSetPoint( DeleteBottom[6], 0, DeleteBottom[5], 4, -0.01 , 0.01 )
+        call DzFrameSetSize( DeleteBottom[6], 0.05, 0.025 )
+        call DzFrameSetFont( DeleteBottom[6], "war3mapImported\\fonts.ttf", 0.04, 0 )
+        call DzFrameSetText(DeleteBottom[6] , "否")
+        set DeleteBottom[7] = DzCreateFrameByTagName("GLUETEXTBUTTON", "name", DeleteBottom[5], "template", 0)
+        call DzFrameSetPoint( DeleteBottom[7], 6 , DeleteBottom[5] , 6 , 0, 0 )
+        call DzFrameSetSize( DeleteBottom[7], 0.08, 0.04 )
+
+        if GetLocalPlayer() == GetLocalPlayer() then
+    	    call DzFrameSetScriptByCode(DeleteBottom[4] , 1 , function BagPackApi_DeleteBottomYes , false)
+            call DzFrameSetScriptByCode(DeleteBottom[7] , 1 , function BagPackApi_DeleteBottomNo , false)
+        endif
+
+
         set looptimeA = 0
         loop
             exitwhen looptimeA > 4
@@ -3552,7 +3691,7 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
                 endif
                 call YDWESetEventDamage(needsetdamage) 
             else 
-                if (YDWEIsEventPhysicalDamage() == true) then
+                if (YDWEIsEventPhysicalDamage() == true) or (YDWEIsEventDamageType(DAMAGE_TYPE_NORMAL) == true) then
                     set realdamage = (Player_Skill_Damage_Append[pid] + getdamage) * physicalDamageMmult * (1 + (Player_Skill_Damage_Percent[pid]/100))
                     set needsetdamage = CheckAndCalcutePhysicalOrMagic_CriticalStrike(realdamage , pid , true) 
                     call DAMAGESHOW_DamageAdd(Player(pid) , needsetdamage)
@@ -5723,6 +5862,7 @@ library ItemUseBag initializer ItemUseBag_Main requires optional FuncItemSystem 
         private string ItemUseBagFrameBaseArtTexter = "ItemUseBag\\BagPackBaseUi.blp"
         private string ItemUseBagFrameSoltNullArtTexter
         private integer array WichItemInSolt
+        private integer array ItemKKid
         private real array SoltInX
         private real array SoltInY
     endglobals
@@ -5781,29 +5921,35 @@ library ItemUseBag initializer ItemUseBag_Main requires optional FuncItemSystem 
         endloop
     endfunction
 
-    function ItemUseBag_AddItmeToItemUseBag takes integer itemid returns nothing
+    function ItemUseBag_AddItmeToItemUseBag takes integer itemid  , integer kid returns nothing
         if WichItemInSolt[1] == 0 or WichItemInSolt[1] == null or WichItemInSolt[1] == -1 then
             set WichItemInSolt[1] = itemid
+            set ItemKKid[1] = kid
             call ItemUseBag_ReArt()
             return
         elseif WichItemInSolt[2] == 0 or WichItemInSolt[2] == null or WichItemInSolt[2] == -1  then
             set WichItemInSolt[2] = itemid
+            set ItemKKid[2] = kid
             call ItemUseBag_ReArt()
             return
         elseif WichItemInSolt[3] == 0 or WichItemInSolt[3] == null or WichItemInSolt[3] == -1  then
             set WichItemInSolt[3] = itemid
+            set ItemKKid[3] = kid
             call ItemUseBag_ReArt()
             return
         elseif WichItemInSolt[4] == 0 or WichItemInSolt[4] == null or WichItemInSolt[4] == -1  then
             set WichItemInSolt[4] = itemid
+            set ItemKKid[4] = kid
             call ItemUseBag_ReArt()
             return
         elseif WichItemInSolt[5] == 0 or WichItemInSolt[5] == null or WichItemInSolt[5] == -1  then
             set WichItemInSolt[5] = itemid
+            set ItemKKid[5] = kid
             call ItemUseBag_ReArt()
             return
         elseif WichItemInSolt[6] == 0 or WichItemInSolt[6] == null or WichItemInSolt[6] == -1  then
             set WichItemInSolt[6] = itemid
+            set ItemKKid[6] = kid
             call ItemUseBag_ReArt()
             return
         endif
@@ -5811,6 +5957,7 @@ library ItemUseBag initializer ItemUseBag_Main requires optional FuncItemSystem 
 
     private function ItemUseBag_RemoveItem takes integer soltid returns nothing
         set WichItemInSolt[soltid] = 0
+        set ItemKKid[soltid] = 0 
         call ItemUseBag_ReArt()
     endfunction
 
@@ -5843,30 +5990,33 @@ library ItemUseBag initializer ItemUseBag_Main requires optional FuncItemSystem 
         local integer pid = GetPlayerId(GetLocalPlayer())
         local integer soltid = ItemUseBag_GetSoltId(Infarm)
         local integer itemtypel = WichItemInSolt[soltid]
-        call DzSyncData("ItemUseBag_Remove" , I2S(GetPlayerId(DzGetTriggerUIEventPlayer())) + I2S(itemtypel))
+        local integer kid = ItemKKid[soltid]
+        if kid >=  10 then
+            call DzSyncData("ItemUseBag_Remove" , I2S(GetPlayerId(DzGetTriggerUIEventPlayer())) + I2S(kid) + I2S(itemtypel))
+        else
+            call DzSyncData("ItemUseBag_Remove" , I2S(GetPlayerId(DzGetTriggerUIEventPlayer())) + "0" +I2S(kid) + I2S(itemtypel))
+        endif
         call ItemUseBag_RemoveItem(soltid)
     endfunction
 
     private function ItemUseBag_RemoveAbAndRemoveItemF takes nothing returns nothing
         local string basedata = DzGetTriggerSyncData()
         local integer pid = S2I( SubStringBJ(basedata, 1 , 1) )
-        local integer itemtypeinteger = S2I( SubStringBJ(basedata , 2 , 20) )  
+        local integer kid = S2I(SubStringBJ(basedata, 2 , 3) )
+        local integer itemtypeinteger = S2I( SubStringBJ(basedata , 4 , 20) )  
         
-        call BagPackApi_SetItemTypeToBag(Player(pid) , itemtypeinteger )
-
-        if Player(pid) == GetLocalPlayer() then
-            call RemoveAttributeAsItemType(itemtypeinteger , Player(pid) )
-        endif
+        call BagPackApi_SetItemTypeToBagWithKK(Player(pid) , itemtypeinteger ,kid )
+        call RemoveAttributeAsItemType(itemtypeinteger , Player(pid) )
     endfunction
 
     private function ItemUseBag_AddAbToUnitF takes nothing returns nothing
         local string basedata = DzGetTriggerSyncData()
         local integer pid = S2I( SubStringBJ(basedata, 1 , 1) )
-        local integer itemtypeinteger = S2I( SubStringBJ(basedata , 2 , 20) )
+        local integer kkid = S2I( SubStringBJ(basedata, 2 , 3) )
+        local integer itemtypeinteger = S2I( SubStringBJ(basedata , 4 , 20) )
         call AddAttributeAsItemType(itemtypeinteger , Player(pid) )
-        
         if Player(pid) == GetLocalPlayer() then
-            call ItemUseBag_AddItmeToItemUseBag(itemtypeinteger)
+            call ItemUseBag_AddItmeToItemUseBag(itemtypeinteger , kkid )
         endif
     endfunction
 
@@ -5966,6 +6116,7 @@ library WareHouseUiSystem
 		private integer maxlevel
 		private unit array targetunit
 		private boolean Auto = false
+        private boolean IsRun = false
 
 		private string BaseTexter = "WareHouseUiSystem\\BaseTexter.tga"
 		private string BaseShowTexter = "WareHouseUiSystem\\BaseShowTexter.tga"
@@ -6069,14 +6220,62 @@ library WareHouseUiSystem
 		endif
 		return false
 	endfunction
+        //仓库排序
+    private function WareHouseUiSystem_BubbleSort takes player p returns integer flag
+        local integer l = 57
+        local integer loopa = 1
+        local integer temp1 = 0
+        local integer temp2 = 0
+        local integer fllag = 0 
+        local integer lv1 = 0
+        local integer lv2 = 0
+        loop
+            exitwhen loopa >= l
+            set temp1 = 0
+            set temp2 = 0
+            set lv1 = YDWEGetObjectPropertyInteger(YDWE_OBJECT_TYPE_ITEM, LoadInteger( ItemSolt , LoadInteger(ItemSolt , 0 , loopa) , 0 ), "Level")
+            set lv2 = YDWEGetObjectPropertyInteger(YDWE_OBJECT_TYPE_ITEM, LoadInteger( ItemSolt , LoadInteger(ItemSolt , 0 , loopa + 1) , 0 ), "Level")
+            if lv1 < lv2 then
+                set temp1 = LoadInteger( ItemSolt , LoadInteger(ItemSolt , 0 , loopa + 1) , 0 )
+                set temp2 = LoadInteger( ItemSolt , LoadInteger(ItemSolt , 0 , loopa) , 0 )
+                call SaveInteger(ItemSolt , LoadInteger(ItemSolt , 0 , loopa + 1) , 0 , temp2)
+                call SaveInteger(ItemSolt , LoadInteger(ItemSolt , 0 , loopa ) , 0 , temp1)
+			 	// call DzFrameSetTexture( LoadInteger(ItemSolt , LoadInteger(ItemSolt , 0 , loopa + 1)  , 1 ) , YDWEGetObjectPropertyString(YDWE_OBJECT_TYPE_ITEM, temp2 , "Art"), 0 )
+			 	// call DzFrameSetTexture( LoadInteger(ItemSolt , LoadInteger(ItemSolt , 0 , loopa)  , 1 ) , YDWEGetObjectPropertyString(YDWE_OBJECT_TYPE_ITEM, temp1 , "Art"), 0 )
+                set fllag = 1
+            endif
+            set loopa = loopa + 1
+        endloop
+        return fllag
+    endfunction
 		///仓库一键合成
 	private function WareHouseUiSystem_RSItemTNewItem_AllWareHouse takes player p returns nothing
 		local integer loopa = 1
-		loop
-			exitwhen loopa > LoadInteger(ItemSolt , 0 , 0)
-			call WareHouseUiSystem_RemoveSameItemOfTwoOnceAndAddNewItem(loopa , 'rag1', p )
-			set loopa = loopa + 1
-		endloop
+        local integer flagw = 1
+        if IsRun == false then
+            set IsRun = true
+           	loop
+			    exitwhen loopa > LoadInteger(ItemSolt , 0 , 0)
+			    call WareHouseUiSystem_RemoveSameItemOfTwoOnceAndAddNewItem.evaluate(loopa , 'rag1', p )
+			    set loopa = loopa + 1
+		    endloop
+            loop
+                exitwhen flagw == 0 
+                set flagw = WareHouseUiSystem_BubbleSort.evaluate(p)
+            endloop
+            set loopa = 1
+            loop
+                exitwhen loopa >= 57
+                if LoadInteger( ItemSolt , LoadInteger(ItemSolt , 0 , loopa) , 0 ) == 0 or LoadInteger( ItemSolt , LoadInteger(ItemSolt , 0 , loopa) , 0 ) == null then
+			        call DzFrameSetTexture( LoadInteger(ItemSolt , LoadInteger(ItemSolt , 0 , loopa)  , 1 ) ,"UI\\Widgets\\Console\\Human\\human-inventory-slotfiller.blp", 0 )
+                else
+                    call DzFrameSetTexture( LoadInteger(ItemSolt , LoadInteger(ItemSolt , 0 , loopa)  , 1 ) , YDWEGetObjectPropertyString(YDWE_OBJECT_TYPE_ITEM, LoadInteger( ItemSolt , LoadInteger(ItemSolt , 0 , loopa) , 0 ) , "Art"), 0 )
+                endif
+                set loopa = loopa + 1
+            endloop 
+            set IsRun = false
+        endif
+
 	endfunction
 		///鼠标点击装备一件合成
 	private function WareHouseUiSystem_MouseKickHcBotton takes nothing returns nothing
@@ -6232,6 +6431,7 @@ library WareHouseUiSystem
 
 	//自动合成计时器运行函数
 	function WareHouseUiSystem_AutoTimerAction takes nothing returns nothing
+        set IsRun = false
 		if Auto then
 			call WareHouseUiSystem_RSItemTNewItem_AllWareHouse(GetLocalPlayer())
 		endif

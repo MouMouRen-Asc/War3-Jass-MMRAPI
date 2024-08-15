@@ -139,6 +139,18 @@ type = player
 [[.args]]
 type = item
 
+[BagPackApi_SetItemToBagWithKK]
+title = "增加一件装备去背包(含有KK的指定槽位ID)[某某人制作]"
+description = "需要设置的玩家 ${player}，物品为 ${物品} ，KK槽位ID${整数}"
+comment = ""
+category = TC_MMRBAGPACK
+[[.args]]
+type = player
+[[.args]]
+type = item
+[[.args]]
+type = integer
+
 [BagPackApi_UiCreate]
 title = "创建背包UI[某某人制作]"
 description = "开启并创建一个背包UI"
