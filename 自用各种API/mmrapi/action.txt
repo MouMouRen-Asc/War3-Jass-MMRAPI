@@ -321,6 +321,27 @@ description = "初始化时加载"
 comment = ""
 category = TC_MMRAPI
 
+[ChangeIsArmorSim]
+title = "设置伤害系统是否启用护甲模拟"
+description = "是否：${布尔} "
+comment = "快速设置，随时更改"
+category = TC_MMRAPI
+[[.args]]
+type = boolean
+
+[ChangeArmorSimValue]
+title = "设置伤害系统护甲模拟系数"
+description = "系数1：${攻击系数} 系数2：${护甲系数}系数3：${基础系数}"
+comment = "快速设置，随时更改"
+category = TC_MMRAPI
+[[.args]]
+type = real
+[[.args]]
+type = real
+[[.args]]
+type = real
+
+
 [AddAttributeAsItem]
 title = "增加指定物品的属性给英雄"
 description = "指定属性的物品：${物品} 哪个玩家： ${玩家}"

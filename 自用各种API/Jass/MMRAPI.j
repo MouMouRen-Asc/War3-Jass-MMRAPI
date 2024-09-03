@@ -2591,8 +2591,10 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
         private integer array Kill_Add_Gold_Percent_10//20
         private integer array Kill_Add_Wood_10//21
         private integer array Kill_Add_Wood_Percent_10//22
-
-
+        private boolean IsSimArmor = false
+        private real AttackMult = 1
+        private real ArmorMult = 0.5
+        private real BaseMult = 100
 	endglobals
 
 	private function PFWZ takes string str,unit u,real size,integer red,integer blue,integer green,real movex,real movey,real cleartime returns nothing
@@ -3717,15 +3719,34 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
                 call YDWESetEventDamage(needsetdamage) 
             endif
         else
-            set pid = GetPlayerId(GetOwningPlayer(GetTriggerUnit()))
-            if (YDWEIsEventPhysicalDamage() == true) then
-                set realdamage = getdamage * (1- (I2R(Player_Physical_LessDamage[pid])/100))
+            if IsSimArmor == false then
+                set pid = GetPlayerId(GetOwningPlayer(GetTriggerUnit()))
+                if (YDWEIsEventPhysicalDamage() == true) then
+                    set realdamage = getdamage * (1- (I2R(Player_Physical_LessDamage[pid])/100))
+                else
+                    set realdamage = getdamage * (1- (I2R(Player_Magic_LessDamage[pid])/100))
+                endif
+                call YDWESetEventDamage(realdamage)
             else
-                set realdamage = getdamage * (1- (I2R(Player_Magic_LessDamage[pid])/100))
+                set pid = GetPlayerId(GetOwningPlayer(GetTriggerUnit()))
+                set AttackValue = GetUnitState(GetEventDamageSource(),ConvertUnitState(0x12)) + GetUnitState(GetEventDamageSource(),ConvertUnitState(0x13))
+                if (YDWEIsEventPhysicalDamage() == true) then
+                    if AttackValue > 10000 then
+                        set AttackValue = AttackValue/100
+                        set realdamage = (((AttackValue * AttackMult + BaseMult) * AttackValue)/(AttackValue +(GetUnitState(GetTriggerUnit(),ConvertUnitState(0x20))* ArmorMult + BaseMult))) * (1- (I2R(Player_Physical_LessDamage[pid])/100))                
+                        set realdamage = realdamage * 100
+                    else
+                        set realdamage = (((AttackValue * AttackMult + BaseMult) * AttackValue)/(AttackValue +(GetUnitState(GetTriggerUnit(),ConvertUnitState(0x20))* ArmorMult + BaseMult))) * (1- (I2R(Player_Physical_LessDamage[pid])/100))
+                    endif
+                else
+                    set realdamage = (((getdamage * AttackMult + BaseMult) * getdamage)/(getdamage +(GetUnitState(GetTriggerUnit(),ConvertUnitState(0x20))* ArmorMult + BaseMult))) * (1- (I2R(Player_Magic_LessDamage[pid])/100))
+                    if realdamage >2000000000 or realdamage < 0 then
+                        set realdamage = 2000000000
+                    endif
+                endif
+                call YDWESetEventDamage(realdamage)
             endif
-            call YDWESetEventDamage(realdamage)
         endif
-
 		// static if LIBRARY_YDWEEventDamageData then
 		// ///暴击和暴击几率
 		// /*
@@ -5120,6 +5141,16 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
 
 
 
+    endfunction
+
+    function ChangeIsArmorSim takes boolean can returns nothing
+        set IsSimArmor = can
+    endfunction
+
+    function ChangeArmorSimValue takes real ATKM , real ARMM , real BM returns nothing
+        set AttackMult = ATKM
+        set ArmorMult = ARMM
+        set BaseMult = BM
     endfunction
 endlibrary
 
