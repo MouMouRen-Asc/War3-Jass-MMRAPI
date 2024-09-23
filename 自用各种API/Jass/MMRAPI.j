@@ -3669,8 +3669,8 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
             endif
             if (YDWEIsEventAttackDamage() == true) then
                 if (YDWEIsEventPhysicalDamage() == true) and ( YDWEIsEventAttackType(ATTACK_TYPE_MAGIC) == false ) then
-                    set realdamage = (Player_Attack_Damage_Append[pid] + getdamage) * physicalDamageMmult
-                    set needsetdamage = CheckAndCalcutePhysicalOrMagic_CriticalStrike(realdamage , pid , true)
+                    set realdamage =  getdamage * physicalDamageMmult
+                    set needsetdamage = CheckAndCalcutePhysicalOrMagic_CriticalStrike(realdamage , pid , true) + Player_Attack_Damage_Append[pid]
                     call DAMAGESHOW_DamageAdd(Player(pid) , needsetdamage)
                     if needsetdamage >2000000000 or needsetdamage < 0 then
                         set needsetdamage = 2000000000
@@ -3680,8 +3680,8 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
                         call SetUnitState(damageunit , UNIT_STATE_LIFE , (GetUnitState(damageunit,UNIT_STATE_LIFE) +suckingvalue )) 
                     endif 
                 else
-                    set realdamage = (Player_Attack_Damage_Append[pid] + getdamage) * magicDamageMult 
-                    set needsetdamage = CheckAndCalcutePhysicalOrMagic_CriticalStrike(realdamage , pid , false)
+                    set realdamage = getdamage * magicDamageMult 
+                    set needsetdamage = CheckAndCalcutePhysicalOrMagic_CriticalStrike(realdamage , pid , false) + Player_Attack_Damage_Append[pid]
                     call DAMAGESHOW_DamageAdd(Player(pid) , needsetdamage)
                     if needsetdamage >2000000000 or needsetdamage < 0 then
                         set needsetdamage = 2000000000
@@ -3694,8 +3694,8 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
                 call YDWESetEventDamage(needsetdamage) 
             else 
                 if (YDWEIsEventPhysicalDamage() == true) or (YDWEIsEventDamageType(DAMAGE_TYPE_NORMAL) == true) then
-                    set realdamage = (Player_Skill_Damage_Append[pid] + getdamage) * physicalDamageMmult * (1 + (Player_Skill_Damage_Percent[pid]/100))
-                    set needsetdamage = CheckAndCalcutePhysicalOrMagic_CriticalStrike(realdamage , pid , true) 
+                    set realdamage = getdamage * physicalDamageMmult * (1 + (Player_Skill_Damage_Percent[pid]/100))
+                    set needsetdamage = CheckAndCalcutePhysicalOrMagic_CriticalStrike(realdamage , pid , true) + Player_Skill_Damage_Append[pid]
                     call DAMAGESHOW_DamageAdd(Player(pid) , needsetdamage)
                     if needsetdamage >2000000000 or needsetdamage < 0 then
                         set needsetdamage = 2000000000
@@ -3705,8 +3705,8 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
                         call SetUnitState(damageunit , UNIT_STATE_LIFE , (GetUnitState(damageunit,UNIT_STATE_LIFE) +suckingvalue )) 
                     endif
                 else
-                    set realdamage = (Player_Skill_Damage_Append[pid] + getdamage) * magicDamageMult * (1 + (Player_Skill_Damage_Percent[pid]/100))
-                    set needsetdamage = CheckAndCalcutePhysicalOrMagic_CriticalStrike(realdamage , pid , false)
+                    set realdamage = getdamage * magicDamageMult * (1 + (Player_Skill_Damage_Percent[pid]/100))
+                    set needsetdamage = CheckAndCalcutePhysicalOrMagic_CriticalStrike(realdamage , pid , false) + Player_Skill_Damage_Append[pid]
                     call DAMAGESHOW_DamageAdd(Player(pid) , needsetdamage)
                     if needsetdamage >2000000000 or needsetdamage < 0 then
                         set needsetdamage = 2000000000
