@@ -129,6 +129,70 @@ category = TC_MMRAPI
 type = integer
 default = "0"
 
+[XIAOWU_TeXiaoChongFeng_1]
+title = "特效冲锋并造成伤害 - [MMR整合]"
+description = "[${单位}]发出[${特效}]冲锋，特效角度：[${角度}] 每次移动：[${距离}]点距离 持续：[${时间}]秒，对[${选取范围}]范围造成[${伤害}]伤害，是否造成一次伤害${true}，攻击类型：${法术}伤害类型：${普通}"
+comment = "特效冲锋造成范围（选取单位不是建筑，单位生命大于0，是单位的敌对）伤害便捷函数"
+category = TC_MMRAPI
+[[.args]]
+type = unit
+default = "GetTriggerUnit"
+[[.args]]
+type = effect
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = boolean
+default = "true"
+[[.args]]
+type = attacktype
+default = ""
+[[.args]]
+type = damagetype
+default = ""
+
+[ItemShow_Init]
+title = "启用地面显示物品与特殊物品栏描述[某某人制作]"
+description = "启用地面显示物品与特殊物品栏描述[某某人制作]"
+comment = "hi额哈哈哈哈哈哈哈哈哈"
+category = TC_MMRAPI
+
+
+[ItemShowBag_SaveItemToHash]
+title = "为指定物品在装备显示UI处添加描述[某某人制作]"
+description = "指定的装备：${物品} ，字符串：${玩家ID}[某某人制作]"
+comment = "嗯，就这么用"
+category = TC_MMRAPI
+[[.args]]
+type = item
+[[.args]]
+type = string
+default = "????"
+
+
+[ItemShowBag_CleanItemToHash]
+title = "为指定物品在装备显示UI处消除描述[某某人制作]"
+description = "指定的装备：${物品} "
+comment = "如果你装备搞多了把我哈希表爆了也可以用这个腾出哈希表空间"
+category = TC_MMRAPI
+[[.args]]
+type = item
+
+
 [BagPackApi_SetItemToBag]
 title = "增加一件装备去背包[某某人制作]"
 description = "需要设置的玩家 ${player}，物品为 ${物品}"
@@ -457,3 +521,4 @@ comment = "不需要创建，执行自动会创建"
 category = TC_HXB
 [[.args]]
 type = hashtable
+
