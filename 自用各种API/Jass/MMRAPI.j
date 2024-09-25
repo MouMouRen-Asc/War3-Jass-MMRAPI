@@ -617,11 +617,11 @@ library MmrApi initializer MmrApi_Init requires YDWEYDWEJapiScript
 
     gamecache PlayerGameCaChe
 
-    hashtable XIAOWU_hxb = InitHashtable()
+    hashtable CF_HXB = InitHashtable()
     //攻击类型
-    attacktype XIAOWU_BSESH_A_bb
+    attacktype CF_BSESH_A_bb
     //伤害类型
-    damagetype XIAOWU_BSESH_A_cc
+    damagetype CF_BSESH_A_cc
     endglobals
 
     function MMRAPI_GetPlayerUnitSkill takes integer pid , integer wich returns integer skillid
@@ -1368,16 +1368,16 @@ library MmrApi initializer MmrApi_Init requires YDWEYDWEJapiScript
         // call MMRAPI_CheckSkillCanTrans(pid , 4 )
     endfunction
 
-    function XIAOWU_XQDWDR_AA takes unit a returns boolean
+    private function XIAOWU_XQDWDR_AF takes unit a returns boolean
         return GetUnitState(a, UNIT_STATE_LIFE) <= 0
     endfunction
 
-    function XIAOWU_XQDWDR_AB takes unit a returns boolean
-        return not XIAOWU_XQDWDR_AA(a)
+    private function XIAOWU_XQDWDR_AG takes unit a returns boolean
+        return not XIAOWU_XQDWDR_AF(a)
     endfunction
 
-    function XIAOWU_XQDWDR_A takes unit a, player b returns boolean
-        if ((IsUnitType(a, UNIT_TYPE_STRUCTURE) == false) and (XIAOWU_XQDWDR_AB(a) == true) and (IsUnitEnemy(a, b) == true)) then
+    private function XIAOWU_XQDWDR_AM takes unit a, player b returns boolean
+        if ((IsUnitType(a, UNIT_TYPE_STRUCTURE) == false) and (XIAOWU_XQDWDR_AG(a) == true) and (IsUnitEnemy(a, b) == true)) then
             return true
         else
             return false
@@ -1400,16 +1400,16 @@ library MmrApi initializer MmrApi_Init requires YDWEYDWEJapiScript
         local group dwz
         local unit dw
         local real pd
-        local unit u = LoadUnitHandle(XIAOWU_hxb,GetHandleId(XW_JSQtx),1)
-        local effect e = LoadEffectHandle(XIAOWU_hxb,GetHandleId(XW_JSQtx),2)
-        local real j = LoadReal(XIAOWU_hxb,GetHandleId(XW_JSQtx),3)
-        local real jl = LoadReal(XIAOWU_hxb,GetHandleId(XW_JSQtx),4)
-        local real s = LoadReal(XIAOWU_hxb,GetHandleId(XW_JSQtx),6)
-        local real fw = LoadReal(XIAOWU_hxb,GetHandleId(XW_JSQtx),8)
-        local boolean b = LoadBoolean(XIAOWU_hxb,GetHandleId(XW_JSQtx),7)
-        local real sj = LoadReal(XIAOWU_hxb,GetHandleId(XW_JSQtx),5)
+        local unit u = LoadUnitHandle(CF_HXB,GetHandleId(XW_JSQtx),1)
+        local effect e = LoadEffectHandle(CF_HXB,GetHandleId(XW_JSQtx),2)
+        local real j = LoadReal(CF_HXB,GetHandleId(XW_JSQtx),3)
+        local real jl = LoadReal(CF_HXB,GetHandleId(XW_JSQtx),4)
+        local real s = LoadReal(CF_HXB,GetHandleId(XW_JSQtx),6)
+        local real fw = LoadReal(CF_HXB,GetHandleId(XW_JSQtx),8)
+        local boolean b = LoadBoolean(CF_HXB,GetHandleId(XW_JSQtx),7)
+        local real sj = LoadReal(CF_HXB,GetHandleId(XW_JSQtx),5)
         set sj = sj - 0.03
-        call SaveReal(XIAOWU_hxb,GetHandleId(XW_JSQtx),5,sj)
+        call SaveReal(CF_HXB,GetHandleId(XW_JSQtx),5,sj)
         
         set x = XIAOWU_ZBYD_X(EXGetEffectX(e), jl, j)
         set y = XIAOWU_ZBYD_Y(EXGetEffectY(e), jl, j)
@@ -1421,9 +1421,9 @@ library MmrApi initializer MmrApi_Init requires YDWEYDWEJapiScript
             set dw = FirstOfGroup(dwz)
             exitwhen dw == null
             call GroupRemoveUnit(dwz, dw)
-            if ( (XIAOWU_XQDWDR_A(dw,GetOwningPlayer(u)) == true) and ((IsUnitInGroup(dw, LoadGroupHandle(XIAOWU_hxb,GetHandleId(XW_JSQtx),9)) == false) or (b == false))) then
-                call GroupAddUnit(LoadGroupHandle(XIAOWU_hxb,GetHandleId(XW_JSQtx),9), dw)
-                call UnitDamageTarget(u, dw, s, true, false, XIAOWU_BSESH_A_bb, XIAOWU_BSESH_A_cc, WEAPON_TYPE_WHOKNOWS )
+            if ( (XIAOWU_XQDWDR_AM(dw,GetOwningPlayer(u)) == true) and ((IsUnitInGroup(dw, LoadGroupHandle(CF_HXB,GetHandleId(XW_JSQtx),9)) == false) or (b == false))) then
+                call GroupAddUnit(LoadGroupHandle(CF_HXB,GetHandleId(XW_JSQtx),9), dw)
+                call UnitDamageTarget(u, dw, s, true, false, CF_BSESH_A_bb, CF_BSESH_A_cc, WEAPON_TYPE_WHOKNOWS )
             else
             endif
         endloop
@@ -1432,10 +1432,10 @@ library MmrApi initializer MmrApi_Init requires YDWEYDWEJapiScript
         set dw = null
         
         if sj <= 0.00 then
-            call DestroyGroup(LoadGroupHandle(XIAOWU_hxb,GetHandleId(XW_JSQtx),9))
-            call SaveGroupHandle(XIAOWU_hxb,GetHandleId(XW_JSQtx),9,null)
+            call DestroyGroup(LoadGroupHandle(CF_HXB,GetHandleId(XW_JSQtx),9))
+            call SaveGroupHandle(CF_HXB,GetHandleId(XW_JSQtx),9,null)
             call DestroyEffect( e )
-            call FlushChildHashtable(XIAOWU_hxb,GetHandleId(XW_JSQtx))
+            call FlushChildHashtable(CF_HXB,GetHandleId(XW_JSQtx))
             call DestroyTimer(XW_JSQtx)
         endif
     endfunction
@@ -1443,18 +1443,18 @@ library MmrApi initializer MmrApi_Init requires YDWEYDWEJapiScript
     function XIAOWU_TeXiaoChongFeng_1 takes unit u, effect e, real j, real jl, real sj, real fw, real s, boolean b, attacktype bb, damagetype cc returns nothing
         local timer XW_JSQtx = null
         set XW_JSQtx =CreateTimer()
-        set XIAOWU_BSESH_A_bb = bb
-        set XIAOWU_BSESH_A_cc = cc
+        set CF_BSESH_A_bb = bb
+        set CF_BSESH_A_cc = cc
         call EXEffectMatRotateZ( e, j )
-        call SaveUnitHandle(XIAOWU_hxb,GetHandleId(XW_JSQtx),1,u)
-        call SaveEffectHandle(XIAOWU_hxb,GetHandleId(XW_JSQtx),2,e)
-        call SaveReal(XIAOWU_hxb,GetHandleId(XW_JSQtx),3,j)
-        call SaveReal(XIAOWU_hxb,GetHandleId(XW_JSQtx),4,jl)
-        call SaveReal(XIAOWU_hxb,GetHandleId(XW_JSQtx),5,sj)
-        call SaveReal(XIAOWU_hxb,GetHandleId(XW_JSQtx),6,s)
-        call SaveBoolean(XIAOWU_hxb,GetHandleId(XW_JSQtx),7,b)
-        call SaveReal(XIAOWU_hxb,GetHandleId(XW_JSQtx),8,fw)
-        call SaveGroupHandle(XIAOWU_hxb,GetHandleId(XW_JSQtx),9,CreateGroup())
+        call SaveUnitHandle(CF_HXB,GetHandleId(XW_JSQtx),1,u)
+        call SaveEffectHandle(CF_HXB,GetHandleId(XW_JSQtx),2,e)
+        call SaveReal(CF_HXB,GetHandleId(XW_JSQtx),3,j)
+        call SaveReal(CF_HXB,GetHandleId(XW_JSQtx),4,jl)
+        call SaveReal(CF_HXB,GetHandleId(XW_JSQtx),5,sj)
+        call SaveReal(CF_HXB,GetHandleId(XW_JSQtx),6,s)
+        call SaveBoolean(CF_HXB,GetHandleId(XW_JSQtx),7,b)
+        call SaveReal(CF_HXB,GetHandleId(XW_JSQtx),8,fw)
+        call SaveGroupHandle(CF_HXB,GetHandleId(XW_JSQtx),9,CreateGroup())
         call TimerStart(XW_JSQtx,0.03,true,function XIAOWU_TeXiaoChongFeng_1_jsq)
         set XW_JSQtx = null
     endfunction
@@ -2717,6 +2717,62 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
     	set pf =null
 	endfunction
 
+    private function ShowDamageAsTx takes unit HTU , unit DMGU , integer Damage  , boolean IsMagic  , boolean IsBJ returns nothing
+        local player p = GetOwningPlayer(DMGU)
+        local real x = GetUnitX(HTU)
+        local real y = GetUnitY(HTU)
+        local location point = Location( x + I2R(GetRandomInt( -30 , 30 )), y)
+        local location pointmove
+        local string zfc = I2S(Damage)
+        local string z
+        local string effectstr
+        local integer a 
+        local integer b 
+        local string ismagicstr 
+        local string isbj
+        local effect ceffect
+
+        if Damage > 1 and IsBJ then
+            if IsMagic then
+                set ismagicstr = "M.mdl"
+            else
+                set ismagicstr = ".mdl"
+            endif
+
+            if IsBJ then
+                //set isbj = "DamageShow\\BigDamage\\"
+                set isbj = "DamageShow\\NotBigDamage\\"
+            else
+                //set isbj = "DamageShow\\NotBigDamage\\"
+            endif
+
+            set a = 1
+            loop
+                exitwhen a > StringLength(zfc)
+                set z = SubStringBJ(zfc, a, a)
+                set b = 0 
+                set effectstr = ""
+                loop
+                    exitwhen b > StringLength(zfc)
+                    set pointmove = PolarProjectionBJ(point , ( 50.00 * I2R(a)) , 0 )
+                    set effectstr =  isbj + z + ismagicstr
+                    set ceffect = AddSpecialEffectLocBJ(pointmove , effectstr)
+                    call DzSetEffectScale(ceffect , 2)
+                    call EXSetEffectSpeed(ceffect , 2.5)
+                    call YDWETimerDestroyEffect( 1.00 , ceffect )
+                    call DzSetEffectVisible( ceffect , false)
+                    if GetLocalPlayer() == p then
+                        call DzSetEffectVisible( ceffect , true)
+                    endif
+                    call RemoveLocation(pointmove)
+                    set b = b + 1
+                endloop
+                set a = a + 1
+            endloop
+            call RemoveLocation(point)
+        endif
+    endfunction
+
 	private function InItem takes nothing returns nothing
 	<?
 	for id, obj in pairs(slk.item) do
@@ -3700,17 +3756,17 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
         if isphysical then
             if (Player_Physical_Critical_Percent[pid]) >= GetRandomInt(1,100) then
                 set needreturn = damagevalue * (1 + (Player_Physical_Critical_Value[pid]/100))
-                if  needreturn > 100000000 then
-                    call PFWZ("|cfffc2c2c物理暴击" + I2S(R2I(needreturn/100000000)) + "亿",GetTriggerUnit(),0.035,255,255,255,GetRandomReal(0.00,0.05),GetRandomReal(0.00,0.05),3.0)
-                elseif  needreturn > 10000000  then
-                    call PFWZ("|cfffc2c2c物理暴击" + I2S(R2I(needreturn/1000000)) + "千万",GetTriggerUnit(),0.03,255,255,255,GetRandomReal(0.00,0.05),GetRandomReal(0.00,0.05),2.5)
-                elseif  needreturn > 1000000  then
-                    call PFWZ("|cfffc2c2c物理暴击" + I2S(R2I(needreturn/1000000)) + "百万",GetTriggerUnit(),0.025,255,255,255,GetRandomReal(0.00,0.05),GetRandomReal(0.00,0.05),2.0)
-                elseif needreturn > 10000 then
-                    call PFWZ("|cfffc2c2c物理暴击" + I2S(R2I(needreturn/10000)) + "万",GetTriggerUnit(),0.02,255,255,255,GetRandomReal(0.00,0.05),GetRandomReal(0.00,0.05),1.5)
-                else 
-                    call PFWZ("|cfffc2c2c物理暴击" + I2S(R2I(needreturn)) ,GetTriggerUnit(),0.02,255,255,255,GetRandomReal(0.00,0.05),GetRandomReal(0.00,0.05),1.0)
-                endif
+                // if  needreturn > 100000000 then
+                //     call PFWZ("|cfffc2c2c物理暴击" + I2S(R2I(needreturn/100000000)) + "亿",GetTriggerUnit(),0.035,255,255,255,GetRandomReal(0.00,0.05),GetRandomReal(0.00,0.05),3.0)
+                // elseif  needreturn > 10000000  then
+                //     call PFWZ("|cfffc2c2c物理暴击" + I2S(R2I(needreturn/1000000)) + "千万",GetTriggerUnit(),0.03,255,255,255,GetRandomReal(0.00,0.05),GetRandomReal(0.00,0.05),2.5)
+                // elseif  needreturn > 1000000  then
+                //     call PFWZ("|cfffc2c2c物理暴击" + I2S(R2I(needreturn/1000000)) + "百万",GetTriggerUnit(),0.025,255,255,255,GetRandomReal(0.00,0.05),GetRandomReal(0.00,0.05),2.0)
+                // elseif needreturn > 10000 then
+                //     call PFWZ("|cfffc2c2c物理暴击" + I2S(R2I(needreturn/10000)) + "万",GetTriggerUnit(),0.02,255,255,255,GetRandomReal(0.00,0.05),GetRandomReal(0.00,0.05),1.5)
+                // else 
+                //     call PFWZ("|cfffc2c2c物理暴击" + I2S(R2I(needreturn)) ,GetTriggerUnit(),0.02,255,255,255,GetRandomReal(0.00,0.05),GetRandomReal(0.00,0.05),1.0)
+                // endif
                 return needreturn
             else
                 return damagevalue
@@ -3719,17 +3775,17 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
             if (Player_Magic_Critical_Percent[pid]) >= GetRandomInt(1,100) then
                 set needreturn = damagevalue * (1 + (Player_Magic_Critical_Value[pid]/100))
 
-                if  needreturn > 100000000 then
-                    call PFWZ("|cff2c5dfc魔法暴击" + R2S(needreturn/100000000) + "亿",GetTriggerUnit(),0.035,255,255,255,GetRandomReal(0.00,0.05),GetRandomReal(0.00,0.05),3.0)
-                elseif  needreturn > 10000000  then
-                    call PFWZ("|cff2c5dfc魔法暴击" + I2S(R2I(needreturn/10000000)) + "千万",GetTriggerUnit(),0.03,255,255,255,GetRandomReal(0.00,0.05),GetRandomReal(0.00,0.05),2.5)
-                elseif  needreturn > 1000000  then
-                    call PFWZ("|cff2c5dfc魔法暴击" + I2S(R2I(needreturn/1000000)) + "百万",GetTriggerUnit(),0.025,255,255,255,GetRandomReal(0.00,0.05),GetRandomReal(0.00,0.05),2.0)
-                elseif needreturn > 10000 then
-                    call PFWZ("|cff2c5dfc魔法暴击" + I2S(R2I(needreturn/10000)) + "万",GetTriggerUnit(),0.02,255,255,255,GetRandomReal(0.00,0.05),GetRandomReal(0.00,0.05),1.5)
-                else 
-                    call PFWZ("|cff2c5dfc魔法暴击" + I2S(R2I(needreturn)) ,GetTriggerUnit(),0.02,255,255,255,GetRandomReal(0.00,0.05),GetRandomReal(0.00,0.05),1.0)             
-                endif
+                // if  needreturn > 100000000 then
+                //     call PFWZ("|cff2c5dfc魔法暴击" + R2S(needreturn/100000000) + "亿",GetTriggerUnit(),0.035,255,255,255,GetRandomReal(0.00,0.05),GetRandomReal(0.00,0.05),3.0)
+                // elseif  needreturn > 10000000  then
+                //     call PFWZ("|cff2c5dfc魔法暴击" + I2S(R2I(needreturn/10000000)) + "千万",GetTriggerUnit(),0.03,255,255,255,GetRandomReal(0.00,0.05),GetRandomReal(0.00,0.05),2.5)
+                // elseif  needreturn > 1000000  then
+                //     call PFWZ("|cff2c5dfc魔法暴击" + I2S(R2I(needreturn/1000000)) + "百万",GetTriggerUnit(),0.025,255,255,255,GetRandomReal(0.00,0.05),GetRandomReal(0.00,0.05),2.0)
+                // elseif needreturn > 10000 then
+                //     call PFWZ("|cff2c5dfc魔法暴击" + I2S(R2I(needreturn/10000)) + "万",GetTriggerUnit(),0.02,255,255,255,GetRandomReal(0.00,0.05),GetRandomReal(0.00,0.05),1.5)
+                // else 
+                //     call PFWZ("|cff2c5dfc魔法暴击" + I2S(R2I(needreturn)) ,GetTriggerUnit(),0.02,255,255,255,GetRandomReal(0.00,0.05),GetRandomReal(0.00,0.05),1.0)             
+                // endif
                 return needreturn
             else
                 return damagevalue
@@ -3772,8 +3828,9 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
             if (YDWEIsEventAttackDamage() == true) then
                 if (YDWEIsEventPhysicalDamage() == true) and ( YDWEIsEventAttackType(ATTACK_TYPE_MAGIC) == false ) then
                     set realdamage =  getdamage * physicalDamageMmult
-                    set needsetdamage = CheckAndCalcutePhysicalOrMagic_CriticalStrike(realdamage , pid , true) + Player_Attack_Damage_Append[pid]
+                    set needsetdamage = CheckAndCalcutePhysicalOrMagic_CriticalStrike(realdamage , pid , true)
                     call DAMAGESHOW_DamageAdd(Player(pid) , needsetdamage)
+                    call ShowDamageAsTx(targetunit , damageunit , R2I(needsetdamage) , false , (needsetdamage > realdamage) )
                     if needsetdamage >2000000000 or needsetdamage < 0 then
                         set needsetdamage = 2000000000
                     endif
@@ -3785,6 +3842,7 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
                     set realdamage = getdamage * magicDamageMult 
                     set needsetdamage = CheckAndCalcutePhysicalOrMagic_CriticalStrike(realdamage , pid , false) + Player_Attack_Damage_Append[pid]
                     call DAMAGESHOW_DamageAdd(Player(pid) , needsetdamage)
+                    call ShowDamageAsTx(targetunit , damageunit , R2I(needsetdamage) , true , (needsetdamage > realdamage) )
                     if needsetdamage >2000000000 or needsetdamage < 0 then
                         set needsetdamage = 2000000000
                     endif
@@ -3793,12 +3851,13 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
                         call SetUnitState(damageunit , UNIT_STATE_LIFE , (GetUnitState(damageunit,UNIT_STATE_LIFE) +suckingvalue )) 
                     endif            
                 endif
-                call YDWESetEventDamage(needsetdamage) 
+                call YDWESetEventDamage(needsetdamage +  Player_Attack_Damage_Append[pid]) 
             else 
                 if (YDWEIsEventPhysicalDamage() == true) or (YDWEIsEventDamageType(DAMAGE_TYPE_NORMAL) == true) then
                     set realdamage = getdamage * physicalDamageMmult * (1 + (Player_Skill_Damage_Percent[pid]/100))
-                    set needsetdamage = CheckAndCalcutePhysicalOrMagic_CriticalStrike(realdamage , pid , true) + Player_Skill_Damage_Append[pid]
+                    set needsetdamage = CheckAndCalcutePhysicalOrMagic_CriticalStrike(realdamage , pid , true)
                     call DAMAGESHOW_DamageAdd(Player(pid) , needsetdamage)
+                    call ShowDamageAsTx(targetunit , damageunit , R2I(needsetdamage) , false , (needsetdamage  > realdamage) )
                     if needsetdamage >2000000000 or needsetdamage < 0 then
                         set needsetdamage = 2000000000
                     endif
@@ -3808,8 +3867,9 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
                     endif
                 else
                     set realdamage = getdamage * magicDamageMult * (1 + (Player_Skill_Damage_Percent[pid]/100))
-                    set needsetdamage = CheckAndCalcutePhysicalOrMagic_CriticalStrike(realdamage , pid , false) + Player_Skill_Damage_Append[pid]
+                    set needsetdamage = CheckAndCalcutePhysicalOrMagic_CriticalStrike(realdamage , pid , false) 
                     call DAMAGESHOW_DamageAdd(Player(pid) , needsetdamage)
+                    call ShowDamageAsTx(targetunit , damageunit , R2I(needsetdamage) , true , (needsetdamage  > realdamage) )
                     if needsetdamage >2000000000 or needsetdamage < 0 then
                         set needsetdamage = 2000000000
                     endif
@@ -3818,7 +3878,7 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
                         call SetUnitState(damageunit , UNIT_STATE_LIFE , (GetUnitState(damageunit,UNIT_STATE_LIFE) +suckingvalue )) 
                     endif  
                 endif
-                call YDWESetEventDamage(needsetdamage) 
+                call YDWESetEventDamage( needsetdamage + Player_Skill_Damage_Append[pid] ) 
             endif
         else
             if IsSimArmor == false then
