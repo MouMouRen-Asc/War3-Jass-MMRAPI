@@ -7,6 +7,8 @@
 #include"japi\YDWEJapiScript.j"
 #include"japi\YDWEJapiUnit.j"
 #include"japi\YDWEState.j"
+#include"KKAPI.j"
+#include"MNEVENT.j"
 
 #include "YDWEBase.j"
 
@@ -1090,6 +1092,7 @@ library MmrApi initializer MmrApi_Init requires YDWEYDWEJapiScript
                     call UnitAddAbility (needtransformation_unit , skillid[3])
                     call SetUnitAbilityLevel(needtransformation_unit , skillid[3] , skilllevel[3])
             endif  
+            call AddAbSkill.execute(GetPlayerId(unitcontralplayer) , needtransformation_unit)
         endif
     endfunction
 
@@ -2699,6 +2702,15 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
         private real BaseMult = 100
 	endglobals
 
+    function AddAbSkill takes integer pid , unit  u returns nothing
+        call UnitAddAbility(u, GreenValueSkill[0])
+		call SetUnitAbilityLevel(u , GreenValueSkill[0] , pid + 2)
+        call UnitAddAbility(u, GreenValueSkill[1])
+		call SetUnitAbilityLevel(u , GreenValueSkill[1] , pid + 2)	
+        call UnitAddAbility(u, GreenValueSkill[2])
+		call SetUnitAbilityLevel(u , GreenValueSkill[2] , pid + 2)		
+    endfunction
+
 	private function PFWZ takes string str,unit u,real size,integer red,integer blue,integer green,real movex,real movey,real cleartime returns nothing
 		local texttag pf
 		set pf = CreateTextTag()
@@ -3995,7 +4007,8 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
 		call TriggerAddAction(trg[4],function trg4Ac)
 		static if LIBRARY_YDWETriggerEvent then
 		set trg[5] = CreateTrigger() ///任意单位接受伤害
-		call YDWESyStemAnyUnitDamagedRegistTrigger(trg[5])
+        call MNAnyUnitDamaged(trg[5] , 180)
+		//call YDWESyStemAnyUnitDamagedRegistTrigger(trg[5])
 		call TriggerAddCondition(trg[5], Condition(function trg5Co))
 		call TriggerAddAction(trg[5],function trg5Ac)
 		endif
