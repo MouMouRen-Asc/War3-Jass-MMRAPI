@@ -2781,8 +2781,8 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
                 endloop
                 set a = a + 1
             endloop
-            call RemoveLocation(point)
         endif
+        call RemoveLocation(point)
     endfunction
 
 	private function InItem takes nothing returns nothing
