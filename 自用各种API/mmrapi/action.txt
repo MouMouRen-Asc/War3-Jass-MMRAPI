@@ -385,6 +385,14 @@ description = "初始化时加载"
 comment = ""
 category = TC_MMRAPI
 
+[WichUnitTypeCantUse]
+title = "设置物品属性预读系统不生效单位类型"
+description = "哪个英雄单位类型拾取物品无效：${单位类型} "
+comment = "快速设置，随时更改"
+category = TC_MMRAPI
+[[.args]]
+type = unitcode
+
 [ChangeIsArmorSim]
 title = "设置伤害系统是否启用护甲模拟"
 description = "是否：${布尔} "

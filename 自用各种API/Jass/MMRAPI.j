@@ -2700,6 +2700,8 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
         private real AttackMult = 1
         private real ArmorMult = 0.5
         private real BaseMult = 100
+        private integer CantUseItemUnitType = 0
+        private boolean IsCantUseItemUnitTypeBeSet = false
 	endglobals
 
     function AddAbSkill takes integer pid , unit  u returns nothing
@@ -2709,6 +2711,11 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
 		call SetUnitAbilityLevel(u , GreenValueSkill[1] , pid + 2)	
         call UnitAddAbility(u, GreenValueSkill[2])
 		call SetUnitAbilityLevel(u , GreenValueSkill[2] , pid + 2)		
+    endfunction
+
+    function WichUnitTypeCantUse takes integer w returns nothing
+        set IsCantUseItemUnitTypeBeSet = true
+        set CantUseItemUnitType = w
     endfunction
 
 	private function PFWZ takes string str,unit u,real size,integer red,integer blue,integer green,real movex,real movey,real cleartime returns nothing
@@ -3177,7 +3184,7 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
 		local integer NeedSkillLevel = PlayerId +2
 
 		//拾取物品单位是英雄才增加
-	if IsUnitType(GetItemUnit, UNIT_TYPE_HERO) == true then
+	if IsUnitType(GetItemUnit, UNIT_TYPE_HERO) == true and ( (GetUnitTypeId(GetManipulatingUnit()) != CantUseItemUnitType)  or IsCantUseItemUnitTypeBeSet == false ) then
 
 		/// 攻击力
 		if GJL != 0. then
@@ -3294,7 +3301,7 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
 	endif
 
         //拾取物品单位是英雄才减少(分割一下上面写的太长了这部分是各种不是直接作用于本体而是单独储存的数据)
-	if IsUnitType(GetItemUnit, UNIT_TYPE_HERO) == true then
+	if IsUnitType(GetItemUnit, UNIT_TYPE_HERO) == true and ( (GetUnitTypeId(GetManipulatingUnit()) != CantUseItemUnitType)  or IsCantUseItemUnitTypeBeSet == false ) then
     call MMRAPI_ChangeAttributePercent(GetOwningPlayer(GetItemUnit) , 1 , LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_STR_PERCENT) , true)
 	call MMRAPI_ChangeAttributePercent(GetOwningPlayer(GetItemUnit) , 2 , LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_AGI_PERCENT) , true)
 	call MMRAPI_ChangeAttributePercent(GetOwningPlayer(GetItemUnit) , 3 , LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_INT_PERCENT) , true)
@@ -3403,7 +3410,7 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
 		local integer NeedSkillLevel = PlayerId +2
 
 		//拾取物品单位是英雄才减少
-	if IsUnitType(GetItemUnit, UNIT_TYPE_HERO) == true then
+	if IsUnitType(GetItemUnit, UNIT_TYPE_HERO) == true and ( (GetUnitTypeId(GetManipulatingUnit()) != CantUseItemUnitType)  or IsCantUseItemUnitTypeBeSet == false ) then
 
 		if GJL != 0. then
 			call SetUnitState(GetManipulatingUnit(),ConvertUnitState(0x12),(GetUnitState(GetManipulatingUnit(),ConvertUnitState(0x12)) - GJL))
@@ -3511,7 +3518,7 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
 
 	endif
     	//拾取物品单位是英雄才减少(分割一下上面写的太长了这部分是各种不是直接作用于本体而是单独储存的数据)
-	if IsUnitType(GetItemUnit, UNIT_TYPE_HERO) == true then
+	if IsUnitType(GetItemUnit, UNIT_TYPE_HERO) == true and ( (GetUnitTypeId(GetManipulatingUnit()) != CantUseItemUnitType)  or IsCantUseItemUnitTypeBeSet == false ) then
     call MMRAPI_ChangeAttributePercent(GetOwningPlayer(GetItemUnit) , 1 , LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_STR_PERCENT) , false)
 	call MMRAPI_ChangeAttributePercent(GetOwningPlayer(GetItemUnit) , 2 , LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_AGI_PERCENT) , false)
 	call MMRAPI_ChangeAttributePercent(GetOwningPlayer(GetItemUnit) , 3 , LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_INT_PERCENT) , false)
@@ -6715,6 +6722,7 @@ function ItemShow_ReShowItem takes nothing returns nothing
         call FlushChildHashtable( GroundShowHashTable, pid )
         call SaveFogStateHandle( GroundShowHashTable, pid, 1, ConvertFogState(GetHandleId(DzGetUnitUnderMouse())) )
         set castitme =  LoadItemHandle(GroundShowHashTable, pid, 1)
+        //call BJDebugMsg(I2S(GetHandleId(DzGetUnitUnderMouse())))
         if ((ConvertedPlayer(pid) == GetLocalPlayer())) then
             if (castitme != null) then
                 set W = 0.17
@@ -6797,6 +6805,7 @@ local string kz
 local string j 
 local integer Value
 local integer sellgoldcost 
+local integer sellwoodcost
 set dw = ItemShowFrame_Show_Unit[GetPlayerId(DzGetTriggerUIEventPlayer())]
 set ydul_xh = 0
     loop
@@ -6809,7 +6818,8 @@ set ydul_xh = 0
             call DzFrameShow(ItemShowFrame[0], true)
             set mz = GetItemName(wp)
             set sellgoldcost = S2I(YDWEGetObjectPropertyString(YDWE_OBJECT_TYPE_ITEM, GetItemTypeId(wp), "goldcost")) / 2
-            set jg = ("|cFFFFFF00出售价格:" +I2S(sellgoldcost) )
+            set sellwoodcost = S2I(YDWEGetObjectPropertyString(YDWE_OBJECT_TYPE_ITEM, GetItemTypeId(wp), "lumbercost")) / 2
+            set jg = ("|cFFFFFF00出售黄金:" +I2S(sellgoldcost) + "|c9a00995e出售木材:" + I2S(sellwoodcost))
             set kz = YDWEGetItemDataString(GetItemTypeId(wp), 3)
             set j = LoadStr(itemhash , GetHandleId(wp) , 0)
             call DzFrameSetText(ItemShowFrame[3], mz)
