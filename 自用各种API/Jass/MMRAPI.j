@@ -724,7 +724,7 @@ library MmrApi initializer MmrApi_Init requires YDWEYDWEJapiScript
         // 获取原始属性值
         set originalValue = GetUnitState(target, attributeType)
 
-        if attributeType = ConvertUnitState(0x51) then
+        if attributeType == ConvertUnitState(0x51) then
            set v = v/100
         endif
         // 根据是增加还是减少来计算新的属性值
