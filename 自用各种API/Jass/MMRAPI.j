@@ -719,14 +719,19 @@ library MmrApi initializer MmrApi_Init requires YDWEYDWEJapiScript
     function MMRAPI_BaseAttributemodification takes unit target, unitstate attributeType, real value, boolean isAddition returns nothing
         local real originalValue = 0
         local real newValue = 0
+        local real v = value
 
         // 获取原始属性值
         set originalValue = GetUnitState(target, attributeType)
+
+        if attributeType = ConvertUnitState(0x51) then
+           set v = v/100
+        endif
         // 根据是增加还是减少来计算新的属性值
         if isAddition then
-            set newValue = originalValue + value
+            set newValue = originalValue + v
         else
-            set newValue = originalValue - value
+            set newValue = originalValue - v
         endif
 
         // 设置单位的新属性值
