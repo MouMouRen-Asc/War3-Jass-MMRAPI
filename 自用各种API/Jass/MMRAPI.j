@@ -2777,7 +2777,7 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
                 set b = 0 
                 set effectstr = ""
                 loop
-                    exitwhen b > StringLength(zfc)
+                    exitwhen b > 9
                     set pointmove = PolarProjectionBJ(point , ( 50.00 * I2R(a)) , 0 )
                     set effectstr =  isbj + z + ismagicstr
                     set ceffect = AddSpecialEffectLocBJ(pointmove , effectstr)
@@ -3771,7 +3771,7 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
 
 	private function trg5Co takes nothing returns boolean
 		///任意单位伤害事件的条件，筛选用的
-    	return GetEventDamage() >= 1.00 and IsUnitEnemy(GetTriggerUnit(), GetOwningPlayer(GetEventDamageSource())) == true 
+    	return GetEventDamage() >= 1.00 and (IsUnitEnemy(GetTriggerUnit(), GetOwningPlayer(GetEventDamageSource())) == true)
 	endfunction
 
     //暴击检测
@@ -3834,7 +3834,7 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
         local real suckingvalue
         local real needsetdamage
 
-        if GetPlayerController(GetOwningPlayer(damageunit)) == MAP_CONTROL_USER then
+        if GetPlayerController(GetOwningPlayer(damageunit)) == MAP_CONTROL_USER and (IsUnitType(GetEventDamageSource(), UNIT_TYPE_HERO) == true) then
             set pid = GetPlayerId(GetOwningPlayer(damageunit))
             if     GetUnitAbilityLevel(targetunit , MonsterCheckSkill[0]) >= 1 then
                 set  magicDamageMult = Player_Normal_Magic_MultipliedValue[pid]
