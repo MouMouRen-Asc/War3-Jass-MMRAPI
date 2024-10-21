@@ -2671,12 +2671,12 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
         private integer array Player_Physical_LessDamage//38
         private integer array Player_Magic_LessDamage//39
 
-        private integer array Player_Normal_Physical_MultipliedValue
-        private integer array Player_Elite_Physical_MultipliedValue
-        private integer array Player_Boss_Physical_MultipliedValue
-        private integer array Player_Normal_Magic_MultipliedValue
-        private integer array Player_Elite_Magic_MultipliedValue
-        private integer array Player_Boss_Magic_MultipliedValue
+        private real array Player_Normal_Physical_MultipliedValue
+        private real array Player_Elite_Physical_MultipliedValue
+        private real array Player_Boss_Physical_MultipliedValue
+        private real array Player_Normal_Magic_MultipliedValue
+        private real array Player_Elite_Magic_MultipliedValue
+        private real array Player_Boss_Magic_MultipliedValue
 
         private integer array Player_Skill_Cold_Donw//40
 
@@ -3381,13 +3381,13 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
     set Player_Physical_LessDamage[PlayerId] = Player_Physical_LessDamage[PlayerId] + LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_PHYSICAL_PROTECT_PERCENT)
     set Player_Magic_LessDamage[PlayerId] = Player_Magic_LessDamage[PlayerId] + LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_MAGIC_PROTECT_PERCENT)
 
-    set Player_Normal_Physical_MultipliedValue[PlayerId] = ( 1 + (Player_Normal_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Physical_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
-    set Player_Elite_Physical_MultipliedValue[PlayerId] = ( 1 + (Player_Elite_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Physical_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
-    set Player_Boss_Physical_MultipliedValue[PlayerId] = ( 1 + (Player_Boss_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Physical_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
+    set Player_Normal_Physical_MultipliedValue[PlayerId] = ( 1 + (I2R(Player_Normal_Damage_Percent[PlayerId])/100)) * ( 1 + (I2R(Player_Physical_Damage_Percent[PlayerId])/100)) * (1 + (I2R(Player_Last_Damage_Percent[PlayerId])/100))
+    set Player_Elite_Physical_MultipliedValue[PlayerId] = ( 1 + (I2R(Player_Elite_Damage_Percent[PlayerId])/100)) * ( 1 + (I2R(Player_Physical_Damage_Percent[PlayerId])/100)) * (1 + (I2R(Player_Last_Damage_Percent[PlayerId])/100))
+    set Player_Boss_Physical_MultipliedValue[PlayerId] = ( 1 + (I2R(Player_Boss_Damage_Percent[PlayerId])/100)) * ( 1 + (I2R(Player_Physical_Damage_Percent[PlayerId])/100)) * (1 + (I2R(Player_Last_Damage_Percent[PlayerId])/100))
 
-    set Player_Normal_Magic_MultipliedValue[PlayerId] = ( 1 + (Player_Normal_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Magic_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
-    set Player_Elite_Magic_MultipliedValue[PlayerId] = ( 1 + (Player_Elite_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Magic_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
-    set Player_Boss_Magic_MultipliedValue[PlayerId] = ( 1 + (Player_Boss_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Magic_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
+    set Player_Normal_Magic_MultipliedValue[PlayerId] = ( 1 + (I2R(Player_Normal_Damage_Percent[PlayerId])/100)) * ( 1 + (I2R(Player_Magic_Damage_Percent[PlayerId])/100)) * (1 + (I2R(Player_Last_Damage_Percent[PlayerId])/100))
+    set Player_Elite_Magic_MultipliedValue[PlayerId] = ( 1 + (I2R(Player_Elite_Damage_Percent[PlayerId])/100)) * ( 1 + (I2R(Player_Magic_Damage_Percent[PlayerId])/100)) * (1 + (I2R(Player_Last_Damage_Percent[PlayerId])/100))
+    set Player_Boss_Magic_MultipliedValue[PlayerId] = ( 1 + (I2R(Player_Boss_Damage_Percent[PlayerId])/100)) * ( 1 + (I2R(Player_Magic_Damage_Percent[PlayerId])/100)) * (1 + (I2R(Player_Last_Damage_Percent[PlayerId])/100))
     endif
 
 	endfunction
@@ -3600,14 +3600,13 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
     set Player_Physical_LessDamage[PlayerId] = Player_Physical_LessDamage[PlayerId] - LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_PHYSICAL_PROTECT_PERCENT)
     set Player_Magic_LessDamage[PlayerId] = Player_Magic_LessDamage[PlayerId] - LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_MAGIC_PROTECT_PERCENT)
 
-    set Player_Normal_Physical_MultipliedValue[PlayerId] = ( 1 + (Player_Normal_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Physical_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
-    set Player_Elite_Physical_MultipliedValue[PlayerId] = ( 1 + (Player_Elite_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Physical_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
-    set Player_Boss_Physical_MultipliedValue[PlayerId] = ( 1 + (Player_Boss_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Physical_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
+    set Player_Normal_Physical_MultipliedValue[PlayerId] = ( 1 + (I2R(Player_Normal_Damage_Percent[PlayerId])/100)) * ( 1 + (I2R(Player_Physical_Damage_Percent[PlayerId])/100)) * (1 + (I2R(Player_Last_Damage_Percent[PlayerId])/100))
+    set Player_Elite_Physical_MultipliedValue[PlayerId] = ( 1 + (I2R(Player_Elite_Damage_Percent[PlayerId])/100)) * ( 1 + (I2R(Player_Physical_Damage_Percent[PlayerId])/100)) * (1 + (I2R(Player_Last_Damage_Percent[PlayerId])/100))
+    set Player_Boss_Physical_MultipliedValue[PlayerId] = ( 1 + (I2R(Player_Boss_Damage_Percent[PlayerId])/100)) * ( 1 + (I2R(Player_Physical_Damage_Percent[PlayerId])/100)) * (1 + (I2R(Player_Last_Damage_Percent[PlayerId])/100))
 
-    set Player_Normal_Magic_MultipliedValue[PlayerId] = ( 1 + (Player_Normal_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Magic_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
-    set Player_Elite_Magic_MultipliedValue[PlayerId] = ( 1 + (Player_Elite_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Magic_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
-    set Player_Boss_Magic_MultipliedValue[PlayerId] = ( 1 + (Player_Boss_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Magic_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
-	
+    set Player_Normal_Magic_MultipliedValue[PlayerId] = ( 1 + (I2R(Player_Normal_Damage_Percent[PlayerId])/100)) * ( 1 + (I2R(Player_Magic_Damage_Percent[PlayerId])/100)) * (1 + (I2R(Player_Last_Damage_Percent[PlayerId])/100))
+    set Player_Elite_Magic_MultipliedValue[PlayerId] = ( 1 + (I2R(Player_Elite_Damage_Percent[PlayerId])/100)) * ( 1 + (I2R(Player_Magic_Damage_Percent[PlayerId])/100)) * (1 + (I2R(Player_Last_Damage_Percent[PlayerId])/100))
+    set Player_Boss_Magic_MultipliedValue[PlayerId] = ( 1 + (I2R(Player_Boss_Damage_Percent[PlayerId])/100)) * ( 1 + (I2R(Player_Magic_Damage_Percent[PlayerId])/100)) * (1 + (I2R(Player_Last_Damage_Percent[PlayerId])/100))
     endif
 
 
@@ -3826,8 +3825,8 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
         local real getdamage = GetEventDamage()
         local real AttackValue 
         local real realdamage
-        local integer magicDamageMult
-        local integer physicalDamageMmult
+        local real magicDamageMult
+        local real physicalDamageMmult
         local integer pid
         local unit damageunit = GetEventDamageSource()
         local unit targetunit = GetTriggerUnit()
@@ -3904,7 +3903,7 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
                 endif
                 call YDWESetEventDamage( needsetdamage + Player_Skill_Damage_Append[pid] ) 
             endif
-        else
+        elseif GetPlayerController(GetOwningPlayer(damageunit)) != MAP_CONTROL_USER then
             if IsSimArmor == false then
                 set pid = GetPlayerId(GetOwningPlayer(GetTriggerUnit()))
                 if (YDWEIsEventPhysicalDamage() == true) then
@@ -3914,21 +3913,21 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
                 endif
                 call YDWESetEventDamage(realdamage)
             else
+                
                 set pid = GetPlayerId(GetOwningPlayer(GetTriggerUnit()))
                 set AttackValue = GetUnitState(GetEventDamageSource(),ConvertUnitState(0x12)) + GetUnitState(GetEventDamageSource(),ConvertUnitState(0x13))
                 if (YDWEIsEventPhysicalDamage() == true) then
                     if AttackValue > 10000 then
-                        set AttackValue = AttackValue/100
                         set realdamage = (((AttackValue * AttackMult + BaseMult) * AttackValue)/(AttackValue +(GetUnitState(GetTriggerUnit(),ConvertUnitState(0x20))* ArmorMult + BaseMult))) * (1- (I2R(Player_Physical_LessDamage[pid])/100))                
-                        set realdamage = realdamage * 100
                     else
+                        
                         set realdamage = (((AttackValue * AttackMult + BaseMult) * AttackValue)/(AttackValue +(GetUnitState(GetTriggerUnit(),ConvertUnitState(0x20))* ArmorMult + BaseMult))) * (1- (I2R(Player_Physical_LessDamage[pid])/100))
                     endif
                 else
                     set realdamage = (((getdamage * AttackMult + BaseMult) * getdamage)/(getdamage +(GetUnitState(GetTriggerUnit(),ConvertUnitState(0x20))* ArmorMult + BaseMult))) * (1- (I2R(Player_Magic_LessDamage[pid])/100))
-                    if realdamage >2000000000 or realdamage < 0 then
+                endif
+                if realdamage >2000000000 or realdamage < 0 then
                         set realdamage = 2000000000
-                    endif
                 endif
                 call YDWESetEventDamage(realdamage)
             endif
@@ -4234,13 +4233,13 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
     set Player_Physical_LessDamage[PlayerId] = Player_Physical_LessDamage[PlayerId] + LoadInteger(Item,GetItemTypeId(getitem),ITEM_SYSTEM_PHYSICAL_PROTECT_PERCENT)
     set Player_Magic_LessDamage[PlayerId] = Player_Magic_LessDamage[PlayerId] + LoadInteger(Item,GetItemTypeId(getitem),ITEM_SYSTEM_MAGIC_PROTECT_PERCENT)
 
-    set Player_Normal_Physical_MultipliedValue[PlayerId] = ( 1 + (Player_Normal_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Physical_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
-    set Player_Elite_Physical_MultipliedValue[PlayerId] = ( 1 + (Player_Elite_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Physical_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
-    set Player_Boss_Physical_MultipliedValue[PlayerId] = ( 1 + (Player_Boss_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Physical_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
+    set Player_Normal_Physical_MultipliedValue[PlayerId] = ( 1 + (I2R(Player_Normal_Damage_Percent[PlayerId])/100)) * ( 1 + (I2R(Player_Physical_Damage_Percent[PlayerId])/100)) * (1 + (I2R(Player_Last_Damage_Percent[PlayerId])/100))
+    set Player_Elite_Physical_MultipliedValue[PlayerId] = ( 1 + (I2R(Player_Elite_Damage_Percent[PlayerId])/100)) * ( 1 + (I2R(Player_Physical_Damage_Percent[PlayerId])/100)) * (1 + (I2R(Player_Last_Damage_Percent[PlayerId])/100))
+    set Player_Boss_Physical_MultipliedValue[PlayerId] = ( 1 + (I2R(Player_Boss_Damage_Percent[PlayerId])/100)) * ( 1 + (I2R(Player_Physical_Damage_Percent[PlayerId])/100)) * (1 + (I2R(Player_Last_Damage_Percent[PlayerId])/100))
 
-    set Player_Normal_Magic_MultipliedValue[PlayerId] = ( 1 + (Player_Normal_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Magic_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
-    set Player_Elite_Magic_MultipliedValue[PlayerId] = ( 1 + (Player_Elite_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Magic_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
-    set Player_Boss_Magic_MultipliedValue[PlayerId] = ( 1 + (Player_Boss_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Magic_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
+    set Player_Normal_Magic_MultipliedValue[PlayerId] = ( 1 + (I2R(Player_Normal_Damage_Percent[PlayerId])/100)) * ( 1 + (I2R(Player_Magic_Damage_Percent[PlayerId])/100)) * (1 + (I2R(Player_Last_Damage_Percent[PlayerId])/100))
+    set Player_Elite_Magic_MultipliedValue[PlayerId] = ( 1 + (I2R(Player_Elite_Damage_Percent[PlayerId])/100)) * ( 1 + (I2R(Player_Magic_Damage_Percent[PlayerId])/100)) * (1 + (I2R(Player_Last_Damage_Percent[PlayerId])/100))
+    set Player_Boss_Magic_MultipliedValue[PlayerId] = ( 1 + (I2R(Player_Boss_Damage_Percent[PlayerId])/100)) * ( 1 + (I2R(Player_Magic_Damage_Percent[PlayerId])/100)) * (1 + (I2R(Player_Last_Damage_Percent[PlayerId])/100))
 
     endif
 
@@ -4431,14 +4430,13 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
     set Player_Physical_LessDamage[PlayerId] = Player_Physical_LessDamage[PlayerId] - LoadInteger(Item,GetItemTypeId(getitem),ITEM_SYSTEM_PHYSICAL_PROTECT_PERCENT)
     set Player_Magic_LessDamage[PlayerId] = Player_Magic_LessDamage[PlayerId] - LoadInteger(Item,GetItemTypeId(getitem),ITEM_SYSTEM_MAGIC_PROTECT_PERCENT)
 
-    set Player_Normal_Physical_MultipliedValue[PlayerId] = ( 1 + (Player_Normal_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Physical_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
-    set Player_Elite_Physical_MultipliedValue[PlayerId] = ( 1 + (Player_Elite_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Physical_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
-    set Player_Boss_Physical_MultipliedValue[PlayerId] = ( 1 + (Player_Boss_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Physical_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
+    set Player_Normal_Physical_MultipliedValue[PlayerId] = ( 1 + (I2R(Player_Normal_Damage_Percent[PlayerId])/100)) * ( 1 + (I2R(Player_Physical_Damage_Percent[PlayerId])/100)) * (1 + (I2R(Player_Last_Damage_Percent[PlayerId])/100))
+    set Player_Elite_Physical_MultipliedValue[PlayerId] = ( 1 + (I2R(Player_Elite_Damage_Percent[PlayerId])/100)) * ( 1 + (I2R(Player_Physical_Damage_Percent[PlayerId])/100)) * (1 + (I2R(Player_Last_Damage_Percent[PlayerId])/100))
+    set Player_Boss_Physical_MultipliedValue[PlayerId] = ( 1 + (I2R(Player_Boss_Damage_Percent[PlayerId])/100)) * ( 1 + (I2R(Player_Physical_Damage_Percent[PlayerId])/100)) * (1 + (I2R(Player_Last_Damage_Percent[PlayerId])/100))
 
-    set Player_Normal_Magic_MultipliedValue[PlayerId] = ( 1 + (Player_Normal_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Magic_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
-    set Player_Elite_Magic_MultipliedValue[PlayerId] = ( 1 + (Player_Elite_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Magic_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
-    set Player_Boss_Magic_MultipliedValue[PlayerId] = ( 1 + (Player_Boss_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Magic_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
-	
+    set Player_Normal_Magic_MultipliedValue[PlayerId] = ( 1 + (I2R(Player_Normal_Damage_Percent[PlayerId])/100)) * ( 1 + (I2R(Player_Magic_Damage_Percent[PlayerId])/100)) * (1 + (I2R(Player_Last_Damage_Percent[PlayerId])/100))
+    set Player_Elite_Magic_MultipliedValue[PlayerId] = ( 1 + (I2R(Player_Elite_Damage_Percent[PlayerId])/100)) * ( 1 + (I2R(Player_Magic_Damage_Percent[PlayerId])/100)) * (1 + (I2R(Player_Last_Damage_Percent[PlayerId])/100))
+    set Player_Boss_Magic_MultipliedValue[PlayerId] = ( 1 + (I2R(Player_Boss_Damage_Percent[PlayerId])/100)) * ( 1 + (I2R(Player_Magic_Damage_Percent[PlayerId])/100)) * (1 + (I2R(Player_Last_Damage_Percent[PlayerId])/100))
     endif
 
     endfunction
@@ -4657,13 +4655,13 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
     set Player_Physical_LessDamage[PlayerId] = Player_Physical_LessDamage[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_PHYSICAL_PROTECT_PERCENT)
     set Player_Magic_LessDamage[PlayerId] = Player_Magic_LessDamage[PlayerId] + LoadInteger(Item,itemtypei,ITEM_SYSTEM_MAGIC_PROTECT_PERCENT)
 
-    set Player_Normal_Physical_MultipliedValue[PlayerId] = ( 1 + (Player_Normal_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Physical_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
-    set Player_Elite_Physical_MultipliedValue[PlayerId] = ( 1 + (Player_Elite_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Physical_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
-    set Player_Boss_Physical_MultipliedValue[PlayerId] = ( 1 + (Player_Boss_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Physical_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
+    set Player_Normal_Physical_MultipliedValue[PlayerId] = ( 1 + (I2R(Player_Normal_Damage_Percent[PlayerId])/100)) * ( 1 + (I2R(Player_Physical_Damage_Percent[PlayerId])/100)) * (1 + (I2R(Player_Last_Damage_Percent[PlayerId])/100))
+    set Player_Elite_Physical_MultipliedValue[PlayerId] = ( 1 + (I2R(Player_Elite_Damage_Percent[PlayerId])/100)) * ( 1 + (I2R(Player_Physical_Damage_Percent[PlayerId])/100)) * (1 + (I2R(Player_Last_Damage_Percent[PlayerId])/100))
+    set Player_Boss_Physical_MultipliedValue[PlayerId] = ( 1 + (I2R(Player_Boss_Damage_Percent[PlayerId])/100)) * ( 1 + (I2R(Player_Physical_Damage_Percent[PlayerId])/100)) * (1 + (I2R(Player_Last_Damage_Percent[PlayerId])/100))
 
-    set Player_Normal_Magic_MultipliedValue[PlayerId] = ( 1 + (Player_Normal_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Magic_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
-    set Player_Elite_Magic_MultipliedValue[PlayerId] = ( 1 + (Player_Elite_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Magic_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
-    set Player_Boss_Magic_MultipliedValue[PlayerId] = ( 1 + (Player_Boss_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Magic_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
+    set Player_Normal_Magic_MultipliedValue[PlayerId] = ( 1 + (I2R(Player_Normal_Damage_Percent[PlayerId])/100)) * ( 1 + (I2R(Player_Magic_Damage_Percent[PlayerId])/100)) * (1 + (I2R(Player_Last_Damage_Percent[PlayerId])/100))
+    set Player_Elite_Magic_MultipliedValue[PlayerId] = ( 1 + (I2R(Player_Elite_Damage_Percent[PlayerId])/100)) * ( 1 + (I2R(Player_Magic_Damage_Percent[PlayerId])/100)) * (1 + (I2R(Player_Last_Damage_Percent[PlayerId])/100))
+    set Player_Boss_Magic_MultipliedValue[PlayerId] = ( 1 + (I2R(Player_Boss_Damage_Percent[PlayerId])/100)) * ( 1 + (I2R(Player_Magic_Damage_Percent[PlayerId])/100)) * (1 + (I2R(Player_Last_Damage_Percent[PlayerId])/100))
 
     endif
 
@@ -4876,14 +4874,13 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
     set Player_Physical_LessDamage[PlayerId] = Player_Physical_LessDamage[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_PHYSICAL_PROTECT_PERCENT)
     set Player_Magic_LessDamage[PlayerId] = Player_Magic_LessDamage[PlayerId] - LoadInteger(Item,itemtypei,ITEM_SYSTEM_MAGIC_PROTECT_PERCENT)
 
-    set Player_Normal_Physical_MultipliedValue[PlayerId] = ( 1 + (Player_Normal_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Physical_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
-    set Player_Elite_Physical_MultipliedValue[PlayerId] = ( 1 + (Player_Elite_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Physical_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
-    set Player_Boss_Physical_MultipliedValue[PlayerId] = ( 1 + (Player_Boss_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Physical_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
+    set Player_Normal_Physical_MultipliedValue[PlayerId] = ( 1 + (I2R(Player_Normal_Damage_Percent[PlayerId])/100)) * ( 1 + (I2R(Player_Physical_Damage_Percent[PlayerId])/100)) * (1 + (I2R(Player_Last_Damage_Percent[PlayerId])/100))
+    set Player_Elite_Physical_MultipliedValue[PlayerId] = ( 1 + (I2R(Player_Elite_Damage_Percent[PlayerId])/100)) * ( 1 + (I2R(Player_Physical_Damage_Percent[PlayerId])/100)) * (1 + (I2R(Player_Last_Damage_Percent[PlayerId])/100))
+    set Player_Boss_Physical_MultipliedValue[PlayerId] = ( 1 + (I2R(Player_Boss_Damage_Percent[PlayerId])/100)) * ( 1 + (I2R(Player_Physical_Damage_Percent[PlayerId])/100)) * (1 + (I2R(Player_Last_Damage_Percent[PlayerId])/100))
 
-    set Player_Normal_Magic_MultipliedValue[PlayerId] = ( 1 + (Player_Normal_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Magic_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
-    set Player_Elite_Magic_MultipliedValue[PlayerId] = ( 1 + (Player_Elite_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Magic_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
-    set Player_Boss_Magic_MultipliedValue[PlayerId] = ( 1 + (Player_Boss_Damage_Percent[PlayerId]/100)) * ( 1 + (Player_Magic_Damage_Percent[PlayerId]/100)) * (1 + (Player_Last_Damage_Percent[PlayerId]/100))
-	
+    set Player_Normal_Magic_MultipliedValue[PlayerId] = ( 1 + (I2R(Player_Normal_Damage_Percent[PlayerId])/100)) * ( 1 + (I2R(Player_Magic_Damage_Percent[PlayerId])/100)) * (1 + (I2R(Player_Last_Damage_Percent[PlayerId])/100))
+    set Player_Elite_Magic_MultipliedValue[PlayerId] = ( 1 + (I2R(Player_Elite_Damage_Percent[PlayerId])/100)) * ( 1 + (I2R(Player_Magic_Damage_Percent[PlayerId])/100)) * (1 + (I2R(Player_Last_Damage_Percent[PlayerId])/100))
+    set Player_Boss_Magic_MultipliedValue[PlayerId] = ( 1 + (I2R(Player_Boss_Damage_Percent[PlayerId])/100)) * ( 1 + (I2R(Player_Magic_Damage_Percent[PlayerId])/100)) * (1 + (I2R(Player_Last_Damage_Percent[PlayerId])/100))
     endif
 
     endfunction
@@ -5173,14 +5170,13 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
         elseif wihcattribute == 66 then
             set Kill_Add_Wood_Percent_10[pid] = value
         endif
-    set Player_Normal_Physical_MultipliedValue[pid] = ( 1 + (Player_Normal_Damage_Percent[pid]/100)) * ( 1 + (Player_Physical_Damage_Percent[pid]/100)) * (1 + (Player_Last_Damage_Percent[pid]/100))
-    set Player_Elite_Physical_MultipliedValue[pid] = ( 1 + (Player_Elite_Damage_Percent[pid]/100)) * ( 1 + (Player_Physical_Damage_Percent[pid]/100)) * (1 + (Player_Last_Damage_Percent[pid]/100))
-    set Player_Boss_Physical_MultipliedValue[pid] = ( 1 + (Player_Boss_Damage_Percent[pid]/100)) * ( 1 + (Player_Physical_Damage_Percent[pid]/100)) * (1 + (Player_Last_Damage_Percent[pid]/100))
+    set Player_Normal_Physical_MultipliedValue[pid] = ( 1 + (I2R(Player_Normal_Damage_Percent[pid])/100)) * ( 1 + (I2R(Player_Physical_Damage_Percent[pid])/100)) * (1 + (I2R(Player_Last_Damage_Percent[pid])/100))
+    set Player_Elite_Physical_MultipliedValue[pid] = ( 1 + (I2R(Player_Elite_Damage_Percent[pid])/100)) * ( 1 + (I2R(Player_Physical_Damage_Percent[pid])/100)) * (1 + (I2R(Player_Last_Damage_Percent[pid])/100))
+    set Player_Boss_Physical_MultipliedValue[pid] = ( 1 + (I2R(Player_Boss_Damage_Percent[pid])/100)) * ( 1 + (I2R(Player_Physical_Damage_Percent[pid])/100)) * (1 + (I2R(Player_Last_Damage_Percent[pid])/100))
 
-    set Player_Normal_Magic_MultipliedValue[pid] = ( 1 + (Player_Normal_Damage_Percent[pid]/100)) * ( 1 + (Player_Magic_Damage_Percent[pid]/100)) * (1 + (Player_Last_Damage_Percent[pid]/100))
-    set Player_Elite_Magic_MultipliedValue[pid] = ( 1 + (Player_Elite_Damage_Percent[pid]/100)) * ( 1 + (Player_Magic_Damage_Percent[pid]/100)) * (1 + (Player_Last_Damage_Percent[pid]/100))
-    set Player_Boss_Magic_MultipliedValue[pid] = ( 1 + (Player_Boss_Damage_Percent[pid]/100)) * ( 1 + (Player_Magic_Damage_Percent[pid]/100)) * (1 + (Player_Last_Damage_Percent[pid]/100))
-	
+    set Player_Normal_Magic_MultipliedValue[pid] = ( 1 + (I2R(Player_Normal_Damage_Percent[pid])/100)) * ( 1 + (I2R(Player_Magic_Damage_Percent[pid])/100)) * (1 + (I2R(Player_Last_Damage_Percent[pid])/100))
+    set Player_Elite_Magic_MultipliedValue[pid] = ( 1 + (I2R(Player_Elite_Damage_Percent[pid])/100)) * ( 1 + (I2R(Player_Magic_Damage_Percent[pid])/100)) * (1 + (I2R(Player_Last_Damage_Percent[pid])/100))
+    set Player_Boss_Magic_MultipliedValue[pid] = ( 1 + (I2R(Player_Boss_Damage_Percent[pid])/100)) * ( 1 + (I2R(Player_Magic_Damage_Percent[pid])/100)) * (1 + (I2R(Player_Last_Damage_Percent[pid])/100))
     endfunction
 
     function AddAttributeForPlayer takes player wichplayer , integer wihcattribute , integer value returns nothing
