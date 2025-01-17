@@ -1015,6 +1015,8 @@ library MmrApi initializer MmrApi_Init requires YDWEYDWEJapiScript
             if bagitem[5] != null then
                 call UnitRemoveItem(wichUnit , bagitem[5])    
             endif 
+            call RemoveAllAB.evaluate(needtransformation_unit)
+            
             set skillid[0] = MMRAPI_GetPlayerUnitSkill(playerid , 1)
             set skillid[1] = MMRAPI_GetPlayerUnitSkill(playerid , 2)
             set skillid[2] = MMRAPI_GetPlayerUnitSkill(playerid , 3)
@@ -1034,6 +1036,7 @@ library MmrApi initializer MmrApi_Init requires YDWEYDWEJapiScript
             set unitstr = GetHeroStr(needtransformation_unit ,false )
             set unitagi = GetHeroAgi(needtransformation_unit ,false )
             set unitint = GetHeroInt(needtransformation_unit ,false )
+            
             set unitmaxhealth = GetUnitState(needtransformation_unit, UNIT_STATE_MAX_LIFE)
             set unitmaxmana = GetUnitState(needtransformation_unit, UNIT_STATE_MAX_MANA)
             set unitdefence = GetUnitState(needtransformation_unit, ConvertUnitState(0x20))
@@ -1046,6 +1049,7 @@ library MmrApi initializer MmrApi_Init requires YDWEYDWEJapiScript
             call RemoveUnit(needtransformation_unit)
             set needtransformation_unit = PlaceRandomUnit(unitp , unitcontralplayer , unit_x , unit_y , unitface)
             set TargetUnit[playerid]  =  needtransformation_unit
+
 
             call SetHeroStr(needtransformation_unit, unitstr , true)
             call SetHeroAgi(needtransformation_unit, unitagi , true)
@@ -3165,6 +3169,18 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
 
 	endfunction
 
+    function RemoveAllAB takes unit u returns nothing
+        if GetUnitAbilityLevel(u,GreenValueSkill[0]) >0 then
+          call  UnitRemoveAbility(u,GreenValueSkill[0])
+        endif
+        if GetUnitAbilityLevel(u,GreenValueSkill[1]) >0 then
+          call  UnitRemoveAbility(u,GreenValueSkill[1])
+        endif
+        if GetUnitAbilityLevel(u,GreenValueSkill[2]) >0 then
+          call  UnitRemoveAbility(u,GreenValueSkill[2])
+        endif
+    endfunction
+
 	private function trg0Ac takes nothing returns nothing
 	///获得物品触发器，攻击力 护甲 生命值 获得之后直接添加，其他的给操作物品单位绑定值
 		local real GJL = R2I(LoadInteger(Item,GetItemTypeId(GetManipulatedItem()),ITEM_SYSTEM_ATTACK))
@@ -4039,6 +4055,95 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
         endloop
 
 	endfunction
+
+    function FuncItemAddGreenAb takes unit u ,integer typ ,real value returns nothing
+        //复制的物品增加属性代码，不要管命名了
+        local unit GetItemUnit = MMRAPI_TargetPlayer(tplayer)
+		local integer PlayerId =  GetPlayerId(GetOwningPlayer(GetItemUnit))
+		local integer NeedSkillLevel = PlayerId +2
+        local integer GJLAD = 0
+        local integer HJAD = 0
+        local integer STRADD = 0
+        local integer AGIADD = 0
+        local integer INTADD = 0
+
+        if typ == 0 then
+            set GJLAD = value
+        elseif typ == 1 then
+            set HJAD = value
+        elseif typ == 2 then
+            set STRADD = value
+        elseif typ == 3 then
+            set AGIADD = value
+        elseif typ == 4 then
+            set INTADD = value
+        endif
+
+        if GJLAD != 0 and GetUnitAbilityLevel(GetItemUnit, GreenValueSkill[1]) == NeedSkillLevel then
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[1]), NeedSkillLevel, 108, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[1]),NeedSkillLevel,108) + R2I(value))
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[1] , 1)
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[1] , NeedSkillLevel)
+		elseif GJLAD != 0 and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[1]) == 0 then
+		call UnitAddAbility(GetItemUnit, GreenValueSkill[1])
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[1]), NeedSkillLevel, 108, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[1]),NeedSkillLevel,108) + R2I(value))
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[1] , NeedSkillLevel)	
+		elseif GJLAD != 0 and (GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[1]) != NeedSkillLevel and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[1]) != 0 )then
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[1]), NeedSkillLevel, 108, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[1]),NeedSkillLevel,108) + R2I(value))
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[1] , NeedSkillLevel)	
+		endif	
+
+
+		if HJAD != 0 and GetUnitAbilityLevel(GetItemUnit, GreenValueSkill[2]) == NeedSkillLevel then
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[2]), NeedSkillLevel, 108, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[2]),NeedSkillLevel,108) + value)
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[2] , 1)
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[2] , NeedSkillLevel)
+		elseif HJAD != 0 and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[2]) == 0 then
+		call UnitAddAbility(GetItemUnit, GreenValueSkill[2])
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[2]), NeedSkillLevel, 108, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[2]),NeedSkillLevel,108) + value)
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[2] , NeedSkillLevel)	
+		elseif HJAD != 0 and (GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[2]) != NeedSkillLevel and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[2]) != 0 )then
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[2]), NeedSkillLevel, 108, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[2]),NeedSkillLevel,108) + value)
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[2] , NeedSkillLevel)	
+		endif	
+
+
+		if STRADD != 0 and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[0]) == NeedSkillLevel then
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]), NeedSkillLevel, 110, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]),NeedSkillLevel,110) + R2I(value))
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[0] , 1)
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[0] , NeedSkillLevel)
+		elseif STRADD != 0 and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[0]) == 0 then
+		call UnitAddAbility(GetItemUnit, GreenValueSkill[0])
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]), NeedSkillLevel, 110, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]),NeedSkillLevel,110) + R2I(value))
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[0] , NeedSkillLevel)	
+		elseif STRADD != 0 and (GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[0]) != NeedSkillLevel and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[0]) != 0 )then
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]), NeedSkillLevel, 110, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]),NeedSkillLevel,110) + R2I(value))
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[0] , NeedSkillLevel)	
+		endif
+		if AGIADD != 0 and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[0]) == NeedSkillLevel then
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]), NeedSkillLevel, 108, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]),NeedSkillLevel,108) + R2I(value))
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[0] , 1)
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[0] , NeedSkillLevel)
+		elseif AGIADD != 0 and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[0]) == 0 then
+		call UnitAddAbility(GetItemUnit, GreenValueSkill[0])
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]), NeedSkillLevel, 108, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]),NeedSkillLevel,108) + R2I(value))
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[0] , NeedSkillLevel)	
+		elseif AGIADD != 0 and (GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[0]) != NeedSkillLevel and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[0]) != 0 )then
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]), NeedSkillLevel, 108, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]),NeedSkillLevel,108) + R2I(value))
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[0] , NeedSkillLevel)	
+		endif
+		if INTADD != 0 and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[0]) == NeedSkillLevel then
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]), NeedSkillLevel, 109, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]),NeedSkillLevel,109) + R2I(value))
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[0] , 1)
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[0] , NeedSkillLevel)
+		elseif INTADD != 0 and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[0]) == 0 then
+		call UnitAddAbility(GetItemUnit, GreenValueSkill[0])
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]), NeedSkillLevel, 109, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]),NeedSkillLevel,109) + R2I(value))
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[0] , NeedSkillLevel)	
+		elseif INTADD != 0 and (GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[0]) != NeedSkillLevel and GetUnitAbilityLevel(GetItemUnit,GreenValueSkill[0]) != 0 )then
+		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]), NeedSkillLevel, 109, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[0]),NeedSkillLevel,109) + R2I(value))
+		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[0] , NeedSkillLevel)	
+		endif
+    endfunction
 
 	function AddAttributeAsItem takes item getitem , player tplayer returns nothing
 	///获得物品触发器，攻击力 护甲 生命值 获得之后直接添加，其他的给操作物品单位绑定值
@@ -5454,6 +5559,7 @@ library ChooseOneForThree  requires BzAPI , YDWEAbilityState , YDWEYDWEJapiScrip
     private function DisLikeChoose takes nothing returns nothing
         local integer playerid = GetPlayerId(DzGetTriggerUIEventPlayer())
         set IsShowChooseOneForThree[playerid] = false
+        set LastTimeChoose[playerid] = 10000
         call DzFrameShow(ChooseOneForThree_BaseChoose_DB[0], IsShowChooseOneForThree[playerid])
         call DzFrameShow(ChooseOneForThree_BaseChoose_DB[1], IsShowChooseOneForThree[playerid])
         call DzFrameShow(ChooseOneForThree_BaseChoose_DB[2], IsShowChooseOneForThree[playerid])
@@ -5462,7 +5568,8 @@ library ChooseOneForThree  requires BzAPI , YDWEAbilityState , YDWEYDWEJapiScrip
         call DzFrameShow(ChooseOneForThree_BaseChoose_DB[5], IsShowChooseOneForThree[playerid])
         call DzFrameShow(ChooseOneForThree_BaseChoose_DB[6], IsShowChooseOneForThree[playerid])
         call DzFrameShow(ChooseOneForThree_BaseChoose_DB[7], IsShowChooseOneForThree[playerid])
-        call DzFrameShow(ChooseOneForThree_BaseShow, IsShowChooseOneForThree[playerid] )        
+        call DzFrameShow(ChooseOneForThree_BaseShow, IsShowChooseOneForThree[playerid] )
+        call DzSyncData( SyncDataType, "9"+I2S(playerid))        
     endfunction
 
     private function LuaLoadAbility takes nothing returns nothing
@@ -5490,7 +5597,7 @@ library ChooseOneForThree  requires BzAPI , YDWEAbilityState , YDWEYDWEJapiScrip
 
         call LuaLoadAbility()
 
-        if true then
+        if false then
 
             set ChooseOneForThree_InUI[0] = DzCreateFrameByTagName("BACKDROP", "ChooseInUI1", BaseUserUi, "template", 0)
             call DzFrameShow( ChooseOneForThree_InUI[0] , true )
@@ -5639,7 +5746,8 @@ library ChooseOneForThree  requires BzAPI , YDWEAbilityState , YDWEYDWEJapiScrip
     if locUnit != null then
         if ChooseDataType == 1 then
             set CItem = CreateItem(ChooseValueId , UX , UY)
-            call UnitAddItem(locUnit , CItem) 
+            call UnitAddItem(locUnit , CItem)
+            call SetWidgetLife( CItem , PlayerId+1)
         elseif ChooseDataType == 2 then
             call MMRAPI_AddSkillAsSoltAndHero(ConvertedPlayer(PlayerId + 1) , ChooseValueId )
         elseif ChooseDataType == 3 then
@@ -5663,7 +5771,7 @@ library ChooseOneForThree  requires BzAPI , YDWEAbilityState , YDWEYDWEJapiScrip
             set PlayerAttributeCorrectedValue[LoopTime] = 1
             set ChooseThreeOfOneTime[LoopTime] = 0
             set IsShowChooseOneForThree[LoopTime] = IsFirstTimeOpen
-            set LastTimeChoose[LoopTime] = 9999
+            set LastTimeChoose[LoopTime] = 99999
             set BaseChoose_DB_TextureFile_Choose1[LoopTime] = BaseChoose_DB_TextureFile
             set BaseChoose_DB_TextureFile_Choose2[LoopTime] = BaseChoose_DB_TextureFile
             set BaseChoose_DB_TextureFile_Choose3[LoopTime] = BaseChoose_DB_TextureFile
@@ -5907,8 +6015,8 @@ library ChooseOneForThree  requires BzAPI , YDWEAbilityState , YDWEYDWEJapiScrip
         if (IsShowChooseOneForThree[GetPlayerId(ShowPlayer)]) then
             call DisplayTextToPlayer( ShowPlayer, 0, 0, "|cffffcc00【系统】|r 有一个还未选择的三选一。已经储存" )
         else
+            call ChooseThreeOfOneTimeChange( ShowPlayer , -1 )
             if (GetLocalPlayer() == ShowPlayer) then
-                call ChooseThreeOfOneTimeChange( ShowPlayer , -1 )
                 call DzFrameSetTexture( ChooseOneForThree_BaseChoose_DB[0], BaseChoose_DB_TextureFile_Choose1[playerid] , 0)
                 call DzFrameSetTexture( ChooseOneForThree_BaseChoose_DB[1], BaseChoose_DB_TextureFile_Choose2[playerid] , 0)
                 call DzFrameSetTexture( ChooseOneForThree_BaseChoose_DB[2], BaseChoose_DB_TextureFile_Choose3[playerid] , 0)

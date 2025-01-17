@@ -451,6 +451,22 @@ default = "1"
 type = integer
 default = "0"
 
+[FuncItemAddGreenAb]
+title = "给指定单位增加一个绿字属性[风险]"
+description = "单位：【${那个单位}】 标签：【${整数}】值：【${实数}】"
+comment = "每个玩家只能有一个这不个单位，因为这个单位的绿字是玩家共享的，标签0：攻击力，1：护甲，2：力量，3：敏捷，4：智力"
+category = TC_MMRAPI
+[[.args]]
+type = unit
+default = "GetTriggerUnit"
+[[.args]]
+type = integer
+default = "0"
+[[.args]]
+type = real
+default = "99"
+
+
 [InitTrig_MemoryHack]
 title = "MH启动！"
 description = "进入游戏后加载"
