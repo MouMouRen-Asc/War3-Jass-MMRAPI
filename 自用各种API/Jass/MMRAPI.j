@@ -4058,14 +4058,14 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
 
     function FuncItemAddGreenAb takes unit u ,integer typ ,real value returns nothing
         //复制的物品增加属性代码，不要管命名了
-        local unit GetItemUnit = MMRAPI_TargetPlayer(tplayer)
+        local unit GetItemUnit = u
 		local integer PlayerId =  GetPlayerId(GetOwningPlayer(GetItemUnit))
 		local integer NeedSkillLevel = PlayerId +2
-        local integer GJLAD = 0
-        local integer HJAD = 0
-        local integer STRADD = 0
-        local integer AGIADD = 0
-        local integer INTADD = 0
+        local real GJLAD = 0
+        local real HJAD = 0
+        local real STRADD = 0
+        local real AGIADD = 0
+        local real INTADD = 0
 
         if typ == 0 then
             set GJLAD = value
@@ -4078,7 +4078,6 @@ library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDama
         elseif typ == 4 then
             set INTADD = value
         endif
-
         if GJLAD != 0 and GetUnitAbilityLevel(GetItemUnit, GreenValueSkill[1]) == NeedSkillLevel then
 		call EXSetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[1]), NeedSkillLevel, 108, EXGetAbilityDataReal(EXGetUnitAbility(GetItemUnit, GreenValueSkill[1]),NeedSkillLevel,108) + R2I(value))
 		call SetUnitAbilityLevel(GetItemUnit , GreenValueSkill[1] , 1)
