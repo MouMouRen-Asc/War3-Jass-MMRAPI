@@ -5568,7 +5568,7 @@ library ChooseOneForThree  requires BzAPI , YDWEAbilityState , YDWEYDWEJapiScrip
         call DzFrameShow(ChooseOneForThree_BaseChoose_DB[6], IsShowChooseOneForThree[playerid])
         call DzFrameShow(ChooseOneForThree_BaseChoose_DB[7], IsShowChooseOneForThree[playerid])
         call DzFrameShow(ChooseOneForThree_BaseShow, IsShowChooseOneForThree[playerid] )
-        call DzSyncData( SyncDataType, "9"+I2S(playerid))        
+        call DzSyncData( SyncDataType, "8"+I2S(playerid))        
     endfunction
 
     private function LuaLoadAbility takes nothing returns nothing
@@ -5726,6 +5726,9 @@ library ChooseOneForThree  requires BzAPI , YDWEAbilityState , YDWEYDWEJapiScrip
     local real UY
     local item CItem
     local integer looptime = 0
+    if S2I(ChooseType) == 8 then
+        return
+    endif
     set UY =  GetUnitY(locUnit)
     set UX =  GetUnitX(locUnit)
     set LastTimeChoose[PlayerId] = S2I(ChooseType) + 1
