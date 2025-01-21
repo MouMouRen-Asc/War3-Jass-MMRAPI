@@ -578,6 +578,517 @@ endlibrary
 
 #endif  /// YDWEAbilityStateIncluded 
 
+#ifndef SyncEffectIncluded
+#define SyncEffectIncluded 
+
+
+library SyncEffect initializer GolableDataInt
+    
+    globals
+       private boolean array PlayerShowEffect
+    endglobals
+
+    private function GolableDataInt takes nothing returns nothing
+        set PlayerShowEffect[0] = true
+        set PlayerShowEffect[1] = true
+        set PlayerShowEffect[2] = true
+        set PlayerShowEffect[3] = true
+        set PlayerShowEffect[4] = true
+        set PlayerShowEffect[5] = true
+        set PlayerShowEffect[6] = true
+        set PlayerShowEffect[7] = true
+        set PlayerShowEffect[8] = true
+        set PlayerShowEffect[9] = true
+        set PlayerShowEffect[10] = true
+        set PlayerShowEffect[11] = true
+    endfunction
+
+    function SyncEffect_ChangePlayerSeeEffect takes player p ,boolean can returns nothing
+        set PlayerShowEffect[GetPlayerId(p)] = can
+    endfunction
+
+//创建异步特效--坐标
+    function SyncEffectByLoc takes string s ,real x ,real y returns effect
+        local string z
+        local effect a
+        if ((PlayerShowEffect[GetPlayerId(GetLocalPlayer())] == true)) then
+            set z = s
+        else
+            set z = ""
+        endif
+        set a = AddSpecialEffect(z, x, y)
+        return a
+    endfunction
+//创建异步特效--点
+    function SyncEffectByPoint takes string s ,location d returns effect
+        local string z
+        local effect a
+        if ((PlayerShowEffect[GetPlayerId(GetLocalPlayer())] == true)) then
+            set z = s
+        else
+            set z = ""
+        endif
+        set a = AddSpecialEffectLoc(z, d)
+        call RemoveLocation( d )
+        return a
+    endfunction
+//创建异步特效--单位
+    function SyncEffectByUnit takes string s ,widget u ,string ss returns effect
+        local string z
+        local effect a
+        if ((PlayerShowEffect[GetPlayerId(GetLocalPlayer())] == true)) then
+            set z = s
+        else
+            set z = ""
+        endif
+        set a = AddSpecialEffectTarget(z, u, ss)
+        return a
+    endfunction
+endlibrary
+#endif
+
+#ifndef MMRToolsIncluded
+#define MMRToolsIncluded
+
+library MMRTools requires SyncEffect
+
+    globals
+        private hashtable RandomValueHashTable = InitHashtable()
+        hashtable BseHash = InitHashtable()
+        attacktype T_AttackType
+        damagetype T_DamageType
+    endglobals
+
+    function ConvetAttackTypeToInteger takes attacktype a returns integer
+        // local lt = 0
+        // loop
+        //     exitwhen lt > 6
+        //         if a = ConvertAttackType(lt) then
+        //             return lt
+        //         endif
+        //     lt = lt + 1 
+        // endloop
+        return GetHandleId(a)
+    endfunction
+
+    function ConvetDamageTypeToInteger takes damagetype a returns integer
+        // local lt = 0
+        // loop
+        //     exitwhen lt > 26
+        //         if a = ConvertDamageType(lt) then
+        //             return lt
+        //         endif
+        //     lt = lt + 1 
+        // endloop
+        return GetHandleId(a)
+    endfunction
+
+    //单位生命值小于等于0
+    function T_UHasHealthLess0 takes unit a returns boolean
+        return GetUnitState(a, UNIT_STATE_LIFE) <= 0
+    endfunction
+    //单位生命值大于0
+    function T_UHasHealthBig0 takes unit a returns boolean
+        return not T_UHasHealthLess0(a)
+    endfunction
+    //把（单位不等于建筑）and（单位生命值大于0）and（单位是玩家的敌对单位）这3个条件合成到一起
+    function T_Check3 takes unit a, player b returns boolean
+        if ((IsUnitType(a, UNIT_TYPE_STRUCTURE) == false) and (T_UHasHealthBig0(a) == true) and (IsUnitEnemy(a, b) == true)) then
+            return true
+        else
+            return false
+        endif
+    endfunction
+
+
+
+    //绝对值
+    function T_Abs_I takes real a returns real
+        if (a >= 0) then
+            return a
+        else
+            return -a
+        endif
+    endfunction
+    //极坐标位移
+    function T_MovePonitAsRo takes location source, real dist, real angle returns location
+        local real x = GetLocationX(source) + dist * Cos(angle * (3.14159/180.0))
+        local real y = GetLocationY(source) + dist * Sin(angle * (3.14159/180.0))
+        return Location(x, y)
+    endfunction
+    //单位到单位的角度
+    function T_UnitToUnitRotation takes unit fromUnit, unit toUnit returns real 
+        return (180.0/3.14159) * Atan2(GetUnitY(toUnit) - GetUnitY(fromUnit), GetUnitX(toUnit) - GetUnitX(fromUnit))
+    endfunction
+    //Coc()角度
+    function T_GetCosRot takes real degrees returns real
+        return Cos(degrees * (3.14159/180))
+    endfunction
+
+    //Sin()角度
+    function T_GetSinRot takes real degrees returns real
+        return Sin(degrees * (3.14159/180))
+    endfunction
+    //扇形选取面相角度并造成伤害
+    function T_SectorUFaceAndDmg takes unit a,  real loc_x , real loc_y , real b,real c,real d,boolean e,boolean f,attacktype g, damagetype h returns nothing
+        local group dwz
+        local unit dw
+        local real fac 
+        set fac = GetUnitFacing(a)
+        set dwz = CreateGroup()
+        call GroupEnumUnitsInRange(dwz,loc_x,loc_y,b,null)
+        loop
+            set dw =FirstOfGroup(dwz)
+            exitwhen dw == null
+            if ((T_Check3(dw,GetOwningPlayer(a))) and (T_GetCosRot((T_UnitToUnitRotation(a,dw) - fac)) > T_GetCosRot(c/2))) then
+                call UnitDamageTarget(a, dw, d, e, f, g, h, WEAPON_TYPE_WHOKNOWS )
+            endif
+            call GroupRemoveUnit(dwz,dw)
+        endloop
+        call DestroyGroup(dwz)
+        set dwz = null
+        set dw = null
+    endfunction
+
+    //扇形选取指定角度并造成伤害
+    function T_SectorMFaceAndDmg takes real rot, unit a,  real loc_x , real loc_y , real b,real c,real d,boolean e,boolean f,attacktype g, damagetype h returns nothing
+        local group dwz
+        local unit dw
+        local real fac = rot
+        set dwz = CreateGroup()
+        call GroupEnumUnitsInRange(dwz,loc_x,loc_y,b,null)
+        loop
+            set dw =FirstOfGroup(dwz)
+            exitwhen dw == null
+            if ((T_Check3(dw,GetOwningPlayer(a))) and (T_GetCosRot((T_UnitToUnitRotation(a,dw) - fac)) > T_GetCosRot(c/2))) then
+                call UnitDamageTarget(a, dw, d, e, f, g, h, WEAPON_TYPE_WHOKNOWS )
+            endif
+            call GroupRemoveUnit(dwz,dw)
+        endloop
+        call DestroyGroup(dwz)
+        set dwz = null
+        set dw = null
+    endfunction
+    //任意矩形选取
+    function T_RectChooseAndDmg takes unit aa, real loc_x , real loc_y , location b,real c,real d,boolean e,boolean f,attacktype g, damagetype h returns nothing
+        local location a = Location(loc_x, loc_y)
+        local real jla = DistanceBetweenPoints(a,b) / 2
+        local real jlb = DistanceBetweenPoints(a,b)
+        local location p1 = T_MovePonitAsRo(b,jla,AngleBetweenPoints(b,a))
+        local real jd = AngleBetweenPoints(a,p1)
+        local real x0 = GetLocationX(p1)
+        local real y0 = GetLocationY(p1)
+        local real xt = (x0 * T_GetCosRot(jd)) + (y0 * T_GetSinRot(jd))
+        local real yt = (y0 * T_GetCosRot(jd)) - (x0 * T_GetSinRot(jd))
+        local real r = SquareRoot((Pow((jlb/2),2.00)) + (Pow((c/2),2.00)))
+        local group dwz
+        local unit dw
+
+        local real x1
+        local real y1
+        local real x2
+        local real y2
+
+        set dwz = CreateGroup()
+        call GroupEnumUnitsInRange(dwz,GetLocationX(p1),GetLocationY(p1),r,null)
+        loop
+            set dw =FirstOfGroup(dwz)
+            exitwhen dw == null
+            set x1 = GetUnitX(dw)
+            set y1 = GetUnitY(dw)
+            set x2 = (x1 * T_GetCosRot(jd)) + (y1 * T_GetSinRot(jd))
+            set y2 = (y1 * T_GetCosRot(jd)) - (x1 * T_GetSinRot(jd))
+            if (T_Abs_I(xt-x2) <= jla) and (T_Abs_I(yt-y2) <= (c/2) and (T_Check3(dw,GetOwningPlayer(aa)))) then
+                call UnitDamageTarget(aa, dw, d, e, f, g, h, WEAPON_TYPE_WHOKNOWS )
+            endif
+            call GroupRemoveUnit(dwz,dw)
+        endloop
+        call DestroyGroup(dwz)
+        set dwz = null
+        set dw = null
+        call RemoveLocation(a)
+        call RemoveLocation(b)
+        call RemoveLocation(p1)
+    endfunction
+
+
+
+    //计时器清除哈希表
+    private function TimerClean takes nothing returns nothing
+        local timer t = GetExpiredTimer()
+        call FlushChildHashtable(RandomValueHashTable,GetHandleId(t))
+        call DestroyTimer(t)
+    endfunction
+    //随机数逻辑
+    function T_GetRandomNumForDif takes integer Max,integer need returns integer
+        local integer ydul_A
+        local integer M_l = Max
+        local integer N_l = need
+        local integer array num
+        local integer array get
+        local integer random
+        local timer t = CreateTimer()
+        call SaveInteger(RandomValueHashTable,GetHandleId(t),0,need)
+
+        set ydul_A = 1
+        loop
+            exitwhen ydul_A > M_l
+            set num[ydul_A] = ydul_A
+            set ydul_A = ydul_A + 1
+        endloop
+        set ydul_A = 1
+        loop
+            exitwhen ydul_A > need
+            set random = num[GetRandomInt(1, M_l)]
+            set get[ydul_A] = num[random]
+            set num[random] = num[M_l]
+            set M_l = M_l - 1
+            call SaveInteger(RandomValueHashTable,GetHandleId(t),ydul_A,get[ydul_A])
+        endloop
+        call TimerStart(t,10,false,function TimerClean)
+        set t = null
+        return GetHandleId(t)
+    endfunction
+
+    function T_GetRandNumForHash takes integer t ,integer wich returns integer
+        return LoadInteger(RandomValueHashTable,t,wich)
+    endfunction
+    //贝塞尔曲线逻辑
+    function T_BSE_WithX takes real t, real x1, real x2, real x3 returns real
+        local real t2 = (1 - t) * (1 - t)
+        local real t_2 = t * t
+        local real zz = (t2 * x1 + 2 * t * (1 - t) * x2 + t_2 * x3)
+        return zz
+    endfunction
+
+    function T_BSE_WithY takes real t, real y1, real y2, real y3 returns real
+        local real t2 = (1 - t) * (1 - t)
+        local real t_2 = t * t
+        local real zz = (t2 * y1 + 2 * t * (1 - t) * y2 + t_2 * y3)
+        return zz
+    endfunction
+
+    //单位到单位的贝塞尔曲线计时器
+    function T_BSE_U2U_TimerAction takes nothing returns nothing
+        local timer t=GetExpiredTimer()
+        local real z = LoadReal(BseHash,GetHandleId(t),8)
+        local location d = GetUnitLoc(LoadUnitHandle(BseHash,GetHandleId(t),1))
+        local location d1 = T_MovePonitAsRo(d,LoadReal(BseHash,GetHandleId(t),7),T_UnitToUnitRotation(LoadUnitHandle(BseHash,GetHandleId(t),1),LoadUnitHandle(BseHash,GetHandleId(t),2)) + LoadReal(BseHash,GetHandleId(t),6))
+        local location d2 = GetUnitLoc(LoadUnitHandle(BseHash,GetHandleId(t),2))
+        local real x0 = EXGetEffectX(LoadEffectHandle(BseHash,GetHandleId(t),3))
+        local real y0 = EXGetEffectY(LoadEffectHandle(BseHash,GetHandleId(t),3))
+        local real x1 = GetLocationX(d1)
+        local real y1 = GetLocationY(d1)
+        local real x2 = GetLocationX(d2)
+        local real y2 = GetLocationY(d2)
+        local real x = T_BSE_WithX(z,x0,x1,x2)
+        local real y = T_BSE_WithY(z,y0,y1,y2)
+        local real c = LoadReal(BseHash,GetHandleId(t),4)+(1.00*z*(1.00-z)*(LoadReal(BseHash,GetHandleId(t),5)*6.66*z))
+        set z = LoadReal(BseHash,GetHandleId(t),8) + 0.02
+        call SaveReal(BseHash,GetHandleId(t),8,z)
+        call EXSetEffectXY(LoadEffectHandle(BseHash,GetHandleId(t),3),x,y)
+        call EXSetEffectZ(LoadEffectHandle(BseHash,GetHandleId(t),3),c)
+        call RemoveLocation(d)
+        call RemoveLocation(d1)
+        call RemoveLocation(d2)
+        if z >= 1.00 then
+            call DestroyEffect(LoadEffectHandle(BseHash,GetHandleId(t),3))
+            call FlushChildHashtable(BseHash,GetHandleId(t))
+            call DestroyTimer(t)
+        endif
+    endfunction
+    //单位到单位的贝塞尔曲线的动作及传参
+    function T_BSE_U2U takes unit a , unit b , effect c , real d , real e , real f , real g returns nothing
+        local timer t = null
+        set t =CreateTimer()
+        call SaveUnitHandle(BseHash,GetHandleId(t),1,a)
+        call SaveUnitHandle(BseHash,GetHandleId(t),2,b)
+        call SaveEffectHandle(BseHash,GetHandleId(t),3,c)
+        call SaveReal(BseHash,GetHandleId(t),4,d)
+        call SaveReal(BseHash,GetHandleId(t),5,e)
+        call SaveReal(BseHash,GetHandleId(t),6,f)
+        call SaveReal(BseHash,GetHandleId(t),7,g)
+        call SaveReal(BseHash,GetHandleId(t),8,0.00)
+        call TimerStart(t,0.02,true,function T_BSE_U2U_TimerAction)
+        set t = null
+    endfunction
+    //点到点的贝塞尔曲线计时器
+    function T_BSE_P2P_TimerAction takes nothing returns nothing
+        local timer t=GetExpiredTimer()
+        local real z = LoadReal(BseHash,GetHandleId(t),8)
+        local location d1 = T_MovePonitAsRo(LoadLocationHandle(BseHash,GetHandleId(t),1),LoadReal(BseHash,GetHandleId(t),7),AngleBetweenPoints(LoadLocationHandle(BseHash,GetHandleId(t),1),LoadLocationHandle(BseHash,GetHandleId(t),2)) + LoadReal(BseHash,GetHandleId(t),6))
+        local real x0 = EXGetEffectX(LoadEffectHandle(BseHash,GetHandleId(t),3))
+        local real y0 = EXGetEffectY(LoadEffectHandle(BseHash,GetHandleId(t),3))
+        local real x1 = GetLocationX(d1)
+        local real y1 = GetLocationY(d1)
+        local real x2 = GetLocationX(LoadLocationHandle(BseHash,GetHandleId(t),2))
+        local real y2 = GetLocationY(LoadLocationHandle(BseHash,GetHandleId(t),2))
+        //local real x = ((Pow(1.00 - z,2)*x0))+((2.00*z)*(1.00-z)*x1)+(z*z*x2)
+        //local real y = ((Pow(1.00 - z,2)*y0))+((2.00*z)*(1.00-z)*y1)+(z*z*y2)
+        local real x = T_BSE_WithX(z,x0,x1,x2)
+        local real y = T_BSE_WithY(z,y0,y1,y2)
+        local real c = LoadReal(BseHash,GetHandleId(t),4)+(1.00*z*(1.00-z)*(LoadReal(BseHash,GetHandleId(t),5)*6.66*z))
+        set z = LoadReal(BseHash,GetHandleId(t),8) + 0.02
+        call SaveReal(BseHash,GetHandleId(t),8,z)
+        call EXSetEffectXY(LoadEffectHandle(BseHash,GetHandleId(t),3),x,y)
+        call EXSetEffectZ(LoadEffectHandle(BseHash,GetHandleId(t),3),c)
+        call RemoveLocation(d1)
+        if z >= 1.00 then
+            call DestroyEffect(LoadEffectHandle(BseHash,GetHandleId(t),3))
+            call RemoveLocation(LoadLocationHandle(BseHash,GetHandleId(t),1))
+            call RemoveLocation(LoadLocationHandle(BseHash,GetHandleId(t),2))
+            call FlushChildHashtable(BseHash,GetHandleId(t))
+            call DestroyTimer(t)
+        endif
+    endfunction
+    //点到点的贝塞尔曲线的动作及传参
+    function T_BSE_P2P takes location a , location b , effect c , real d , real e , real f , real g returns nothing
+        local timer t = null
+        set t =CreateTimer()
+        call SaveLocationHandle(BseHash,GetHandleId(t),1,a)
+        call SaveLocationHandle(BseHash,GetHandleId(t),2,b)
+        call SaveEffectHandle(BseHash,GetHandleId(t),3,c)
+        call SaveReal(BseHash,GetHandleId(t),4,d)
+        call SaveReal(BseHash,GetHandleId(t),5,e)
+        call SaveReal(BseHash,GetHandleId(t),6,f)
+        call SaveReal(BseHash,GetHandleId(t),7,g)
+        call SaveReal(BseHash,GetHandleId(t),8,0.00)
+        call TimerStart(t,0.02,true,function T_BSE_P2P_TimerAction)
+        set t = null
+    endfunction
+
+    //单位到单位的贝塞尔曲线计时器[带伤害]
+    function T_BSE_U2UD_TimerAction takes nothing returns nothing
+    local timer t=GetExpiredTimer()
+    local real z = LoadReal(BseHash,GetHandleId(t),8)
+    local location d = GetUnitLoc(LoadUnitHandle(BseHash,GetHandleId(t),1))
+    local location d1 = T_MovePonitAsRo(d,LoadReal(BseHash,GetHandleId(t),7),T_UnitToUnitRotation(LoadUnitHandle(BseHash,GetHandleId(t),1),LoadUnitHandle(BseHash,GetHandleId(t),2)) + LoadReal(BseHash,GetHandleId(t),6))
+    local location d2 = GetUnitLoc(LoadUnitHandle(BseHash,GetHandleId(t),2))
+    local real x0 = EXGetEffectX(LoadEffectHandle(BseHash,GetHandleId(t),3))
+    local real y0 = EXGetEffectY(LoadEffectHandle(BseHash,GetHandleId(t),3))
+    local real x1 = GetLocationX(d1)
+    local real y1 = GetLocationY(d1)
+    local real x2 = GetLocationX(d2)
+    local real y2 = GetLocationY(d2)
+    local real x = T_BSE_WithX(z,x0,x1,x2)
+    local real y = T_BSE_WithY(z,y0,y1,y2)
+    local real c = LoadReal(BseHash,GetHandleId(t),4)+(1.00*z*(1.00-z)*(LoadReal(BseHash,GetHandleId(t),5)*6.66*z))
+    local attacktype atktype = ConvertAttackType(LoadInteger(BseHash,GetHandleId(t),10)) 
+    local damagetype dmgtype = ConvertDamageType(LoadInteger(BseHash,GetHandleId(t),11)) 
+    set z = LoadReal(BseHash,GetHandleId(t),8) + 0.02
+    call SaveReal(BseHash,GetHandleId(t),8,z)
+    call EXSetEffectXY(LoadEffectHandle(BseHash,GetHandleId(t),3),x,y)
+    call EXSetEffectZ(LoadEffectHandle(BseHash,GetHandleId(t),3),c)
+    call RemoveLocation(d)
+    call RemoveLocation(d1)
+    call RemoveLocation(d2)
+    if z >= 1.00 then
+        call UnitDamageTarget(LoadUnitHandle(BseHash,GetHandleId(t),1), LoadUnitHandle(BseHash,GetHandleId(t),2), LoadReal(BseHash,GetHandleId(t),9), true, false, atktype, dmgtype, WEAPON_TYPE_WHOKNOWS )
+        call DestroyEffect(LoadEffectHandle(BseHash,GetHandleId(t),3))
+        call FlushChildHashtable(BseHash,GetHandleId(t))
+        call DestroyTimer(t)
+    endif
+    endfunction
+    //单位到单位的贝塞尔曲线的动作及传参[带伤害]
+    function T_BSE_U2UD takes unit a , unit b , effect c , real d , real e , real f , real g, real aa, attacktype bb, damagetype cc returns nothing
+    local timer t = null
+    set t =CreateTimer()
+    call SaveUnitHandle(BseHash,GetHandleId(t),1,a)
+    call SaveUnitHandle(BseHash,GetHandleId(t),2,b)
+    call SaveEffectHandle(BseHash,GetHandleId(t),3,c)
+    call SaveReal(BseHash,GetHandleId(t),4,d)
+    call SaveReal(BseHash,GetHandleId(t),5,e)
+    call SaveReal(BseHash,GetHandleId(t),6,f)
+    call SaveReal(BseHash,GetHandleId(t),7,g)
+    call SaveReal(BseHash,GetHandleId(t),8,0.00)
+    call SaveReal(BseHash,GetHandleId(t),9,aa)
+    call SaveInteger(BseHash,GetHandleId(t),10,ConvetAttackTypeToInteger(bb))
+    call SaveInteger(BseHash,GetHandleId(t),11,ConvetDamageTypeToInteger(cc))
+    call TimerStart(t,0.02,true,function T_BSE_U2UD_TimerAction)
+    set t = null
+    endfunction
+
+    //点到点的贝塞尔曲线计时器[带伤害]
+    function T_BSE_P2PD_TimerAction takes nothing returns nothing
+        local timer t=GetExpiredTimer()
+        local real z = LoadReal(BseHash,GetHandleId(t),8)
+        local location d1 = T_MovePonitAsRo(LoadLocationHandle(BseHash,GetHandleId(t),1),LoadReal(BseHash,GetHandleId(t),7),AngleBetweenPoints(LoadLocationHandle(BseHash,GetHandleId(t),1),LoadLocationHandle(BseHash,GetHandleId(t),2)) + LoadReal(BseHash,GetHandleId(t),6))
+        local real x0 = EXGetEffectX(LoadEffectHandle(BseHash,GetHandleId(t),3))
+        local real y0 = EXGetEffectY(LoadEffectHandle(BseHash,GetHandleId(t),3))
+        local real x1 = GetLocationX(d1)
+        local real y1 = GetLocationY(d1)
+        local real x2 = GetLocationX(LoadLocationHandle(BseHash,GetHandleId(t),2))
+        local real y2 = GetLocationY(LoadLocationHandle(BseHash,GetHandleId(t),2))
+        local real x = T_BSE_WithX(z,x0,x1,x2)
+        local real y = T_BSE_WithY(z,y0,y1,y2)
+        local real c = LoadReal(BseHash,GetHandleId(t),4)+(1.00*z*(1.00-z)*(LoadReal(BseHash,GetHandleId(t),5)*6.66*z))
+
+        local unit u = LoadUnitHandle(BseHash,GetHandleId(t),9)
+        local real dmg = LoadReal(BseHash,GetHandleId(t),10)
+        local real dmgr = LoadReal(BseHash,GetHandleId(t),11)
+        local effect sfx = LoadEffectHandle(BseHash,GetHandleId(t),12)
+        local attacktype atktype = ConvertAttackType(LoadInteger(BseHash,GetHandleId(t),13)) 
+        local damagetype dmgtype = ConvertDamageType(LoadInteger(BseHash,GetHandleId(t),14)) 
+
+        local group dwz
+        local unit dw
+        set z = LoadReal(BseHash,GetHandleId(t),8) + 0.02
+        call SaveReal(BseHash,GetHandleId(t),8,z)
+        call EXSetEffectXY(LoadEffectHandle(BseHash,GetHandleId(t),3),x,y)
+        call EXSetEffectZ(LoadEffectHandle(BseHash,GetHandleId(t),3),c)
+        call RemoveLocation(d1)
+        if z >= 1.00 then
+            call DestroyEffect(LoadEffectHandle(BseHash,GetHandleId(t),3))
+            set dwz = CreateGroup()
+            call GroupEnumUnitsInRange(dwz ,x , y , dmgr , null)
+            call DzSetEffectVisible(sfx,true)
+            call EXSetEffectXY(sfx,x,y)
+            call EXSetEffectZ(sfx,c)
+            loop
+                set dw =FirstOfGroup(dwz)
+                exitwhen dw == null
+                if (T_Check3(dw,GetOwningPlayer(u))) then
+                    call UnitDamageTarget(u, dw, dmg, false, false, atktype, dmgtype, WEAPON_TYPE_WHOKNOWS )
+                endif
+                call GroupRemoveUnit(dwz,dw)
+            endloop
+            call DestroyGroup(dwz)
+            call RemoveLocation(LoadLocationHandle(BseHash,GetHandleId(t),1))
+            call RemoveLocation(LoadLocationHandle(BseHash,GetHandleId(t),2))
+            call FlushChildHashtable(BseHash,GetHandleId(t))
+            call DestroyTimer(t)
+        endif
+        set dwz = null
+        set dw = null
+    endfunction
+    //点到点的贝塞尔曲线的动作及传参[带伤害]
+    function T_BSE_P2PD takes location a , location b , effect c , real d , real e , real f , real g , unit u ,real dmg ,real dmgr, attacktype bb, damagetype cc , effect sfx returns nothing
+        local timer t = null
+        set t =CreateTimer()
+        call DzSetEffectVisible(sfx,false)
+        call SaveLocationHandle(BseHash,GetHandleId(t),1,a)
+        call SaveLocationHandle(BseHash,GetHandleId(t),2,b)
+        call SaveEffectHandle(BseHash,GetHandleId(t),3,c)
+        call SaveReal(BseHash,GetHandleId(t),4,d)
+        call SaveReal(BseHash,GetHandleId(t),5,e)
+        call SaveReal(BseHash,GetHandleId(t),6,f)
+        call SaveReal(BseHash,GetHandleId(t),7,g)
+        call SaveReal(BseHash,GetHandleId(t),8,0.00)
+        call SaveUnitHandle(BseHash,GetHandleId(t),9,u)//单位
+        call SaveReal(BseHash,GetHandleId(t),10,dmg)//伤害
+        call SaveReal(BseHash,GetHandleId(t),11,dmgr)//伤害范围
+        call SaveEffectHandle(BseHash,GetHandleId(t),12,sfx)//伤害特效
+        call SaveInteger(BseHash,GetHandleId(t),13,ConvetAttackTypeToInteger(bb))
+        call SaveInteger(BseHash,GetHandleId(t),14,ConvetDamageTypeToInteger(cc))
+        call TimerStart(t,0.02,true,function T_BSE_P2P_TimerAction)
+        set t = null
+    endfunction
+
+endlibrary
+
+#endif
+
+
 
 
 #ifndef MMRAPIIncluded
@@ -1379,16 +1890,16 @@ library MmrApi initializer MmrApi_Init requires YDWEYDWEJapiScript
         // call MMRAPI_CheckSkillCanTrans(pid , 4 )
     endfunction
 
-    private function XIAOWU_XQDWDR_AF takes unit a returns boolean
+    private function T_Check3F takes unit a returns boolean
         return GetUnitState(a, UNIT_STATE_LIFE) <= 0
     endfunction
 
-    private function XIAOWU_XQDWDR_AG takes unit a returns boolean
-        return not XIAOWU_XQDWDR_AF(a)
+    private function T_Check3G takes unit a returns boolean
+        return not T_Check3F(a)
     endfunction
 
-    private function XIAOWU_XQDWDR_AM takes unit a, player b returns boolean
-        if ((IsUnitType(a, UNIT_TYPE_STRUCTURE) == false) and (XIAOWU_XQDWDR_AG(a) == true) and (IsUnitEnemy(a, b) == true)) then
+    private function T_Check3M takes unit a, player b returns boolean
+        if ((IsUnitType(a, UNIT_TYPE_STRUCTURE) == false) and (T_Check3G(a) == true) and (IsUnitEnemy(a, b) == true)) then
             return true
         else
             return false
@@ -1432,7 +1943,7 @@ library MmrApi initializer MmrApi_Init requires YDWEYDWEJapiScript
             set dw = FirstOfGroup(dwz)
             exitwhen dw == null
             call GroupRemoveUnit(dwz, dw)
-            if ( (XIAOWU_XQDWDR_AM(dw,GetOwningPlayer(u)) == true) and ((IsUnitInGroup(dw, LoadGroupHandle(CF_HXB,GetHandleId(XW_JSQtx),9)) == false) or (b == false))) then
+            if ( (T_Check3M(dw,GetOwningPlayer(u)) == true) and ((IsUnitInGroup(dw, LoadGroupHandle(CF_HXB,GetHandleId(XW_JSQtx),9)) == false) or (b == false))) then
                 call GroupAddUnit(LoadGroupHandle(CF_HXB,GetHandleId(XW_JSQtx),9), dw)
                 call UnitDamageTarget(u, dw, s, true, false, CF_BSESH_A_bb, CF_BSESH_A_cc, WEAPON_TYPE_WHOKNOWS )
             else
@@ -5568,7 +6079,7 @@ library ChooseOneForThree  requires BzAPI , YDWEAbilityState , YDWEYDWEJapiScrip
         call DzFrameShow(ChooseOneForThree_BaseChoose_DB[6], IsShowChooseOneForThree[playerid])
         call DzFrameShow(ChooseOneForThree_BaseChoose_DB[7], IsShowChooseOneForThree[playerid])
         call DzFrameShow(ChooseOneForThree_BaseShow, IsShowChooseOneForThree[playerid] )
-        call DzSyncData( SyncDataType, "8"+I2S(playerid))        
+        //call DzSyncData( SyncDataType, "8"+I2S(playerid))        
     endfunction
 
     private function LuaLoadAbility takes nothing returns nothing
@@ -7329,5 +7840,6 @@ endlibrary
 
 
 #endif
+
 
 

@@ -123,3 +123,86 @@ type = itemcode
 [[.args]]
 type = player
 default = "GetTriggerPlayer()"
+
+[SyncEffectByLoc]
+title = "新建特效(创建到坐标) [异步创建]"
+description = "新建特效 ${特效路径} 在(${X},${Y})处  [异步创建]"
+comment = "使用为指定玩家设置特效显示来创建"
+category = TC_MMRAPI
+returns = effect
+[[.args]]
+type = modelfile
+default = ""
+[[.args]]
+type = real
+default = "0.00"
+[[.args]]
+type = real
+default = "0.00"
+
+[SyncEffectByPoint]
+title = "新建特效(创建到点) [异步创建]"
+description = "新建特效 ${特效路径} 在 ${会自动清除点} 处  [异步创建]"
+comment = "使用为指定玩家设置特效显示来创建"
+category = TC_MMRAPI
+returns = effect
+[[.args]]
+type = modelfile
+default = ""
+[[.args]]
+type = location
+
+[SyncEffectByUnit]
+title = "新建特效(创建到单位) [异步创建]"
+description = "新建特效 ${特效路径} 并绑定到 ${单位} 的 ${Attachment Point} 附加点上  [异步创建]"
+comment = "使用为指定玩家设置特效显示来创建"
+category = TC_MMRAPI
+returns = effect
+[[.args]]
+type = modelfile
+default = ""
+[[.args]]
+type = unit
+default = "GetTriggerUnit"
+[[.args]]
+type = string
+default = "\"origin\""
+
+[T_GetRandomNumForDif]
+title = "生成不重复随机数"
+description = "最大值： ${整数} 生成的不重复随机数的数量：${整数} "
+comment = "生成一组不重复随机数，返回一个Key，使用Key查询：生成最大值一定要大于随机数的数量+1"
+category = TC_MMRAPI
+returns = integer
+[[.args]]
+type = integer
+default = "10"
+[[.args]]
+type = integer
+default = "3"
+
+[T_GetRandNumForHash]
+title = "查询生成的随机数"
+description = "查询Kye： ${整数} 第几个随机数：${整数}"
+comment = "使用为指定玩家设置特效显示来创建"
+category = TC_MMRAPI
+returns = integer
+[[.args]]
+type = integer
+default = "0"
+[[.args]]
+type = integer
+default = "0"
+
+[T_Check3]
+title = "[某某人]单位是玩家的敌对单位(便捷3合一条件)"
+description = "单位：${选取单位}是 玩家：${玩家} 的敌对单位"
+comment = "就是把（单位不等于建筑）and（单位生命值大于0）and（单位是玩家的敌对单位）这3个条件合成到一起了"
+category = TC_MMRAPI
+returns = boolean
+[[.args]]
+type = unit
+default = "GetEnumUnit"
+[[.args]]
+type = player
+default = ""
