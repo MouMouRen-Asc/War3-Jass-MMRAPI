@@ -1068,7 +1068,7 @@ library MMRTools requires SyncEffect
         call EXSetEffectXY(LoadEffectHandle(BseHash,GetHandleId(t),3),x,y)
         call EXSetEffectZ(LoadEffectHandle(BseHash,GetHandleId(t),3),c)
         call RemoveLocation(d1)
-        if z>= 0.98 then
+        if z>= 0.96 then
             call DzSetEffectVisible(sfx, true )
         endif
         if z >= 1.00 then
