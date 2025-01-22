@@ -844,3 +844,82 @@ default = ""
 [[.args]]
 type = damagetype
 default = ""
+
+[T_SpawnUnitXY]
+title = "[某某人]启动计时器刷兵向指定坐标攻击"
+description = "为玩家：${玩家},刷${单位类型},面向${实数},刷出数量${整数},刷出区域${区域},攻击X：${实数}，攻击Y：${实数},刷怪次数：${整数}，刷怪间隔：${实数},是否刷在区域随机点：${布尔}"
+comment = "就是把（单位不等于建筑）and（单位生命值大于0）and（单位是玩家的敌对单位）这3个条件合成到一起了"
+category = TC_MMRSB
+[[.args]]
+type = player
+[[.args]]
+type = unitcode
+[[.args]]
+type = real
+[[.args]]
+type = integer
+[[.args]]
+type = rect
+[[.args]]
+type = real
+[[.args]]
+type = real
+[[.args]]
+type = integer
+[[.args]]
+type = real
+[[.args]]
+type = boolean
+
+[T_SpawnUnitTU]
+title = "[某某人]启动计时器刷兵向指定单位攻击"
+description = "为玩家：${玩家},刷${单位类型},面向${实数},刷出数量${整数},刷出区域${区域},攻击到的单位：${单位},刷怪次数：${整数}，刷怪间隔：${实数},是否刷在区域随机点：${布尔}"
+comment = "就是把（单位不等于建筑）and（单位生命值大于0）and（单位是玩家的敌对单位）这3个条件合成到一起了"
+category = TC_MMRSB
+[[.args]]
+type = player
+[[.args]]
+type = unitcode
+[[.args]]
+type = real
+[[.args]]
+type = integer
+[[.args]]
+type = rect
+[[.args]]
+type = unit
+[[.args]]
+type = integer
+[[.args]]
+type = real
+[[.args]]
+type = boolean
+
+[T_UD_AddUPool]
+title = "[某某人爆装备]指定单位类型增加一个爆的装备"
+description = "指定单位类型增加一个爆的装备 ||单位类型：${单位类型}||物品类型：${物品类型}||物品权重：${实数}||所有物品爆率：${实数}"
+comment = "指定某个单位类型爆某种装备，权重计算[需要在地图初始化时开启爆装备系统]"
+category = TC_MMRDL
+[[.args]]
+type = unitcode
+[[.args]]
+type = itemcode
+[[.args]]
+type = real
+[[.args]]
+type = real
+
+
+[T_UD_RemovePool]
+title = "[某某人爆装备]指定单位类型清空全部爆的装备"
+description = "指定单位类型增加一个爆的装备 ||单位类型：${单位类型}"
+comment = "清理指定单位所有能爆的装备，权重计算[需要在地图初始化时开启爆装备系统]"
+category = TC_MMRDL
+[[.args]]
+type = unitcode
+
+[T_ResUDead_InMap]
+title = "[某某人爆装备]开启爆装备系统"
+description = "开启爆装备系统[初始化调用]"
+comment = "初始化调用最好，0s调用也可"
+category = TC_MMRDL

@@ -1,0 +1,5 @@
+[T_UDEvent]
+title = "[某某人]万能掉落装备回调"
+description = "万能掉落装备回调"
+comment = "回传3个值凶手单位,死亡单位，掉落物品"
+category = TC_MMRDL

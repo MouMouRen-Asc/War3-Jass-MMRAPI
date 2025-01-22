@@ -5,6 +5,8 @@ TC_MMRThreeForOne=[某某人三选一],ReplaceableTextures\PassiveButtons\PASBTN
 TC_MMRDPS=[某某人DPS],ReplaceableTextures\PassiveButtons\PASBTNFeedBack.blp
 TC_WHUS=[某某人仓库UI],ReplaceableTextures\CommandButtons\BTNIceShard.blp
 TC_HXB=[某某人快速哈希表],ReplaceableTextures\CommandButtons\BTNPeasant.blp
+TC_MMRSB=[某某人刷兵],ReplaceableTextures\CommandButtons\BTNFootman.blp
+TC_MMRDL=[某某人爆装备],ReplaceableTextures\CommandButtons\BTNClawsOfAttack.blp
 
 [TriggerTypes]
 boolean=0,1,1,WESTRING_TRIGTYPE_boolean

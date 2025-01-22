@@ -206,3 +206,62 @@ default = "GetEnumUnit"
 [[.args]]
 type = player
 default = ""
+
+[T_SpawnUnitXY]
+title = "[某某人]启动计时器刷兵向指定坐标攻击"
+description = "为玩家：${玩家},刷${单位类型},面向${实数},刷出数量${整数},刷出区域${区域},攻击X：${实数}，攻击Y：${实数},刷怪次数：${整数}，刷怪间隔：${实数},是否刷在区域随机点：${布尔}"
+comment = "就是把（单位不等于建筑）and（单位生命值大于0）and（单位是玩家的敌对单位）这3个条件合成到一起了"
+category = TC_MMRSB
+returns = group
+[[.args]]
+type = player
+[[.args]]
+type = unitcode
+[[.args]]
+type = real
+[[.args]]
+type = integer
+[[.args]]
+type = rect
+[[.args]]
+type = real
+[[.args]]
+type = real
+[[.args]]
+type = integer
+[[.args]]
+type = real
+[[.args]]
+type = boolean
+
+[T_SpawnUnitTU]
+title = "[某某人]启动计时器刷兵向指定单位攻击"
+description = "为玩家：${玩家},刷${单位类型},面向${实数},刷出数量${整数},刷出区域${区域},攻击到的单位：${单位},刷怪次数：${整数}，刷怪间隔：${实数},是否刷在区域随机点：${布尔}"
+comment = "就是把（单位不等于建筑）and（单位生命值大于0）and（单位是玩家的敌对单位）这3个条件合成到一起了"
+category = TC_MMRSB
+returns = group
+[[.args]]
+type = player
+[[.args]]
+type = unitcode
+[[.args]]
+type = real
+[[.args]]
+type = integer
+[[.args]]
+type = rect
+[[.args]]
+type = unit
+[[.args]]
+type = integer
+[[.args]]
+type = real
+[[.args]]
+type = boolean
+
+[GetUDItem]
+title = "[某某人爆装备]当前爆的装备"
+description = "当前爆了件什么装备"
+comment = "只能在爆装备事件下使用"
+category = TC_MMRDL
+returns = item

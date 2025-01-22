@@ -654,9 +654,15 @@ library MMRTools requires SyncEffect
 
     globals
         private hashtable RandomValueHashTable = InitHashtable()
+        private hashtable MmrTHash = InitHashtable()
         hashtable BseHash = InitHashtable()
         attacktype T_AttackType
         damagetype T_DamageType
+
+        private trigger array UDItemEventQueue
+        private integer UDItemQL = 0
+        private hashtable UdHash 
+        private hashtable UPool 
     endglobals
 
     function ConvetAttackTypeToInteger takes attacktype a returns integer
@@ -811,13 +817,15 @@ library MMRTools requires SyncEffect
         call RemoveLocation(p1)
     endfunction
 
+    private function TimerCleanHash takes timer t ,hashtable has returns nothing
+        call FlushChildHashtable(has,GetHandleId(t))
+        call DestroyTimer(t)
+    endfunction
 
-
-    //计时器清除哈希表
+    //计时器清除哈希表-随机数
     private function TimerClean takes nothing returns nothing
         local timer t = GetExpiredTimer()
-        call FlushChildHashtable(RandomValueHashTable,GetHandleId(t))
-        call DestroyTimer(t)
+        call TimerCleanHash(t,RandomValueHashTable)
     endfunction
     //随机数逻辑
     function T_GetRandomNumForDif takes integer Max,integer need returns integer
@@ -1084,6 +1092,176 @@ library MMRTools requires SyncEffect
         set t = null
     endfunction
 
+    //万能刷兵不会卡顿版攻击向XY坐标-计时器动作
+    function T_SpawnUnitxy_TimerAction takes nothing returns nothing
+        local timer t = GetExpiredTimer()
+        local player pp = LoadPlayerHandle(MmrTHash,GetHandleId(t),0)
+        local integer ut = LoadInteger(MmrTHash,GetHandleId(t),1)
+        local integer contnumber = LoadInteger(MmrTHash,GetHandleId(t),2)
+        local integer times = LoadInteger(MmrTHash,GetHandleId(t),3)
+        local rect re = LoadRectHandle(MmrTHash,GetHandleId(t),4)
+        local real x = LoadReal(MmrTHash,GetHandleId(t),5)
+        local real y = LoadReal(MmrTHash,GetHandleId(t),6)
+        local real xi = GetRectCenterX(re)
+        local real yi = GetRectCenterY(re)
+        local unit tu = LoadUnitHandle(MmrTHash,GetHandleId(t),7)
+        local real face =LoadReal(MmrTHash,GetHandleId(t),8)
+        local group g = LoadGroupHandle(MmrTHash,GetHandleId(t),10)
+        local unit cu
+        if tu == null and (x== 0 and y == 0)then
+            if times <= 0 then
+                call FlushChildHashtable(MmrTHash,GetHandleId(t))
+                call DestroyTimer(t)
+            endif
+        else
+            if tu != null then
+                set x = GetUnitX(tu)
+                set y = GetUnitY(tu)
+            endif
+            set times = times - 1
+            if times > 0 then
+                loop
+                    exitwhen contnumber <= 0
+                    if LoadBoolean(MmrTHash,GetHandleId(t),9) then
+                        set xi = GetRandomReal(GetRectMinX(re) ,GetRectMaxX(re))
+                        set yi = GetRandomReal(GetRectMinY(re) ,GetRectMaxY(re))
+                    endif
+                    call SaveInteger(MmrTHash,GetHandleId(t),3,times)
+                    set cu =  CreateUnit(pp, ut,xi,yi,face)
+                    call GroupAddUnit(g,cu)
+                    call IssuePointOrder(cu,"attack",x,y)
+                    set contnumber = contnumber - 1
+                endloop
+            else    
+                call FlushChildHashtable(MmrTHash,GetHandleId(t))
+                call DestroyTimer(t)
+            endif
+            set t = null
+        endif
+    endfunction
+
+    //万能刷兵不会卡顿版攻击向XY坐标
+    function T_SpawnUnitXY takes player who  , integer ut , real face ,integer number , rect wrct ,real x ,real y ,integer times ,real deleay ,boolean israndom returns group
+        local timer t = CreateTimer()
+        local group g = CreateGroup()
+        call SavePlayerHandle(MmrTHash,GetHandleId(t),0,who)
+        call SaveInteger(MmrTHash,GetHandleId(t),1,ut)
+        call SaveInteger(MmrTHash,GetHandleId(t),2,number)
+        call SaveInteger(MmrTHash,GetHandleId(t),3,times)
+        call SaveRectHandle(MmrTHash,GetHandleId(t),4,wrct)
+        call SaveReal(MmrTHash,GetHandleId(t),5,x)
+        call SaveReal(MmrTHash,GetHandleId(t),6,y)
+        call SaveGroupHandle(MmrTHash,GetHandleId(t),10,g)
+        call SaveReal(MmrTHash,GetHandleId(t),8,face)
+        call SaveBoolean(MmrTHash,GetHandleId(t),9,israndom)
+        call TimerStart(t,deleay,true,function T_SpawnUnitxy_TimerAction)
+        set t = null 
+        return g
+    endfunction
+
+    //万能刷兵不会卡顿版攻击向单位坐标
+    function T_SpawnUnitTU takes player who  , integer ut , real face ,integer number , rect wrct ,unit tu ,integer times ,real deleay , boolean israndom returns group
+        local timer t = CreateTimer()
+        local group g = CreateGroup()
+        call SavePlayerHandle(MmrTHash,GetHandleId(t),0,who)
+        call SaveInteger(MmrTHash,GetHandleId(t),1,ut)
+        call SaveInteger(MmrTHash,GetHandleId(t),2,number)
+        call SaveInteger(MmrTHash,GetHandleId(t),3,times)
+        call SaveRectHandle(MmrTHash,GetHandleId(t),4,wrct)
+        call SaveUnitHandle(MmrTHash,GetHandleId(t),7,tu)
+        call SaveGroupHandle(MmrTHash,GetHandleId(t),10,g)
+        call SaveReal(MmrTHash,GetHandleId(t),8,face)
+        call SaveBoolean(MmrTHash,GetHandleId(t),9,israndom)
+        call TimerStart(t,deleay,true,function T_SpawnUnitxy_TimerAction)
+        set t = null 
+        return g
+    endfunction
+
+    //万能爆装备系统
+    //单位物品池加入物品
+    function T_UD_AddUPool takes integer utpid ,integer itemcode , real weight ,real precent returns nothing
+        local itempool itp
+        if LoadItemPoolHandle(UPool,utpid,0) == null then
+            set itp = CreateItemPool()
+            call SaveItemPoolHandle(UPool,utpid,0,itp)
+            call SaveReal(UPool,utpid,1,precent)
+            call ItemPoolAddItemType(itp,itemcode,weight)
+        else
+            call ItemPoolAddItemType(LoadItemPoolHandle(UPool,utpid,0),itemcode,weight)
+            call SaveReal(UPool,utpid,1,precent)
+        endif
+        set itp = null
+    endfunction
+    //清空单位类型下属物品池子
+    function T_UD_RemovePool takes integer utpid returns nothing
+        if LoadItemPoolHandle(UPool,utpid,0) != null then
+            call DestroyItemPool(LoadItemPoolHandle(UPool,utpid,0))
+        endif
+        call FlushChildHashtable(UPool,utpid)
+    endfunction
+    //单位死亡动作
+    function T_UdeadAaction takes nothing returns nothing
+        local unit u = GetDyingUnit()
+        local item it 
+        local integer i = 0
+        if GetRandomReal(0,100) > LoadReal(UPool,GetUnitTypeId(u),1) then
+            call TriggerRemoveAction(LoadTriggerHandle(UdHash,GetHandleId(u),0),LoadTriggerActionHandle(UdHash,GetHandleId(u),1))
+            call DestroyTrigger(LoadTriggerHandle(UdHash,GetHandleId(u),0))
+            call FlushChildHashtable(UdHash,GetHandleId(u))  
+            return
+        endif
+        set it = PlaceRandomItem(LoadItemPoolHandle(UPool,GetUnitTypeId(u),0),GetUnitX(u),GetUnitY(u))
+        loop
+            exitwhen i >= UDItemQL
+            if UDItemEventQueue[i] != null and IsTriggerEnabled(UDItemEventQueue[i]) and TriggerEvaluate(UDItemEventQueue[i]) then
+                call SaveItemHandle(MmrTHash,GetHandleId(UDItemEventQueue[i]),0,it)
+                call TriggerExecute(UDItemEventQueue[i])//如果触发不为空,触发开启,则运行触发器i
+            endif
+            set i = i + 1  
+        endloop 
+        call TriggerRemoveAction(LoadTriggerHandle(UdHash,GetHandleId(u),0),LoadTriggerActionHandle(UdHash,GetHandleId(u),1))
+        call DestroyTrigger(LoadTriggerHandle(UdHash,GetHandleId(u),0))
+        call FlushChildHashtable(UdHash,GetHandleId(u))  
+    endfunction
+    //注册指定单位死亡/物品池为空则不会注册
+    function T_ResUDead takes unit wichu returns nothing
+        local trigger t = CreateTrigger()
+        call SaveTriggerHandle(UdHash,GetHandleId(wichu),0,t)
+        call SaveTriggerActionHandle(UdHash,GetHandleId(wichu),1,TriggerAddAction(t,function T_UdeadAaction))
+        call TriggerRegisterUnitEvent(t,wichu,EVENT_UNIT_DEATH)
+    endfunction
+    //单位进入地图条件
+    function T_ResUDead_InMapAc takes nothing returns boolean
+        if GetUnitAbilityLevel(GetFilterUnit(), 'Aloc') <= 0  then
+            if LoadItemPoolHandle(UPool,GetUnitTypeId(GetFilterUnit()),0) != null then
+                call T_ResUDead(GetFilterUnit())   
+                return true
+            endif  
+        else
+            return false
+        endif
+            return false
+    endfunction
+    //单位进入地图注册//入口函数
+    function T_ResUDead_InMap takes nothing returns nothing
+        local trigger t = CreateTrigger()
+        local region  r = CreateRegion()
+        set UdHash = InitHashtable()
+        set UPool = InitHashtable()
+        call RegionAddRect(r, GetWorldBounds())
+        call TriggerRegisterEnterRegion(t, r, Condition(function T_ResUDead_InMapAc))
+        //非蝗虫单位进入区域 注册指定单位接受伤害事件
+    endfunction
+
+    function T_UDEvent takes trigger trg returns nothing
+        set UDItemEventQueue[UDItemQL] = trg
+        set UDItemQL = UDItemQL + 1
+    endfunction
+
+    function GetUDItem takes nothing returns item
+        local trigger t = GetTriggeringTrigger()
+        return LoadItemHandle(MmrTHash,GetHandleId(t),0)
+    endfunction
 endlibrary
 
 #endif
