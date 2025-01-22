@@ -265,3 +265,42 @@ description = "当前爆了件什么装备"
 comment = "只能在爆装备事件下使用"
 category = TC_MMRDL
 returns = item
+
+[T_GetUnitStrAsReal]
+title = "[某某人]返回乘法后的英雄力量"
+description = "单位：${单位},是否包含绿字：${布尔值},乘数：${实数}"
+comment = "本来应该是整数的简单转换下"
+category = TC_MMRAPI
+returns = real
+[[.args]]
+type = unit
+[[.args]]
+type = boolean
+[[.args]]
+type = real
+
+[T_GetUnitAgiAsReal]
+title = "[某某人]返回乘法后的英雄敏捷"
+description = "单位：${单位},是否包含绿字：${布尔值},乘数：${实数}"
+comment = "本来应该是整数的简单转换下"
+category = TC_MMRAPI
+returns = real
+[[.args]]
+type = unit
+[[.args]]
+type = boolean
+[[.args]]
+type = real
+
+[T_GetUnitIntAsReal]
+title = "[某某人]返回乘法后的英雄智力"
+description = "单位：${单位},是否包含绿字：${布尔值},乘数：${实数}"
+comment = "本来应该是整数的简单转换下"
+category = TC_MMRAPI
+returns = real
+[[.args]]
+type = unit
+[[.args]]
+type = boolean
+[[.args]]
+type = real

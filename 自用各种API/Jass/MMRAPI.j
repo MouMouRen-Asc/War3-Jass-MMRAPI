@@ -665,6 +665,28 @@ library MMRTools requires SyncEffect
         private hashtable UPool 
     endglobals
 
+    function T_GetUnitStrAsReal takes unit u , boolean inbund,real mult returns real
+        if (IsUnitType(u, UNIT_TYPE_HERO) == true) then
+            return I2R(GetHeroStr(u,inbund))*mult
+        endif
+        return 0.00
+    endfunction
+
+    function T_GetUnitAgiAsReal takes unit u , boolean inbund,real mult returns real
+        if (IsUnitType(u, UNIT_TYPE_HERO) == true) then
+            return I2R(GetHeroAgi(u,inbund))*mult
+        endif
+        return 0.00
+    endfunction
+
+    function T_GetUnitIntAsReal takes unit u , boolean inbund,real mult returns real
+        if (IsUnitType(u, UNIT_TYPE_HERO) == true) then
+            return I2R(GetHeroInt(u,inbund))*mult
+        endif
+        return 0.00
+    endfunction
+
+
     function ConvetAttackTypeToInteger takes attacktype a returns integer
         // local lt = 0
         // loop
@@ -1040,18 +1062,23 @@ library MMRTools requires SyncEffect
 
         local group dwz
         local unit dw
+
         set z = LoadReal(BseHash,GetHandleId(t),8) + 0.02
         call SaveReal(BseHash,GetHandleId(t),8,z)
         call EXSetEffectXY(LoadEffectHandle(BseHash,GetHandleId(t),3),x,y)
         call EXSetEffectZ(LoadEffectHandle(BseHash,GetHandleId(t),3),c)
         call RemoveLocation(d1)
+        if z>= 0.98 then
+            call DzSetEffectVisible(sfx, true )
+        endif
         if z >= 1.00 then
+            
             call DestroyEffect(LoadEffectHandle(BseHash,GetHandleId(t),3))
             set dwz = CreateGroup()
             call GroupEnumUnitsInRange(dwz ,x , y , dmgr , null)
-            call DzSetEffectVisible(sfx,true)
             call EXSetEffectXY(sfx,x,y)
             call EXSetEffectZ(sfx,c)
+            call DzSetEffectAnimation( sfx, 0, 0 )
             loop
                 set dw =FirstOfGroup(dwz)
                 exitwhen dw == null
@@ -1088,7 +1115,7 @@ library MMRTools requires SyncEffect
         call SaveEffectHandle(BseHash,GetHandleId(t),12,sfx)//伤害特效
         call SaveInteger(BseHash,GetHandleId(t),13,ConvetAttackTypeToInteger(bb))
         call SaveInteger(BseHash,GetHandleId(t),14,ConvetDamageTypeToInteger(cc))
-        call TimerStart(t,0.02,true,function T_BSE_P2P_TimerAction)
+        call TimerStart(t,0.02,true,function T_BSE_P2PD_TimerAction)
         set t = null
     endfunction
 
@@ -1127,10 +1154,12 @@ library MMRTools requires SyncEffect
                         set yi = GetRandomReal(GetRectMinY(re) ,GetRectMaxY(re))
                     endif
                     call SaveInteger(MmrTHash,GetHandleId(t),3,times)
-                    set cu =  CreateUnit(pp, ut,xi,yi,face)
-                    call GroupAddUnit(g,cu)
-                    call IssuePointOrder(cu,"attack",x,y)
-                    set contnumber = contnumber - 1
+                    if (IsTerrainPathable(xi, yi, PATHING_TYPE_WALKABILITY)) == false then
+                        set cu =  CreateUnit(pp, ut,xi,yi,face)
+                        call GroupAddUnit(g,cu)
+                        call IssuePointOrder(cu,"attack",x,y)
+                        set contnumber = contnumber - 1
+                    endif
                 endloop
             else    
                 call FlushChildHashtable(MmrTHash,GetHandleId(t))
