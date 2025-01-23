@@ -728,7 +728,28 @@ library MMRTools requires SyncEffect
         endif
     endfunction
 
+    function T_Damage takes unit dmgu ,unit tu ,real damage ,boolean isnomatk ,boolean isfaratk ,attacktype atktype ,damagetype dmgtype returns nothing
+        call UnitDamageTarget(dmgu , tu ,damage, isnomatk, isfaratk, atktype, dmgtype , WEAPON_TYPE_WHOKNOWS )
+    endfunction
 
+    function T_ChooseRectAndDamage takes unit dmgu ,real x ,real y ,real damage ,real radr,boolean isnomatk ,boolean isfaratk ,attacktype atktype ,damagetype dmgtype returns nothing
+        local group g = CreateGroup()
+        local unit loc_dmgu = dmgu
+        local unit dw 
+        call GroupEnumUnitsInRange(g,x,y,radr,null)
+        loop
+            set dw =FirstOfGroup(g)
+            exitwhen dw == null
+                if T_Check3(dw,GetOwningPlayer(loc_dmgu)) then
+                    call T_Damage.execute(loc_dmgu , dw ,damage, isnomatk, isfaratk, atktype, dmgtype)
+                endif
+            call GroupRemoveUnit(g,dw)
+        endloop
+        call DestroyGroup(g)
+        set g = null
+	    set loc_dmgu = null
+	    set dw = null
+    endfunction
 
     //绝对值
     function T_Abs_I takes real a returns real
@@ -1427,7 +1448,10 @@ library MmrApi initializer MmrApi_Init requires YDWEYDWEJapiScript
     endfunction
 
     function MMRAPI_TargetPlayer takes player tplayer returns unit thisunit
-        return TargetUnit[GetPlayerId(tplayer)]
+        if (GetPlayerSlotState(tplayer) == PLAYER_SLOT_STATE_PLAYING) then
+            return TargetUnit[GetPlayerId(tplayer)]
+        endif
+        return null
     endfunction
 
     function MMRAPI_TargetPlayerBagIsNull takes integer pid returns boolean isnull
