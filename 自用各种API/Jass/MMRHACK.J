@@ -1,4 +1,4 @@
-library APIMemoryHack
+library MMRHACK
     globals
         constant integer NULL               = 0 // Reserved for developer's ease of use.
         hashtable MemHackTable              = InitHashtable( )
@@ -614,20 +614,18 @@ library APIMemoryHack
         
     endfunction
 
+    function RunUnlockMem takes nothing returns nothing
+        local force pg = CreateForce()
+        call ForceAddPlayer( pg, Player( 0 ) )
+        call ForForce( pg, I2C( C2I( function UnlockMemory ) + 0x8 ) )
+    endfunction
+
     function InitTrig_MemoryHack takes nothing returns nothing
-    //set gg_trg_MemoryHack = CreateTrigger(  )
-    set bj_FORCE_PLAYER[ 0 ] = CreateForce( )
-    call ForceAddPlayer( bj_FORCE_PLAYER[ 0 ], Player( 0 ) )
-    call ForForce( bj_FORCE_PLAYER[ 0 ], I2C( C2I( function UnlockMemory ) + 0x8 ) )
+    // set bj_FORCE_PLAYER[ 0 ] = CreateForce( )
+    // call ForceAddPlayer( bj_FORCE_PLAYER[ 0 ], Player( 0 ) )
+    // call ForForce( bj_FORCE_PLAYER[ 0 ], I2C( C2I( function UnlockMemory ) + 0x8 ) )
+    call TimerStart(CreateTimer(),0,false, function RunUnlockMem)
 endfunction
 
 endlibrary
-//===========================================================================
-// function InitTrig_MemoryHack takes nothing returns nothing
-//     //set gg_trg_MemoryHack = CreateTrigger(  )
-//     set bj_FORCE_PLAYER[ 0 ] = CreateForce( )
-//     call ForceAddPlayer( bj_FORCE_PLAYER[ 0 ], Player( 0 ) )
-//     call ForForce( bj_FORCE_PLAYER[ 0 ], I2C( C2I( function UnlockMemory ) + 0x8 ) )
-//     call BJDebugMsg("MH")
-// endfunction
 
