@@ -919,6 +919,32 @@ type = real
 [[.args]]
 type = boolean
 
+[T_SpawnUnitTU2rect]
+title = "[某某人]启动计时器刷兵向指定单位攻击(两矩形刷不重叠选点刷兵)"
+description = "为玩家：${玩家},刷${单位类型},面向${实数},刷出数量${整数},刷出并攻击到的单位：${单位},不刷怪物半径${实数}，刷出怪物半径${实数},刷怪次数：${整数}，刷怪间隔：${实数}刷怪不可超出区域：${区域}"
+comment = "不刷怪物半径一定要小于刷出怪物半径，否则刷不出来"
+category = TC_MMRSB
+[[.args]]
+type = player
+[[.args]]
+type = unitcode
+[[.args]]
+type = real
+[[.args]]
+type = integer
+[[.args]]
+type = unit
+[[.args]]
+type = real
+[[.args]]
+type = real
+[[.args]]
+type = integer
+[[.args]]
+type = real
+[[.args]]
+type = rect
+
 [T_UD_AddUPool]
 title = "[某某人爆装备]指定单位类型增加一个爆的装备"
 description = "指定单位类型增加一个爆的装备 ||单位类型：${单位类型}||物品类型：${物品类型}||物品权重：${实数}||所有物品爆率：${实数}"

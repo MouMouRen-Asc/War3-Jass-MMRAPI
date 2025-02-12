@@ -578,9 +578,127 @@ endlibrary
 
 #endif  /// YDWEAbilityStateIncluded 
 
+
+#ifndef MMRMathIncluded 
+#define MMRMathIncluded 
+
+library MMRMath
+
+    //使一个区域只能在另一个矩形区域内移动
+    function MoveRectInOtherRect takes rect other ,rect move ,real x ,real y returns nothing
+        local real o_min_x = GetRectMinX(other)
+        local real o_min_y = GetRectMinY(other)
+        local real o_max_x = GetRectMaxX(other)
+        local real o_max_y = GetRectMaxY(other)
+        local real m_min_x = GetRectMinX(move)
+        local real m_min_y = GetRectMinY(move)
+        local real m_max_x = GetRectMaxX(move)
+        local real m_max_y = GetRectMaxY(move)
+        local real n_min_x = x - (GetRectWidthBJ(move)/2)
+        local real n_min_y = y - (GetRectHeightBJ(move)/2)
+        local real n_max_x = x + (GetRectWidthBJ(move)/2)
+        local real n_max_y = y + (GetRectHeightBJ(move)/2)
+        local real nx = 0.00
+        local real ny = 0.00
+
+        if n_min_x >= o_min_x and n_max_x <= o_max_x then
+            set nx = n_max_x- n_min_x
+        else
+            //上标超限
+            if n_min_x >= o_min_x then
+                set nx = o_max_x - (o_max_x - (GetRectWidthBJ(move)/2))
+            //下标超限
+            elseif  n_max_x <= o_max_x then
+                set nx = n_min_x + (n_min_x + (GetRectWidthBJ(move)/2))
+            else
+                call BJDebugMsg("Error(移动矩形区域X):错误")
+            endif
+        endif
+        if n_min_y >= o_min_y and n_max_y <= o_max_y then
+            set nx = n_max_y- n_min_y
+        else
+            //上标超限
+            if n_min_y >= o_min_y then
+                set ny = o_max_y - (o_max_y - (GetRectHeightBJ(move)/2))
+            //下标超限
+            elseif  n_max_x <= o_max_x then
+                set ny = n_min_y + (n_min_y + (GetRectHeightBJ(move)/2))
+            else
+                call BJDebugMsg("Error(移动矩形区域Y):错误")
+            endif
+        endif
+        call MoveRectTo(move, nx,ny)
+    endfunction
+
+    //矩形区域算法-使一个矩形区域中心以及边界不得超过另外一个矩形区域(返回中心点-产生一个点)
+    function MoveRectLocInOtherRect takes rect other ,real w ,real h ,real x ,real y returns location 
+        local real o_min_x = GetRectMinX(other)
+        local real o_min_y = GetRectMinY(other)
+        local real o_max_x = GetRectMaxX(other)
+        local real o_max_y = GetRectMaxY(other)
+        local real m_min_x = x - w
+        local real m_min_y = y - h
+        local real m_max_x = x + w
+        local real m_max_y = y + h
+        local real m_h = m_max_y - m_min_y
+        local real m_w = m_max_x - m_min_x
+        local real nx = x
+        local real ny = y
+        if m_min_x > o_min_x or m_max_x < o_max_x then
+            if m_min_x < o_min_x then
+                set nx = nx + (o_min_x - m_min_x)
+            endif
+            if m_max_x > o_max_x then
+                set nx = nx + (o_max_x - m_max_x)
+            endif
+        endif
+        if m_min_y > o_min_y or m_max_y < o_max_y then
+            if m_min_y < o_min_y then
+                set ny = ny + (o_min_y - m_min_y)
+            endif
+            if m_max_x > o_max_x then
+                set ny = ny + (o_max_y - m_max_y)
+            endif
+        endif
+
+        return Location(nx,ny)
+    endfunction
+
+    function MMR_Math_GetRealInAButNotB takes real Min_n_loc, real Max_n_loc, real Min_c_loc, real Max_c_loc returns real
+        local real totalLength = Max_n_loc - Min_n_loc
+        local real excludedLength = Max_c_loc - Min_c_loc
+        local real validLength = totalLength - excludedLength
+        local real r = GetRandomReal(0, 1) // 生成一个 [0, 1] 之间的随机数
+        local real loc
+
+        // 检查是否有有效区间
+        if validLength <= 0 then
+            // 如果没有有效区间，返回一个无效值（可以根据需求调整）
+            return 0.00
+        endif
+
+        // 检查区间是否重叠
+        if (Min_c_loc >= Max_n_loc or Max_c_loc <= Min_n_loc) then
+            // 如果 CD 区间完全在 AB 区间之外，直接在整个 AB 区间随机
+            set loc = Min_n_loc + r * totalLength
+        else
+            // 否则，按照有效区间计算
+            if r < ((Min_c_loc - Min_n_loc) / validLength) then
+                // 随机点位于 [A, C) 区间
+               set loc = Min_n_loc + r * (Min_c_loc - Min_n_loc)
+            else
+                // 随机点位于 [D, B) 区间
+               set loc = Max_c_loc + (r - ((Min_c_loc - Min_n_loc) / validLength)) * (Max_n_loc - Max_c_loc)
+            endif
+        endif
+        return loc
+    endfunction
+    
+endlibrary
+#endif
+
 #ifndef SyncEffectIncluded
 #define SyncEffectIncluded 
-
 
 library SyncEffect initializer GolableDataInt
     
@@ -650,7 +768,7 @@ endlibrary
 #ifndef MMRToolsIncluded
 #define MMRToolsIncluded
 
-library MMRTools requires SyncEffect
+library MMRTools requires SyncEffect , MMRMath
 
     globals
         private hashtable RandomValueHashTable = InitHashtable()
@@ -658,12 +776,15 @@ library MMRTools requires SyncEffect
         hashtable BseHash = InitHashtable()
         attacktype T_AttackType
         damagetype T_DamageType
+        private boolean OpOderCheck
 
         private trigger array UDItemEventQueue
         private integer UDItemQL = 0
         private hashtable UdHash 
         private hashtable UPool 
     endglobals
+
+    
 
     function T_GetUnitStrAsReal takes unit u , boolean inbund,real mult returns real
         if (IsUnitType(u, UNIT_TYPE_HERO) == true) then
@@ -686,6 +807,69 @@ library MMRTools requires SyncEffect
         return 0.00
     endfunction
 
+    function CheckUnitHaveOder takes unit u  returns boolean
+        local integer  oid = GetUnitCurrentOrder(u)
+            if oid == 0 or oid == null then
+                return false
+            endif
+        return true
+    endfunction
+    //组内无命令单位发布无目标命令
+    function AsGroupToNonOidUnitGiveOder_Non takes group nog , string oid returns nothing
+        local group g = CreateGroup()
+        local unit dw
+        call GroupAddGroup(nog , g)
+        loop
+            set dw =FirstOfGroup(g)
+            exitwhen dw == null
+                if (IsUnitType(dw, UNIT_TYPE_DEAD) == false) and CheckUnitHaveOder(dw) == false then
+                    call IssueImmediateOrder(dw, oid)
+                endif
+            call GroupRemoveUnit(g,dw)
+        endloop
+    endfunction
+    //组内无命令单位发布指定点命令
+    function AsGroupToNonOidUnitGiveOder_Point takes group nog,string oid ,location loc returns nothing
+        local group g = CreateGroup()
+        local unit dw
+        call GroupAddGroup(nog , g)
+        loop
+            set dw =FirstOfGroup(g)
+            exitwhen dw == null
+                if (IsUnitType(dw, UNIT_TYPE_DEAD) == false) and CheckUnitHaveOder(dw) == false then
+                    call IssuePointOrderLoc(dw, oid ,loc)
+                endif
+            call GroupRemoveUnit(g,dw)
+        endloop
+    endfunction
+    //组内无命令单位发布指定XY命令
+    function AsGroupToNonOidUnitGiveOder_XY takes group nog,string oid ,real x,real y returns nothing
+        local group g = CreateGroup()
+        local unit dw
+        call GroupAddGroup(nog , g)
+        loop
+            set dw =FirstOfGroup(g)
+            exitwhen dw == null
+                if (IsUnitType(dw, UNIT_TYPE_DEAD) == false) and CheckUnitHaveOder(dw) == false then
+                    call IssuePointOrder(dw, oid ,x,y)
+                endif
+            call GroupRemoveUnit(g,dw)
+        endloop
+    endfunction
+    //组内无命令单位发布指定单位命令
+    function AsGroupToNonOidUnitGiveOder_Unit takes group nog,string oid , unit u returns nothing
+        local group g = CreateGroup()
+        local unit dw
+        call GroupAddGroup(nog , g)
+        loop
+            set dw =FirstOfGroup(g)
+            exitwhen dw == null
+                if (IsUnitType(dw, UNIT_TYPE_DEAD) == false) and CheckUnitHaveOder(dw) == false then
+                    call IssueTargetOrder(dw, oid, u)
+                endif
+            call GroupRemoveUnit(g,dw)
+        endloop
+    endfunction
 
     function ConvetAttackTypeToInteger takes attacktype a returns integer
         // local lt = 0
@@ -709,6 +893,60 @@ library MMRTools requires SyncEffect
         //     lt = lt + 1 
         // endloop
         return GetHandleId(a)
+    endfunction
+
+    //随机区一个坐标在一个矩形内但不在另一个矩形(会产生一个点)
+    function GetLocInRectButNotOther takes rect r, rect o returns location
+        local real o_min_x = GetRectMinX(o)
+        local real o_min_y = GetRectMinY(o)
+        local real o_max_x = GetRectMaxX(o)
+        local real o_max_y = GetRectMaxY(o)
+        local real m_min_x = GetRectMinX(r)
+        local real m_min_y = GetRectMinY(r)
+        local real m_max_x = GetRectMaxX(r)
+        local real m_max_y = GetRectMaxY(r)
+        local real random_x = 0.00
+        local real random_y = 0.00
+        set random_x = MMR_Math_GetRealInAButNotB(m_min_x , m_max_x , o_min_x , o_max_x)
+        set random_y = MMR_Math_GetRealInAButNotB(m_min_y , m_max_y , o_min_y , o_max_y)
+        if random_x == 0 and  random_y == 0 then
+            call BJDebugMsg("Error(矩形覆盖取点错误)：两个区域完全重合完全被覆盖")
+            return Location(0,0)
+        endif
+        if random_x == 0 then
+            return Location(GetRandomReal(o_min_x , o_max_x) , random_y)
+        elseif random_y == 0 then
+            return Location(random_x , GetRandomReal(o_min_y , o_max_y))
+        endif
+        return Location(random_x,random_y)
+    endfunction
+
+    //随机区一个坐标在范围内但不在另一个范围(会产生一个点)
+    //r1:小圈半径，r2大圈半径，xy为基准点
+    function GetLocInLocButNotOther takes real x  , real y ,real x1 ,real y1, real r1, real r2 returns location
+        local real o_min_x = x1-r2
+        local real o_min_y = y1-r2
+        local real o_max_x = x1+r2
+        local real o_max_y = y1+r2
+        local real m_min_x = x-r1
+        local real m_min_y = y-r1
+        local real m_max_x = x+r1
+        local real m_max_y = y+r1
+        local real random_x = 0.00
+        local real random_y = 0.00
+        
+        set random_x = MMR_Math_GetRealInAButNotB(m_min_x , m_max_x , o_min_x , o_max_x)
+        set random_y = MMR_Math_GetRealInAButNotB(m_min_y , m_max_y , o_min_y , o_max_y)
+        if random_x == 0 and  random_y == 0 then
+            call BJDebugMsg("Error(矩形覆盖取点错误)：两个区域完全重合完全被覆盖")
+            return Location(0,0)
+        endif
+        if random_x == 0 then
+            return Location(GetRandomReal(o_min_x , o_max_x) , random_y)
+        elseif random_y == 0 then
+            return Location(random_x , GetRandomReal(o_min_y , o_max_y))
+        endif
+        return Location(random_x,random_y)
     endfunction
 
     //单位生命值小于等于0
@@ -1167,7 +1405,7 @@ library MMRTools requires SyncEffect
                 set y = GetUnitY(tu)
             endif
             set times = times - 1
-            if times > 0 then
+            if times >= 0 then
                 loop
                     exitwhen contnumber <= 0
                     if LoadBoolean(MmrTHash,GetHandleId(t),9) then
@@ -1226,6 +1464,99 @@ library MMRTools requires SyncEffect
         set t = null 
         return g
     endfunction
+
+    function AddUnitAndAttackTo takes player p ,integer ut ,real xi ,real yi ,real x ,real y ,real face ,group g returns nothing
+        local unit cu 
+        set cu =  CreateUnit(p, ut,xi,yi,face)
+        call GroupAddUnit(g,cu)
+        call IssuePointOrder(cu,"attack",x,y)
+        set cu = null
+    endfunction
+
+    //指定单位刷兵在指定单位周围(两矩形刷不重叠选点刷兵)-计时器动作
+    function T_SpawnUnitxy2rect_TimerAction takes nothing returns nothing
+        local timer t = GetExpiredTimer()
+        local player pp = LoadPlayerHandle(MmrTHash,GetHandleId(t),0)
+        local integer ut = LoadInteger(MmrTHash,GetHandleId(t),1)
+        local integer contnumber = LoadInteger(MmrTHash,GetHandleId(t),2)
+        local integer times = LoadInteger(MmrTHash,GetHandleId(t),3)
+        local rect re = LoadRectHandle(MmrTHash,GetHandleId(t),4)
+        local unit tu = LoadUnitHandle(MmrTHash,GetHandleId(t),7)
+        local real face =LoadReal(MmrTHash,GetHandleId(t),8)
+        local group g = LoadGroupHandle(MmrTHash,GetHandleId(t),10)
+        local real r1 = LoadReal(MmrTHash,GetHandleId(t),4)
+        local real r2 = LoadReal(MmrTHash,GetHandleId(t),5)
+        local rect rec = LoadRectHandle(MmrTHash,GetHandleId(t),6)
+        local real xi = 0
+        local real yi = 0
+        local real x = 0
+        local real y = 0
+        local unit cu
+        local location p
+        local location q
+        local location r
+        if tu == null then
+            if times <= 0 then
+                call FlushChildHashtable(MmrTHash,GetHandleId(t))
+                call DestroyTimer(t)
+            endif
+        else
+            if tu != null then
+                set x = GetUnitX(tu)
+                set y = GetUnitY(tu)
+            endif
+            set times = times - 1
+            if times >= 0 then
+                loop
+                    exitwhen contnumber <= 0
+                    set q = MoveRectLocInOtherRect(rec, r2 , r2, x , y )
+                    set p = MoveRectLocInOtherRect(rec, r1 , r1, x , y )
+                    set r =  GetLocInLocButNotOther(GetLocationX(q),GetLocationY(q),GetLocationX(p),GetLocationY(p),r2,r1)
+                    set xi = GetLocationX(r)
+                    set yi = GetLocationY(r)
+                    call RemoveLocation(p)
+                    call RemoveLocation(q)
+                    call RemoveLocation(r)
+                    set p = null
+                    set q = null
+                    set r = null
+                    call SaveInteger(MmrTHash,GetHandleId(t),3,times)
+                    if (IsTerrainPathable(xi, yi, PATHING_TYPE_WALKABILITY)) == false then
+                        call AddUnitAndAttackTo.execute(pp,ut,xi,yi,x,y,face,g)
+                        set contnumber = contnumber - 1
+                    endif
+                endloop
+            else    
+                call FlushChildHashtable(MmrTHash,GetHandleId(t))
+                call DestroyTimer(t)
+            endif
+            set t = null
+        endif
+    endfunction
+
+    //指定单位刷兵在指定单位周围(两矩形刷不重叠选点刷兵)
+    function T_SpawnUnitTU2rect takes player who  , integer ut , real face ,integer number ,unit tu ,real r1 ,real r2 ,integer times ,real deleay ,rect rec returns group
+        local timer t = CreateTimer()
+        local group g = CreateGroup()
+        if r1>=r2 then
+            call DestroyGroup(g)
+            return null
+        endif
+        call SavePlayerHandle(MmrTHash,GetHandleId(t),0,who)
+        call SaveInteger(MmrTHash,GetHandleId(t),1,ut)
+        call SaveInteger(MmrTHash,GetHandleId(t),2,number)
+        call SaveInteger(MmrTHash,GetHandleId(t),3,times)
+        call SaveReal(MmrTHash,GetHandleId(t),4,r1)
+        call SaveReal(MmrTHash,GetHandleId(t),5,r2)
+        call SaveRectHandle(MmrTHash,GetHandleId(t),6,rec)
+        call SaveUnitHandle(MmrTHash,GetHandleId(t),7,tu)
+        call SaveGroupHandle(MmrTHash,GetHandleId(t),10,g)
+        call SaveReal(MmrTHash,GetHandleId(t),8,face)
+        call TimerStart(t,deleay,true,function T_SpawnUnitxy2rect_TimerAction)
+        set t = null 
+        return g
+    endfunction
+
 
     //万能爆装备系统
     //单位物品池加入物品
