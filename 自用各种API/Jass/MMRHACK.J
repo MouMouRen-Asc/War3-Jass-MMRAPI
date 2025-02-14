@@ -1,4 +1,4 @@
-library MMRHACK
+library MmrHackBase
     globals
         constant integer NULL               = 0 // Reserved for developer's ease of use.
         hashtable MemHackTable              = InitHashtable( )

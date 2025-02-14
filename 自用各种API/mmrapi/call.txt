@@ -331,3 +331,119 @@ type = unit
 type = boolean
 [[.args]]
 type = real
+
+
+[MSC_AddPlayerChooseTime]
+title = "[某某人]获得超级选择添加选择事件（返回事件ID）"
+description = "获得超级选择返回值，对应玩家：${玩家}，刷新返回值：${字符串}，关闭返回值：${字符串}"
+comment = "玩家添加一个选择事件，返回事件ID"
+category = TC_WNSX1
+returns = string
+[[.args]]
+type = player
+[[.args]]
+type = string
+[[.args]]
+type = string
+
+[MSC_AsEvnentIdAddChoose]
+title = "[某某人]获得超级选择通过事件ID添加选项属性"
+description = "获得超级选择返回值，事件ID：${字符串}，选项序号：${整数}，标题：${字符串}图片：${字符串}文本：${字符串}返回值：${字符串}"
+comment = "为超级选择的指定事件ID的指定选择添加属性"
+category = TC_WNSX1
+returns = string
+[[.args]]
+type = string
+[[.args]]
+type = integer
+[[.args]]
+type = string
+[[.args]]
+type = string
+[[.args]]
+type = string
+[[.args]]
+type = string
+
+
+[MSC_IsEventIdVail]
+title = "[某某人]超级选择事件ID是否有效"
+description = "超级选择的这个事件ID是否有效，事件ID：${字符串}"
+comment = "布尔值"
+category = TC_WNSX1
+returns = boolean
+[[.args]]
+type = string
+
+
+[MSC_AsEventIdGetRtn]
+title = "[某某人]获得超级选择返回值"
+description = "获得超级选择返回值，事件ID：${字符串}，第几个选项：${整数}"
+comment = "当前选项你的自己写的返回值"
+category = TC_WNSX1
+returns = string
+[[.args]]
+type = string
+[[.args]]
+type = integer
+
+[MSC_AsEventIdGetTil]
+title = "[某某人]获得超级选择标题"
+description = "获得超级选择标题事件ID：${字符串}，第几个选项：${整数}"
+comment = "当前选项你的标题"
+category = TC_WNSX1
+returns = string
+[[.args]]
+type = string
+[[.args]]
+type = integer
+
+[MSC_AsEventIdGetTexter]
+title = "[某某人]获得超级选择图片"
+description = "获得超级选择图片事件ID：${字符串}，第几个选项：${整数}"
+comment = "当前选项你的图片"
+category = TC_WNSX1
+returns = string
+[[.args]]
+type = string
+[[.args]]
+type = integer
+
+[MSC_AsEventIdGetMessage]
+title = "[某某人]获得超级选择文本"
+description = "获得超级选择文本事件ID：${字符串}，第几个选项：${整数}"
+comment = "当前选项你的文本"
+category = TC_WNSX1
+returns = string
+[[.args]]
+type = string
+[[.args]]
+type = integer
+
+[MSC_GetChooseNum]
+title = "[某某人]获得超级选择选取的选项[响应事件]"
+description = "获得超级选择选取的选项[响应事件]"
+comment = "整数"
+category = TC_WNSX1
+returns = integer
+
+[MSC_GetChoosePlayer]
+title = "[某某人]获得超级选择选取的玩家ID[响应事件]"
+description = "获得超级选择选取的玩家ID[响应事件]"
+comment = "整数"
+category = TC_WNSX1
+returns = integer
+
+[MSC_GetChooseEid]
+title = "[某某人]获得超级选择选取的整体事件ID[响应事件]"
+description = "获得超级选择选取的整体事件ID[响应事件]"
+comment = "字符串"
+category = TC_WNSX1
+returns = string
+
+[MSC_GetChooseValue]
+title = "[某某人]获得超级选择选取的返回值[响应事件]"
+description = "获得超级选择选取的返回值[响应事件]"
+comment = "字符串"
+category = TC_WNSX1
+returns = string

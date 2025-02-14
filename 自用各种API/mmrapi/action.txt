@@ -973,3 +973,75 @@ title = "[某某人爆装备]开启爆装备系统"
 description = "开启爆装备系统[初始化调用]"
 comment = "初始化调用最好，0s调用也可"
 category = TC_MMRDL
+
+
+
+
+
+
+
+
+
+[MSC_In_ChooseUI]
+title = "[某某人]超级选择创建UI"
+description = "创建UI数量：${整数},基础背景板图片：${字符串}，标题图片：${字符串}，三选一移出图片：${字符串}，三选一移入图片：${字符串}，三选一标题文字图片：${字符串}，关闭移出图片：${字符串}，关闭移入图片：${字符串}，刷新移出图片：${字符串}，刷新移入图片：${字符串}"
+comment = "显示数量不可大于创建数量：图片失效就是绿色图片了哦！"
+category = TC_WNSX1
+[[.args]]
+type = integer
+[[.args]]
+type = string
+[[.args]]
+type = string
+[[.args]]
+type = string
+[[.args]]
+type = string
+[[.args]]
+type = string
+[[.args]]
+type = string
+[[.args]]
+type = string
+[[.args]]
+type = string
+[[.args]]
+type = string
+
+[MSC_OpUiAsPlayer]
+title = "[某某人]为指定玩家打开超级选择"
+description = "玩家${玩家},事件ID${字符串},选项数量${整数}"
+comment = "选项数量不可大于你创建的选项数量，事件ID为空或当前有玩家正在选的三选一都不会有反应，事件ID如果不存在或者未被创建会有未知问题"
+category = TC_WNSX1
+[[.args]]
+type = player
+[[.args]]
+type = string
+[[.args]]
+type = integer
+
+[MSC_AsEvnentIdAddChoose]
+title = "[某某人]获得超级选择通过事件ID添加选项属性"
+description = "获得超级选择返回值，事件ID：${字符串}，选项序号：${整数}，标题：${字符串}图片：${字符串}文本：${字符串}返回值：${字符串}"
+comment = "为超级选择的指定事件ID的指定选择添加属性"
+category = TC_WNSX1
+[[.args]]
+type = string
+[[.args]]
+type = integer
+[[.args]]
+type = string
+[[.args]]
+type = string
+[[.args]]
+type = string
+[[.args]]
+type = string
+
+[MSC_DestroyChooseEvent]
+title = "[某某人]获得超级选择摧毁指定事件ID"
+description = "获得超级选择返回值，事件ID：${字符串}"
+comment = "摧毁指定事件ID"
+category = TC_WNSX1
+[[.args]]
+type = string
