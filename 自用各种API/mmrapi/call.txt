@@ -447,3 +447,78 @@ description = "获得超级选择选取的返回值[响应事件]"
 comment = "字符串"
 category = TC_WNSX1
 returns = string
+
+[Math_UIWidget]
+title = "[某某人]UI真实宽度"
+description = "获得UI真实宽度1600像素基准（16:9）需传入数值${实数}"
+comment = "返回计算后的实数不要拿逆天存，存了必出事"
+category = TC_MMRMATH
+returns = real
+[[.args]]
+type = real
+
+[Math_UIHight]
+title = "[某某人]UI真实高度"
+description =  "获得UI真实高度900像素基准（16:9）需传入数值${实数}"
+comment = "返回计算后的实数不要拿逆天存，存了必出事"
+category = TC_MMRMATH
+returns = real
+[[.args]]
+type = real
+
+
+[SplLevel_AddUnitLevelData]
+title = "[某某人境界]为指定单位添加境界值"
+description = "单位：${单位},境界值：${实数}"
+comment = "如果单位没有境界将会默认添加0境界,并且不会添加境界值,如果升级了境界会返回境界名称，其他情况返回字符串0"
+category = TC_MMRJJ
+returns = string
+[[.args]]
+type = unit
+[[.args]]
+type = real
+
+[SplLevel_GetLevelNeedByInteger]
+title = "[某某人境界]通过境界ID获取境界升级需求值"
+description = "境界ID：${整数}"
+comment = "返回一个实数境界值"
+category = TC_MMRJJ
+returns = real
+[[.args]]
+type = integer
+
+[SplLevel_GetUnitLevelNeedByInteger]
+title = "[某某人境界]获取单位的升级需求境界值"
+description = "单位：${单位}"
+comment = "返回一个实数境界值"
+category = TC_MMRJJ
+returns = real
+[[.args]]
+type = unit
+
+[SplLevel_GetLevelNameByInteger]
+title = "[某某人境界]通过境界ID获取境界名称"
+description = "境界ID：${整数}"
+comment = "返回境界名称"
+category = TC_MMRJJ
+returns = string
+[[.args]]
+type = integer
+
+[SplLevel_GetUnitLevelNameByInteger]
+title = "[某某人境界]获取单位当前境界"
+description = "单位：${单位}"
+comment = "返回境界名称"
+category = TC_MMRJJ
+returns = string
+[[.args]]
+type = unit
+
+[SplLevel_GetUnitNextLevelNameByInteger]
+title = "[某某人境界]获取单位下一个境界"
+description = "单位：${单位}"
+comment = "返回境界名称"
+category = TC_MMRJJ
+returns = string
+[[.args]]
+type = unit

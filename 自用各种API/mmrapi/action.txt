@@ -1045,3 +1045,32 @@ comment = "摧毁指定事件ID"
 category = TC_WNSX1
 [[.args]]
 type = string
+
+[SplLevel_UseIt]
+title = "[某某人境界]境界系统启用"
+description = "启用境界系统"
+comment = "载入哈希表"
+category = TC_MMRJJ
+
+[SplLevel_SetLevelData]
+title = "[某某人境界]境界系统添加数据"
+description = "境界名称${字符串},境界需求值${实数}"
+comment = "从第0个境界开始，也是默认境界"
+category = TC_MMRJJ
+[[.args]]
+type = string
+[[.args]]
+type = real
+
+
+[SplLevel_SetUnitLevelData]
+title = "[某某人境界]为指定单位设置境界"
+description = "单位：${单位},境界${整数},境界值${实数}"
+comment = "如果单位没有境界将会默认添加0境界,并且不会添加境界值"
+category = TC_MMRJJ
+[[.args]]
+type = unit
+[[.args]]
+type = integer
+[[.args]]
+type = real
