@@ -3,7 +3,11 @@
 /KKWE插件/bin
 /KKWE插件/example(演示地图)
 /KKWE插件/logs
-/KKWE插件/plugin
+/KKWE插件/plugin/*
+!/KKWE插件/plugin/jasshelper
+!/KKWE插件/plugin/YDTrigger
+/KKWE插件/plugin/YDTrigger/*
+!/KKWE插件/plugin/YDTrigger/YDTrigger.h
 /KKWE插件/share/locale
 /KKWE插件/share/mpq/OriginGameJapi
 /KKWE插件/share/mpq/carlos
@@ -18,5 +22,6 @@
 /KKWE插件/share/script
 /KKWE插件/jass/OriginGameJass
 /KKWE插件/jass/package
-*.exe
-*.dll
+KKWE*.exe
+Uninstall.exe
+Updater.dll
