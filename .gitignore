@@ -9,3 +9,5 @@
 /KKWE插件/share/mpq/OriginGameJapi
 /KKWE插件/share/mpq/carlos
 /KKWE插件/share/script
+*.exe
+*.dll
