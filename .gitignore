@@ -1,4 +1,11 @@
-*.w3x
+/KKWE插件/backups
+/KKWE插件/bin
+/KKWE插件/example(演示地图)
+/KKWE插件/logs
 /KKWE插件/jass/OriginGameJass
 /KKWE插件/jass/package
-/KKWE插件/plugin/YDTrigger/package
+/KKWE插件/plugin
+/KKWE插件/share/locale
+/KKWE插件/share/mpq/OriginGameJapi
+/KKWE插件/share/mpq/carlos
+/KKWE插件/share/script
