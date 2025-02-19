@@ -1,0 +1,11 @@
+[T_UDEvent]
+title = "[某某人]万能掉落装备回调"
+description = "万能掉落装备回调"
+comment = "回传3个值凶手单位,死亡单位，掉落物品"
+category = TC_MMRDL
+
+[MSC_ResEventByT]
+title = "[某某人]超级选择回调"
+description = "玩家超级选择回调"
+comment = "获取同步信息获取原始值"
+category = TC_WNSX1

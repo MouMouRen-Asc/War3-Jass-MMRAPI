@@ -1,0 +1,533 @@
+[MMRAPI_CheckHeroMainAttribute]
+title = "英雄主属性获得"
+description = "获得${单位}的主属性[某某人制作]"
+comment = "返回值1是力量，2是敏捷，3是智力"
+category = TC_MMRAPI
+returns = integer
+[[.args]]
+type = unit
+default = "GetTriggerUnit"
+
+[MMRAPI_TargetPlayer]
+title = "获取内置英雄单位"
+description = "获得${玩家}的内置英雄单位[某某人制作]"
+comment = "返回一个当前玩家的内置指定单位"
+category = TC_MMRAPI
+returns = unit
+[[.args]]
+type = player
+default = "GetTriggerPlayer"
+
+[MMRAPI_GetSkillIdSolt]
+title = "获取技能所在槽位"
+description = "指定玩家ID的${玩家id} ,指定技能id${技能id}[某某人制作]"
+comment = "返回技能ID所在的槽位，无则返回0"
+category = TC_MMRAPI
+returns = integer
+[[.args]]
+type = integer
+[[.args]]
+type = integer
+
+[MMRAPI_GetPlayerUnitSkill]
+title = "获取指定槽位的技能"
+description = "指定玩家ID的${玩家id} ,指定槽位id${槽位id}[某某人制作]"
+comment = "返回指定槽位的技能，无则返回0"
+category = TC_MMRAPI
+returns = abilcode
+[[.args]]
+type = integer
+[[.args]]
+type = integer
+
+
+
+[LoadPlayerLastChoose]
+title = "三选一上次选择"
+description = "获得${触发玩家}的三选一上次选择"
+comment = "在三选一期间返回值为9999"
+category = TC_MMRThreeForOne
+returns = integer
+[[.args]]
+type = player
+default = "GetTriggerPlayer"
+
+[GetChooseThreeOfOneTime]
+title = "三选一上次选择"
+description = "获得${触发玩家}的三选一选择次数"
+comment = "返回一个整数"
+category = TC_MMRThreeForOne
+returns = integer
+[[.args]]
+type = player
+default = "GetTriggerPlayer"
+
+
+
+[MMRAPI_ChangeCanTransState]
+title = "合成技能系统状态切换"
+description = "合成状态切换玩家ID：${玩家ID}"
+comment = "将需要传入的单位变身为这个单位所有者所有的目标单位类型的单位,玩家1的ID是0"
+category = TC_MMRAPI
+returns = boolean
+[[.args]]
+type = integer
+default = "0"
+
+
+[GetPlayerSkillCoodDown]
+title = "返回一个目标单位技能冷却时间"
+description = "需要返回的目标单位：${单位}"
+comment = "传入一个单位，返回这个单位所有者的技能冷却(直接乘数)"
+category = TC_MMRAPI
+returns = real
+[[.args]]
+type = unit
+default = "GetTriggerUnit"
+
+[GetAttributeForPlayerAsStr]
+title = "返回指定玩家的目标ID的属性以及说明"
+description = "需要返回的目标单位：${玩家} 目标属性: ${属性ID}"
+comment = "返回指定玩家的目标ID的属性以及说明需要开启伤害系统"
+category = TC_MMRAPI
+returns = string
+[[.args]]
+type = player
+default = "GetTriggerPlayer"
+[[.args]]
+type = integer
+default = "0"
+
+
+[GetAttributeForPlayer]
+title = "查询指定玩家的指定属性"
+description = "需要查询的玩家：${玩家} 属性ID： ${整数}"
+comment = "查询内置指定玩家的指定属性"
+category = TC_MMRAPI
+returns = integer
+[[.args]]
+type = player
+default = "GetTriggerPlayer"
+[[.args]]
+type = integer
+default = "1"
+
+[WareHouseUiSystem_AddItmeToWareHouse]
+title = "给指定玩家仓库增加一个物品[某某人仓库UI]"
+description = "给指定玩家仓库增加一个物品——物品类型${物品类型} 玩家：${那个玩家} "
+comment = ""
+category = TC_WHUS
+returns = boolean
+[[.args]]
+type = itemcode
+[[.args]]
+type = player
+default = "GetTriggerPlayer()"
+
+[SyncEffectByLoc]
+title = "新建特效(创建到坐标) [异步创建]"
+description = "新建特效 ${特效路径} 在(${X},${Y})处  [异步创建]"
+comment = "使用为指定玩家设置特效显示来创建"
+category = TC_MMRAPI
+returns = effect
+[[.args]]
+type = modelfile
+default = ""
+[[.args]]
+type = real
+default = "0.00"
+[[.args]]
+type = real
+default = "0.00"
+
+[SyncEffectByPoint]
+title = "新建特效(创建到点) [异步创建]"
+description = "新建特效 ${特效路径} 在 ${会自动清除点} 处  [异步创建]"
+comment = "使用为指定玩家设置特效显示来创建"
+category = TC_MMRAPI
+returns = effect
+[[.args]]
+type = modelfile
+default = ""
+[[.args]]
+type = location
+
+[SyncEffectByUnit]
+title = "新建特效(创建到单位) [异步创建]"
+description = "新建特效 ${特效路径} 并绑定到 ${单位} 的 ${Attachment Point} 附加点上  [异步创建]"
+comment = "使用为指定玩家设置特效显示来创建"
+category = TC_MMRAPI
+returns = effect
+[[.args]]
+type = modelfile
+default = ""
+[[.args]]
+type = unit
+default = "GetTriggerUnit"
+[[.args]]
+type = string
+default = "\"origin\""
+
+[T_GetRandomNumForDif]
+title = "生成不重复随机数"
+description = "最大值： ${整数} 生成的不重复随机数的数量：${整数} "
+comment = "生成一组不重复随机数，返回一个Key，使用Key查询：生成最大值一定要大于随机数的数量+1"
+category = TC_MMRAPI
+returns = integer
+[[.args]]
+type = integer
+default = "10"
+[[.args]]
+type = integer
+default = "3"
+
+[T_GetRandNumForHash]
+title = "查询生成的随机数"
+description = "查询Kye： ${整数} 第几个随机数：${整数}"
+comment = "使用为指定玩家设置特效显示来创建"
+category = TC_MMRAPI
+returns = integer
+[[.args]]
+type = integer
+default = "0"
+[[.args]]
+type = integer
+default = "0"
+
+[T_Check3]
+title = "[某某人]单位是玩家的敌对单位(便捷3合一条件)"
+description = "单位：${选取单位}是 玩家：${玩家} 的敌对单位"
+comment = "就是把（单位不等于建筑）and（单位生命值大于0）and（单位是玩家的敌对单位）这3个条件合成到一起了"
+category = TC_MMRAPI
+returns = boolean
+[[.args]]
+type = unit
+default = "GetEnumUnit"
+[[.args]]
+type = player
+default = ""
+
+[T_SpawnUnitXY]
+title = "[某某人]启动计时器刷兵向指定坐标攻击"
+description = "为玩家：${玩家},刷${单位类型},面向${实数},刷出数量${整数},刷出区域${区域},攻击X：${实数}，攻击Y：${实数},刷怪次数：${整数}，刷怪间隔：${实数},是否刷在区域随机点：${布尔}"
+comment = "就是把（单位不等于建筑）and（单位生命值大于0）and（单位是玩家的敌对单位）这3个条件合成到一起了"
+category = TC_MMRSB
+returns = group
+[[.args]]
+type = player
+[[.args]]
+type = unitcode
+[[.args]]
+type = real
+[[.args]]
+type = integer
+[[.args]]
+type = rect
+[[.args]]
+type = real
+[[.args]]
+type = real
+[[.args]]
+type = integer
+[[.args]]
+type = real
+[[.args]]
+type = boolean
+
+[T_SpawnUnitTU]
+title = "[某某人]启动计时器刷兵向指定单位攻击"
+description = "为玩家：${玩家},刷${单位类型},面向${实数},刷出数量${整数},刷出区域${区域},攻击到的单位：${单位},刷怪次数：${整数}，刷怪间隔：${实数},是否刷在区域随机点：${布尔}"
+comment = "就是把（单位不等于建筑）and（单位生命值大于0）and（单位是玩家的敌对单位）这3个条件合成到一起了"
+category = TC_MMRSB
+returns = group
+[[.args]]
+type = player
+[[.args]]
+type = unitcode
+[[.args]]
+type = real
+[[.args]]
+type = integer
+[[.args]]
+type = rect
+[[.args]]
+type = unit
+[[.args]]
+type = integer
+[[.args]]
+type = real
+[[.args]]
+type = boolean
+
+[T_SpawnUnitTU2rect]
+title = "[某某人]启动计时器刷兵向指定单位攻击(两矩形刷不重叠选点刷兵)"
+description = "为玩家：${玩家},刷${单位类型},面向${实数},刷出数量${整数},刷出并攻击到的单位：${单位},不刷怪物半径${实数}，刷出怪物半径${实数},刷怪次数：${整数}，刷怪间隔：${实数}刷怪不可超出区域：${区域}"
+comment = "不刷怪物半径一定要小于刷出怪物半径，否则刷不出来"
+category = TC_MMRSB
+returns = group
+[[.args]]
+type = player
+[[.args]]
+type = unitcode
+[[.args]]
+type = real
+[[.args]]
+type = integer
+[[.args]]
+type = unit
+[[.args]]
+type = real
+[[.args]]
+type = real
+[[.args]]
+type = integer
+[[.args]]
+type = real
+[[.args]]
+type = rect
+
+[GetUDItem]
+title = "[某某人爆装备]当前爆的装备"
+description = "当前爆了件什么装备"
+comment = "只能在爆装备事件下使用"
+category = TC_MMRDL
+returns = item
+
+[T_GetUnitStrAsReal]
+title = "[某某人]返回乘法后的英雄力量"
+description = "单位：${单位},是否包含绿字：${布尔值},乘数：${实数}"
+comment = "本来应该是整数的简单转换下"
+category = TC_MMRAPI
+returns = real
+[[.args]]
+type = unit
+[[.args]]
+type = boolean
+[[.args]]
+type = real
+
+[T_GetUnitAgiAsReal]
+title = "[某某人]返回乘法后的英雄敏捷"
+description = "单位：${单位},是否包含绿字：${布尔值},乘数：${实数}"
+comment = "本来应该是整数的简单转换下"
+category = TC_MMRAPI
+returns = real
+[[.args]]
+type = unit
+[[.args]]
+type = boolean
+[[.args]]
+type = real
+
+[T_GetUnitIntAsReal]
+title = "[某某人]返回乘法后的英雄智力"
+description = "单位：${单位},是否包含绿字：${布尔值},乘数：${实数}"
+comment = "本来应该是整数的简单转换下"
+category = TC_MMRAPI
+returns = real
+[[.args]]
+type = unit
+[[.args]]
+type = boolean
+[[.args]]
+type = real
+
+
+[MSC_AddPlayerChooseTime]
+title = "[某某人]获得超级选择添加选择事件（返回事件ID）"
+description = "获得超级选择返回值，对应玩家：${玩家}，刷新返回值：${字符串}，关闭返回值：${字符串}"
+comment = "玩家添加一个选择事件，返回事件ID"
+category = TC_WNSX1
+returns = string
+[[.args]]
+type = player
+[[.args]]
+type = string
+[[.args]]
+type = string
+
+[MSC_AsEvnentIdAddChoose]
+title = "[某某人]获得超级选择通过事件ID添加选项属性"
+description = "获得超级选择返回值，事件ID：${字符串}，选项序号：${整数}，标题：${字符串}图片：${字符串}文本：${字符串}返回值：${字符串}"
+comment = "为超级选择的指定事件ID的指定选择添加属性"
+category = TC_WNSX1
+returns = string
+[[.args]]
+type = string
+[[.args]]
+type = integer
+[[.args]]
+type = string
+[[.args]]
+type = string
+[[.args]]
+type = string
+[[.args]]
+type = string
+
+
+[MSC_IsEventIdVail]
+title = "[某某人]超级选择事件ID是否有效"
+description = "超级选择的这个事件ID是否有效，事件ID：${字符串}"
+comment = "布尔值"
+category = TC_WNSX1
+returns = boolean
+[[.args]]
+type = string
+
+
+[MSC_AsEventIdGetRtn]
+title = "[某某人]获得超级选择返回值"
+description = "获得超级选择返回值，事件ID：${字符串}，第几个选项：${整数}"
+comment = "当前选项你的自己写的返回值"
+category = TC_WNSX1
+returns = string
+[[.args]]
+type = string
+[[.args]]
+type = integer
+
+[MSC_AsEventIdGetTil]
+title = "[某某人]获得超级选择标题"
+description = "获得超级选择标题事件ID：${字符串}，第几个选项：${整数}"
+comment = "当前选项你的标题"
+category = TC_WNSX1
+returns = string
+[[.args]]
+type = string
+[[.args]]
+type = integer
+
+[MSC_AsEventIdGetTexter]
+title = "[某某人]获得超级选择图片"
+description = "获得超级选择图片事件ID：${字符串}，第几个选项：${整数}"
+comment = "当前选项你的图片"
+category = TC_WNSX1
+returns = string
+[[.args]]
+type = string
+[[.args]]
+type = integer
+
+[MSC_AsEventIdGetMessage]
+title = "[某某人]获得超级选择文本"
+description = "获得超级选择文本事件ID：${字符串}，第几个选项：${整数}"
+comment = "当前选项你的文本"
+category = TC_WNSX1
+returns = string
+[[.args]]
+type = string
+[[.args]]
+type = integer
+
+[MSC_GetChooseNum]
+title = "[某某人]获得超级选择选取的选项[响应事件]"
+description = "获得超级选择选取的选项[响应事件]"
+comment = "整数"
+category = TC_WNSX1
+returns = integer
+
+[MSC_GetChoosePlayer]
+title = "[某某人]获得超级选择选取的玩家ID[响应事件]"
+description = "获得超级选择选取的玩家ID[响应事件]"
+comment = "整数"
+category = TC_WNSX1
+returns = integer
+
+[MSC_GetChooseEid]
+title = "[某某人]获得超级选择选取的整体事件ID[响应事件]"
+description = "获得超级选择选取的整体事件ID[响应事件]"
+comment = "字符串"
+category = TC_WNSX1
+returns = string
+
+[MSC_GetChooseValue]
+title = "[某某人]获得超级选择选取的返回值[响应事件]"
+description = "获得超级选择选取的返回值[响应事件]"
+comment = "字符串"
+category = TC_WNSX1
+returns = string
+
+[Math_UIWidget]
+title = "[某某人]UI真实宽度"
+description = "获得UI真实宽度1600像素基准（16:9）需传入数值${实数}"
+comment = "返回计算后的实数不要拿逆天存，存了必出事"
+category = TC_MMRMATH
+returns = real
+[[.args]]
+type = real
+
+[Math_UIHight]
+title = "[某某人]UI真实高度"
+description =  "获得UI真实高度900像素基准（16:9）需传入数值${实数}"
+comment = "返回计算后的实数不要拿逆天存，存了必出事"
+category = TC_MMRMATH
+returns = real
+[[.args]]
+type = real
+
+
+[SplLevel_AddUnitLevelData]
+title = "[某某人境界]为指定单位添加境界值"
+description = "单位：${单位},境界值：${实数}"
+comment = "如果单位没有境界将会默认添加0境界,并且不会添加境界值,如果升级了境界会返回境界名称，其他情况返回字符串0"
+category = TC_MMRJJ
+returns = string
+[[.args]]
+type = unit
+[[.args]]
+type = real
+
+[SplLevel_GetLevelNeedByInteger]
+title = "[某某人境界]通过境界ID获取境界升级需求值"
+description = "境界ID：${整数}"
+comment = "返回一个实数境界值"
+category = TC_MMRJJ
+returns = real
+[[.args]]
+type = integer
+
+[SplLevel_GetUnitLevelNeedByInteger]
+title = "[某某人境界]获取单位的升级需求境界值"
+description = "单位：${单位}"
+comment = "返回一个实数境界值"
+category = TC_MMRJJ
+returns = real
+[[.args]]
+type = unit
+
+[SplLevel_GetLevelNameByInteger]
+title = "[某某人境界]通过境界ID获取境界名称"
+description = "境界ID：${整数}"
+comment = "返回境界名称"
+category = TC_MMRJJ
+returns = string
+[[.args]]
+type = integer
+
+[SplLevel_GetUnitLevelNameByInteger]
+title = "[某某人境界]获取单位当前境界"
+description = "单位：${单位}"
+comment = "返回境界名称"
+category = TC_MMRJJ
+returns = string
+[[.args]]
+type = unit
+
+[SplLevel_GetUnitNextLevelNameByInteger]
+title = "[某某人境界]获取单位下一个境界"
+description = "单位：${单位}"
+comment = "返回境界名称"
+category = TC_MMRJJ
+returns = string
+[[.args]]
+type = unit
+
+[M_NativeFrame]
+title = "[某某人]原生Frame [P]"
+description = "原生Frame:${Frame}"
+comment = ""
+category = BZ_GUI
+returns = frame
+[[.args]]
+type = NativeFrame

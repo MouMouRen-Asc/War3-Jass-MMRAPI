@@ -1,0 +1,1082 @@
+[InNzApi]
+title = "地图初始化时载入-载入内置"
+description = "地图初始化时载入-载入内置"
+comment = "必须地图初始化时载入,载入内置同是还会修改Lua引擎"
+category = TC_MMRAPI
+
+[T_ChooseRectAndDamage]
+title = "选取圆形范围单位造成伤害无需排泄"
+description = "造成伤害单位${单位}，造成伤害位置X${实数}，造成伤害位置Y${实数},造成的伤害${实数},造成伤害范围${实数},是否是平A伤害${布尔},是否是远程伤害${布尔},攻击类型${攻击类型}，伤害类型${伤害类型}"
+comment = "模拟属性增减，但是只会模拟部分属性"
+category = TC_MMRAPI
+[[.args]]
+type = unit
+[[.args]]
+type = real
+[[.args]]
+type = real
+[[.args]]
+type = real
+[[.args]]
+type = real
+[[.args]]
+type = boolean
+[[.args]]
+type = boolean
+[[.args]]
+type = attacktype
+[[.args]]
+type = damagetype
+
+[MMRAPI_BaseAttributemodification]
+title = "万能属性模拟系统（基础）[某某人制作]"
+description = "需要设置的单位为 ${单位}，属性类型为 ${属性类型}，数值为 ${数值}，是增加么 ${是还是否}"
+comment = "模拟属性增减，但是只会模拟部分属性"
+category = TC_MMRAPI
+[[.args]]
+type = unit
+default = ""
+[[.args]]
+type = unitstate
+default = UNIT_STATE_LIFE
+[[.args]]
+type = integer
+default = "0"
+[[.args]]
+type = boolean
+default = false
+
+[MMRAPI_HeroSet]
+title = "内置英雄设置[某某人制作]"
+description = "需要设置的单位为 ${玩家}，设置的英雄 ${单位}"
+comment = "设置内置内联函数的一个英雄，给他一个初始值用于支持百分比全属性增幅的运行"
+category = TC_MMRAPI
+[[.args]]
+type = player
+default = "GetTriggerPlayer"
+[[.args]]
+type = unit
+default = "GetTriggerUnit"
+
+[MMRAPI_HeroPercentSet]
+title = "百分比属性设置系统[某某人制作]"
+description = "需要设置的玩家 ${玩家}，属性类型为 ${属性类型}，数值为 ${数值}"
+comment = "属性类型1是力量，属性类型2是敏捷，属性类型3是智力，4是白字攻击力(需要内置英雄设置的支持)"
+category = TC_MMRAPI
+[[.args]]
+type = player
+default = "GetTriggerPlayer"
+[[.args]]
+type = integer
+default = "0"
+[[.args]]
+type = integer
+default = "0"
+
+[MMRAPI_ChangeAttributePercent]
+title = "设置百分比属性值增减[某某人制作]"
+description = "需要设置的玩家 ${玩家}，属性类型为 ${整数} , 值为${整数} ， 是否增加${布尔}"
+comment = "属性类型1是力量，属性类型2是敏捷，属性类型3是智力，4是白字攻击力(需要内置英雄设置的支持)"
+category = TC_MMRAPI
+[[.args]]
+type = player
+default = "GetTriggerPlayer"
+[[.args]]
+type = integer
+default = "0"
+[[.args]]
+type = integer
+default = "0"
+[[.args]]
+type = boolean
+default = "true"
+
+[MMRAPI_DynamicAttributeTimeInit]
+title = "百分比属性启用[某某人制作]"
+description = "开启玩家1到玩家8的百分比属性系统，需要设置内置英雄设置"
+comment = "开启玩家1到玩家8的百分比属性系统，需要设置内置英雄设置"
+category = TC_MMRAPI
+
+[MMRAPI_HeroTransformation]
+title = "变身系统[某某人制作]"
+description = "需要设置的玩家 ${需要变身的单位}，单位类型为 ${目标单位类型}"
+comment = "将需要传入的单位变身为这个单位所有者所有的目标单位类型的单位"
+category = TC_MMRAPI
+[[.args]]
+type = unit
+default = "GetTriggerUnit"
+[[.args]]
+type = unitpool
+default = "CreateUnitPool()"
+
+[MMRAPI_DeleteSkillAsSoltAndHero]
+title = "删除内置指定玩家英雄的指定槽位技能[某某人制作]"
+description = "需要设置的玩家 ${玩家指定}，槽位${槽位值}"
+comment = "将需要传入的单位变身为这个单位所有者所有的目标单位类型的单位"
+category = TC_MMRAPI
+[[.args]]
+type = player
+default = "GetTriggerPlayer"
+[[.args]]
+type = integer
+default = "0"
+
+[MMRAPI_AddSkillAsSoltAndHero]
+title = "为空置槽位添加一个指定技能"
+description = "需要设置的玩家 ${玩家指定}，技能${槽位值}"
+comment = "将需要传入的单位变身为这个单位所有者所有的目标单位类型的单位"
+category = TC_MMRAPI
+[[.args]]
+type = player
+default = "GetTriggerPlayer"
+[[.args]]
+type = abilcode
+
+[MMRAPI_SetInTransSkillHash]
+title = "添加一个合成技能"
+description = "合成技能主技能 ${技能ID}，合成技能辅技能1${技能ID} ，合成技能辅技能2${技能ID} ，合成技能辅技能3${技能ID} ，合成技能辅技能4${技能ID} ， 合成技能目标技能${技能ID}"
+comment = "将需要传入的单位变身为这个单位所有者所有的目标单位类型的单位"
+category = TC_MMRAPI
+[[.args]]
+type = abilcode
+[[.args]]
+type = abilcode
+[[.args]]
+type = abilcode
+[[.args]]
+type = abilcode
+[[.args]]
+type = abilcode
+[[.args]]
+type = abilcode
+
+[MMRAPI_ChangeCanTransState]
+title = "合成技能系统状态切换"
+description = "合成状态切换玩家ID：${玩家ID}"
+comment = "将需要传入的单位变身为这个单位所有者所有的目标单位类型的单位,玩家1的ID是0"
+category = TC_MMRAPI
+[[.args]]
+type = integer
+default = "0"
+
+[XIAOWU_TeXiaoChongFeng_1]
+title = "特效冲锋并造成伤害 - [MMR整合]"
+description = "[${单位}]发出[${特效}]冲锋，特效角度：[${角度}] 每次移动：[${距离}]点距离 持续：[${时间}]秒，对[${选取范围}]范围造成[${伤害}]伤害，是否造成一次伤害${true}，攻击类型：${法术}伤害类型：${普通}"
+comment = "特效冲锋造成范围（选取单位不是建筑，单位生命大于0，是单位的敌对）伤害便捷函数"
+category = TC_MMRAPI
+[[.args]]
+type = unit
+default = "GetTriggerUnit"
+[[.args]]
+type = effect
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = boolean
+default = "true"
+[[.args]]
+type = attacktype
+default = ""
+[[.args]]
+type = damagetype
+default = ""
+
+[ItemShow_Init]
+title = "启用地面显示物品与特殊物品栏描述[某某人制作]"
+description = "启用地面显示物品与特殊物品栏描述[某某人制作]"
+comment = "hi额哈哈哈哈哈哈哈哈哈"
+category = TC_MMRAPI
+
+
+[ItemShowBag_SaveItemToHash]
+title = "为指定物品在装备显示UI处添加描述[某某人制作]"
+description = "指定的装备：${物品} ，字符串：${玩家ID}[某某人制作]"
+comment = "嗯，就这么用"
+category = TC_MMRAPI
+[[.args]]
+type = item
+[[.args]]
+type = string
+default = "????"
+
+
+[ItemShowBag_CleanItemToHash]
+title = "为指定物品在装备显示UI处消除描述[某某人制作]"
+description = "指定的装备：${物品} "
+comment = "如果你装备搞多了把我哈希表爆了也可以用这个腾出哈希表空间"
+category = TC_MMRAPI
+[[.args]]
+type = item
+
+
+[BagPackApi_SetItemToBag]
+title = "增加一件装备去背包[某某人制作]"
+description = "需要设置的玩家 ${player}，物品为 ${物品}"
+comment = ""
+category = TC_MMRBAGPACK
+[[.args]]
+type = player
+[[.args]]
+type = item
+
+[BagPackApi_SetItemToBagWithKK]
+title = "增加一件装备去背包(含有KK的指定槽位ID)[某某人制作]"
+description = "需要设置的玩家 ${player}，物品为 ${物品} ，KK槽位ID${整数}"
+comment = ""
+category = TC_MMRBAGPACK
+[[.args]]
+type = player
+[[.args]]
+type = item
+[[.args]]
+type = integer
+
+[BagPackApi_UiCreate]
+title = "创建背包UI[某某人制作]"
+description = "开启并创建一个背包UI"
+comment = "不可重复创建，初始化创建即可"
+category = TC_MMRBAGPACK
+
+[BagPackApi_UiShowOrClose]
+title = "显示或关闭背包UI[某某人制作]"
+description = "需要显示的玩家 ${player}"
+comment = ""
+category = TC_MMRBAGPACK
+[[.args]]
+type = player
+
+
+[BagPackApi_SetBackGround]
+title = "设置背包各类背景图[某某人制作]"
+description = "背包背景底图 ${str}，说明底图 ${str},按钮开启${str}，按钮关闭${str}"
+comment = "最好初始化时设置于创建UI前设置"
+category = TC_MMRBAGPACK
+[[.args]]
+type = string
+[[.args]]
+type = string
+[[.args]]
+type = string
+[[.args]]
+type = string
+
+[BagPackApi_SetPlayerBagPackCanUse]
+title = "设置玩家234号背包是否可以使用[某某人制作]"
+description = "设置的玩家 ${玩家}，背包2 ${b},背包3${b1}，背包4${b2}"
+comment = "最好初始化时设置于创建UI前设置"
+category = TC_MMRBAGPACK
+[[.args]]
+type = player
+default = "GetTriggerPlayer"
+[[.args]]
+type = boolean
+default = "true"
+[[.args]]
+type = boolean
+default = "true"
+[[.args]]
+type = boolean
+default = "true"
+
+[ChangeBaseTextur]
+title = "设置某个选项的底图路径"
+description = "设置 ${玩家} 的 ${选项123其中一个} 的 ${图片路径} "
+comment = ""
+category =TC_MMRThreeForOne
+[[.args]]
+type = player
+default = "GetTriggerPlayer"
+[[.args]]
+type = integer
+[[.args]]
+type = string
+default = "UI\\Widgets\\ToolTips\\Human\\human-tooltip-background.blp"
+
+[ChangeTxModle]
+title = "设置某个选项的进入特效"
+description = "设置 ${玩家} 的 ${选项123其中一个} 的 ${特效路径} "
+comment = ""
+category = TC_MMRThreeForOne
+[[.args]]
+type = player
+default = "GetTriggerPlayer"
+[[.args]]
+type = integer
+[[.args]]
+type = string
+default = "UI\\Feedback\\Autocast\\UI-ModalButtonOn.mdl"
+
+[ChangePlayerChoose3Bool]
+title = "设置玩家是否可以使用第三个选项"
+description = "设置 ${玩家} 的 ${选项是否} "
+comment = ""
+category = TC_MMRThreeForOne
+[[.args]]
+type = player
+default = "GetTriggerPlayer"
+[[.args]]
+type = boolean
+
+[ShowChooseUiToPlayer]
+title = "对玩家显示三选一UI"
+description = "设置 ${玩家} 选项 ${第1个选项类型}  ${4字节码} ${第2个选项类型} ${4字节码} ${第3个选项类型} ${4字节码}"
+comment = "选项类型1为装备2为技能"
+category = TC_MMRThreeForOne
+[[.args]]
+type = player
+default = "GetTriggerPlayer"
+[[.args]]
+type = integer
+[[.args]]
+type = integer
+[[.args]]
+type = integer
+[[.args]]
+type = integer
+[[.args]]
+type = integer
+[[.args]]
+type = integer
+
+[ChooseOneForThree_Init]
+title = "载入三选一UI"
+description = "加载三选一UI"
+comment = "建议初始化时载入"
+category = TC_MMRThreeForOne
+
+[NewChooseInHashTable]
+title = "三选一属性选项增加一项可选择的属性选项"
+description = "显示贴图路径 ${字符串} "
+comment = "生成一个新的三选一可选的选项"
+category = TC_MMRThreeForOne
+[[.args]]
+type = string
+default = "ReplaceableTextures\\CommandButtons\\BTNBoots.blp"
+
+[AddAttributeToHash]
+title = "为指定三选一属性选项的ID增加一项属性"
+description = "选项ID ${ID} ，属性ID ${ID} ，属性增加值 ${ID} ,带数值的说明 ${ID} "
+comment = "可增加无限多选项，建议不要超过5个PS:属性增加值会被属性增加值修正器修正"
+category = TC_MMRThreeForOne
+[[.args]]
+type = integer
+default = "0"
+[[.args]]
+type = integer
+default = "0"
+[[.args]]
+type = integer
+default = "0"
+[[.args]]
+type = string
+default = "这是一串属性说明"
+
+[ChangePlayerAttributeCorrectedValue]
+title = "三选一属性增加值修正值调整"
+description = "需要改变的玩家为 ${玩家} ，目标值为 ${整数} "
+comment = "属性增加值*修正值 = 最终值 ：不设置的话默认值为1"
+category = TC_MMRThreeForOne
+[[.args]]
+type = player
+default = "GetTriggerPlayer"
+[[.args]]
+type = integer
+default = "1"
+
+[ChooseThreeOfOneTimeChange]
+title = "三选一储存计数增减"
+description = "三选一储存计数改变的玩家 ${玩家} ，改变的值${整数}"
+comment = "调用则减1"
+category = TC_MMRThreeForOne
+[[.args]]
+type = player
+default = "GetTriggerPlayer"
+[[.args]]
+type = integer
+default = "1"
+
+[FuncItemSystem_Init]
+title = "启用Lua预读物品与相应的伤害系统"
+description = "初始化时加载"
+comment = ""
+category = TC_MMRAPI
+
+[WichUnitTypeCantUse]
+title = "设置物品属性预读系统不生效单位类型"
+description = "哪个英雄单位类型拾取物品无效：${单位类型} "
+comment = "快速设置，随时更改"
+category = TC_MMRAPI
+[[.args]]
+type = unitcode
+
+[ChangeIsArmorSim]
+title = "设置伤害系统是否启用护甲模拟"
+description = "是否：${布尔} "
+comment = "快速设置，随时更改"
+category = TC_MMRAPI
+[[.args]]
+type = boolean
+
+[ChangeArmorSimValue]
+title = "设置伤害系统护甲模拟系数"
+description = "系数1：${攻击系数} 系数2：${护甲系数}系数3：${基础系数}"
+comment = "快速设置，随时更改"
+category = TC_MMRAPI
+[[.args]]
+type = real
+[[.args]]
+type = real
+[[.args]]
+type = real
+
+
+[AddAttributeAsItem]
+title = "增加指定物品的属性给英雄"
+description = "指定属性的物品：${物品} 哪个玩家： ${玩家}"
+comment = "给内置属性系统添加一部分属性，需要扣除使用移除物品的属性"
+category = TC_MMRAPI
+[[.args]]
+type = item
+[[.args]]
+type = player
+
+[RemoveAttributeAsItem]
+title = "移除指定物品的属性给英雄"
+description = "需要移除属性的物品：${物品} 哪个玩家： ${玩家}"
+comment = "给内置属性系统添加一部分属性，如果需要增加使用增加指定物品的属性"
+category = TC_MMRAPI
+[[.args]]
+type = item
+[[.args]]
+type = player
+
+
+
+[AddAttributeForPlayer]
+title = "增加指定玩家的内置属性"
+description = "需要查询的玩家：${玩家} 属性ID： ${整数} , 增加值${整数}"
+comment = "查询内置指定玩家的指定属性"
+category = TC_MMRAPI
+[[.args]]
+type = player
+default = "GetTriggerPlayer"
+[[.args]]
+type = integer
+default = "1"
+[[.args]]
+type = integer
+default = "0"
+
+[FuncItemAddGreenAb]
+title = "给指定单位增加一个绿字属性[风险]"
+description = "单位：【${那个单位}】 标签：【${整数}】值：【${实数}】"
+comment = "每个玩家只能有一个这不个单位，因为这个单位的绿字是玩家共享的，标签0：攻击力，1：护甲，2：力量，3：敏捷，4：智力"
+category = TC_MMRAPI
+[[.args]]
+type = unit
+default = "GetTriggerUnit"
+[[.args]]
+type = integer
+default = "0"
+[[.args]]
+type = real
+default = "99"
+
+
+[InitTrig_MemoryHack]
+title = "MH启动！"
+description = "进入游戏后加载"
+comment = ""
+category = TC_MMRAPI
+
+[DAMAGESHOW_Init]
+title = "伤害面板启动"
+description = "进入游戏后0.1秒加载这个伤害面板即可"
+comment = ""
+category = TC_MMRDPS
+
+[DAMAGESHOW_PlayerArtSet]
+title = "伤害面板英雄头像设置"
+description = "设置为指定玩家内置英雄的头像图片：${玩家} "
+comment = "设置伤害面板显示头像为指定玩家内置英雄的头像图片"
+category = TC_MMRDPS
+[[.args]]
+type = player
+default = "GetTriggerPlayer"
+
+[WareHouseUiSystem_SetItemPool]
+title = "传入一个物品池给仓库[某某人仓库UI]"
+description = "传入一个物品池等级：${玩家} 物品池：${玩家} "
+comment = "传入一个物品池给仓库根据"
+category = TC_WHUS
+[[.args]]
+type = integer
+default = "物品池等级"
+[[.args]]
+type = itempool
+default = "传入的物品池"
+
+[WareHouseUiSystem_SetTargetUnit]
+title = "设置仓库返回的单位[某某人仓库UI]"
+description = "设置仓库返回的单位——玩家：${玩家} 单位：${单位} "
+comment = "仓库左键提取出来的物品传给谁"
+category = TC_WHUS
+[[.args]]
+type = player
+default = "GetTriggerPlayer()"
+[[.args]]
+type = unit
+default = "GetTriggerUnit()"
+
+[WareHouseUiSystem_AddItmeToWareHouse]
+title = "给指定玩家仓库增加一个物品[某某人仓库UI]"
+description = "给指定玩家仓库增加一个物品——物品类型${物品类型} 玩家：${那个玩家} "
+comment = ""
+category = TC_WHUS
+[[.args]]
+type = itemcode
+[[.args]]
+type = player
+default = "GetTriggerPlayer()"
+
+[WareHouseUiSystem_Main]
+title = "初始化加载仓库UI[某某人仓库UI]"
+description = "初始化加载仓库UI"
+comment = ""
+category = TC_WHUS
+
+[WareHouseUiSystem_ShowToLoaclPlayer]
+title = "切换指定玩家仓库UI显示[某某人仓库UI]"
+description = "切换指定玩家仓库UI显示-玩家：${那个玩家} "
+comment = ""
+category = TC_WHUS
+[[.args]]
+type = player
+default = "GetTriggerPlayer()"
+
+[InHashByCode_Shop]
+title = "商城相关哈希表载入[某某人快速哈希表]"
+description = "商城相关哈希表载入：${需要操作的哈希表} "
+comment = "不需要创建，执行自动会创建"
+category = TC_HXB
+[[.args]]
+type = hashtable
+
+[SyncEffect_ChangePlayerSeeEffect]
+title = "设置指定玩家能否看到异步特效[异步特效]"
+description = "玩家：${玩家} ，是否能看到异步特效：${玩家}"
+comment = "默认值玩家1-12都是True"
+category = TC_MMRAPI
+[[.args]]
+type = player
+default = "GetTriggerPlayer"
+[[.args]]
+type = boolean
+default = "false"
+
+[SyncEffectByLoc]
+title = "新建特效(创建到坐标) [异步创建]"
+description = "新建特效 ${特效路径} 在(${X},${Y})处  [异步创建]"
+comment = "使用为指定玩家设置特效显示来创建"
+category = TC_MMRAPI
+[[.args]]
+type = modelfile
+default = ""
+[[.args]]
+type = real
+default = "0.00"
+[[.args]]
+type = real
+default = "0.00"
+
+[SyncEffectByPoint]
+title = "新建特效(创建到点) [异步创建]"
+description = "新建特效 ${特效路径} 在 ${会自动清除点} 处  [异步创建]"
+comment = "使用为指定玩家设置特效显示来创建"
+category = TC_MMRAPI
+[[.args]]
+type = modelfile
+default = ""
+[[.args]]
+type = location
+
+[SyncEffectByUnit]
+title = "新建特效(创建到单位) [异步创建]"
+description = "新建特效 ${特效路径} 并绑定到 ${单位} 的 ${Attachment Point} 附加点上  [异步创建]"
+comment = "使用为指定玩家设置特效显示来创建"
+category = TC_MMRAPI
+[[.args]]
+type = modelfile
+default = ""
+[[.args]]
+type = unit
+default = "GetTriggerUnit"
+[[.args]]
+type = string
+default = "\"origin\""
+
+[T_BSE_U2U]
+title = "贝塞尔曲线[带高度]PS：单位到单位"
+description = "单位1：${单位} 到单位2：${单位} 特效：${特效} 初始高度：${实数} 最高高度：${实数} 角度：${实数} 距离：${实数} "
+comment = "高度可以写随机初始高度-任意高度，角度可以写随机实数110-250，距离自己试试就知道了PS：创建特效在坐标，不要创建到点"
+category = TC_MMRAPI
+[[.args]]
+type = unit
+default = ""
+[[.args]]
+type = unit
+default = ""
+[[.args]]
+type = effect
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+
+[T_BSE_P2P]
+title = "贝塞尔曲线[带高度]PS：点到点"
+description = "开始点：${点} 结束点：${点} 特效：${特效} 初始高度：${实数} 最高高度：${实数} 角度：${实数} 距离开始点距离：${实数} "
+comment = "PS:开始点和结束点会-自动排泄-不需要预设点。创建特效在坐标，不要创建到点"
+category = TC_MMRAPI
+[[.args]]
+type = location
+default = ""
+[[.args]]
+type = location
+default = ""
+[[.args]]
+type = effect
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+
+[T_BSE_P2PD]
+title = "贝塞尔曲线[带高度带伤害]PS：点到点"
+description = "开始点：${点} 结束点：${点} 特效：${特效} 初始高度：${实数} 最高高度：${实数} 角度：${实数} 距离开始点距离：${实数}, 伤害单位：${单位}伤害值：${实数}伤害半径${实数}，攻击类型${攻击类型}，伤害类型${伤害类型}，结束特效${实数}"
+comment = "PS:开始点和结束点会-自动排泄-不需要预设点。创建特效在坐标，不要创建到点"
+category = TC_MMRAPI
+[[.args]]
+type = location
+default = ""
+[[.args]]
+type = location
+default = ""
+[[.args]]
+type = effect
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = unit
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = attacktype
+default = ""
+[[.args]]
+type = damagetype
+default = ""
+[[.args]]
+type = effect
+default = ""
+
+[T_BSE_U2UD]
+title = "贝塞尔曲线[带伤害]"
+description = "单位1：${单位} 单位2：${单位} 特效：${特效} 初始高度：${实数} 最高高度：${实数} 角度：${实数} 距离：${实数} ，并让单位1对单位2造成${实数}攻击伤害，攻击类型：${法术}伤害类型：${普通}"
+comment = "高度可以写随机初始高度-任意高度，角度可以写随机实数110-250，距离自己试试就知道了，PS：创建特效在坐标，不要创建到点"
+category = TC_MMRAPI
+[[.args]]
+type = unit
+default = ""
+[[.args]]
+type = unit
+default = ""
+[[.args]]
+type = effect
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = attacktype
+default = ""
+[[.args]]
+type = damagetype
+default = ""
+
+[T_SectorUFaceAndDmg]
+title = "扇形选取面相角度[带伤害]"
+description = "单位：造成伤害${单位} 选取X位置${实数},选取Y位置${实数},选取半径：${实数} 选取角度：${角度}造成：${伤害}点伤害(${true}攻击伤害，${false}远程伤害)攻击类型：${法术}伤害类型：${普通}"
+comment = "选取单位面向角度PS：选取单位不是建筑，单位生命值大于0，是单位所有者的敌对单位"
+category = TC_MMRAPI
+[[.args]]
+type = unit
+default = ""
+[[.args]]
+type = real
+default = "0.00"
+[[.args]]
+type = real
+default = "0.00"
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = boolean
+default = "true"
+[[.args]]
+type = boolean
+default = "false"
+[[.args]]
+type = attacktype
+default = ""
+[[.args]]
+type = damagetype
+default = ""
+
+[T_SectorMFaceAndDmg]
+title = "扇形选取指定角度[带伤害]"
+description = "角度：${实数}，单位：造成伤害${单位} 选取X位置${实数},选取Y位置${实数},选取半径：${实数} 选取角度：${角度}造成：${伤害}点伤害(${true}攻击伤害，${false}远程伤害)攻击类型：${法术}伤害类型：${普通}"
+comment = "选取单位面向角度PS：选取单位不是建筑，单位生命值大于0，是单位所有者的敌对单位"
+category = TC_MMRAPI
+[[.args]]
+type = real
+default = "0.00"
+[[.args]]
+type = unit
+default = ""
+[[.args]]
+type = real
+default = "0.00"
+[[.args]]
+type = real
+default = "0.00"
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = boolean
+default = "true"
+[[.args]]
+type = boolean
+default = "false"
+[[.args]]
+type = attacktype
+default = ""
+[[.args]]
+type = damagetype
+default = ""
+
+[T_RectChooseAndDmg]
+title = "任意矩形选取[带伤害]"
+description = "造成伤害单位：${单位} ，开始位置X：${实数} , 开始位置Y：${实数} 结束点：${点}宽度：${宽度}对直线造成：${伤害}伤害(${true}攻击伤害，${false}远程伤害)攻击类型：${法术}伤害类型：${普通}"
+comment = "选取开始单位到结束点宽度内矩形的单位造成伤害,矩形直线伤害PS：选取单位不是建筑，单位生命值大于0，是单位所有者的敌对单位"
+category = TC_MMRAPI
+[[.args]]
+type = unit
+default = ""
+[[.args]]
+type = real
+default = "0.00"
+[[.args]]
+type = real
+default = "0.00"
+[[.args]]
+type = location
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = real
+default = ""
+[[.args]]
+type = boolean
+default = "true"
+[[.args]]
+type = boolean
+default = "false"
+[[.args]]
+type = attacktype
+default = ""
+[[.args]]
+type = damagetype
+default = ""
+
+[T_SpawnUnitXY]
+title = "[某某人]启动计时器刷兵向指定坐标攻击"
+description = "为玩家：${玩家},刷${单位类型},面向${实数},刷出数量${整数},刷出区域${区域},攻击X：${实数}，攻击Y：${实数},刷怪次数：${整数}，刷怪间隔：${实数},是否刷在区域随机点：${布尔}"
+comment = "就是把（单位不等于建筑）and（单位生命值大于0）and（单位是玩家的敌对单位）这3个条件合成到一起了"
+category = TC_MMRSB
+[[.args]]
+type = player
+[[.args]]
+type = unitcode
+[[.args]]
+type = real
+[[.args]]
+type = integer
+[[.args]]
+type = rect
+[[.args]]
+type = real
+[[.args]]
+type = real
+[[.args]]
+type = integer
+[[.args]]
+type = real
+[[.args]]
+type = boolean
+
+[T_SpawnUnitTU]
+title = "[某某人]启动计时器刷兵向指定单位攻击"
+description = "为玩家：${玩家},刷${单位类型},面向${实数},刷出数量${整数},刷出区域${区域},攻击到的单位：${单位},刷怪次数：${整数}，刷怪间隔：${实数},是否刷在区域随机点：${布尔}"
+comment = "就是把（单位不等于建筑）and（单位生命值大于0）and（单位是玩家的敌对单位）这3个条件合成到一起了"
+category = TC_MMRSB
+[[.args]]
+type = player
+[[.args]]
+type = unitcode
+[[.args]]
+type = real
+[[.args]]
+type = integer
+[[.args]]
+type = rect
+[[.args]]
+type = unit
+[[.args]]
+type = integer
+[[.args]]
+type = real
+[[.args]]
+type = boolean
+
+[T_SpawnUnitTU2rect]
+title = "[某某人]启动计时器刷兵向指定单位攻击(两矩形刷不重叠选点刷兵)"
+description = "为玩家：${玩家},刷${单位类型},面向${实数},刷出数量${整数},刷出并攻击到的单位：${单位},不刷怪物半径${实数}，刷出怪物半径${实数},刷怪次数：${整数}，刷怪间隔：${实数}刷怪不可超出区域：${区域}"
+comment = "不刷怪物半径一定要小于刷出怪物半径，否则刷不出来"
+category = TC_MMRSB
+[[.args]]
+type = player
+[[.args]]
+type = unitcode
+[[.args]]
+type = real
+[[.args]]
+type = integer
+[[.args]]
+type = unit
+[[.args]]
+type = real
+[[.args]]
+type = real
+[[.args]]
+type = integer
+[[.args]]
+type = real
+[[.args]]
+type = rect
+
+[T_UD_AddUPool]
+title = "[某某人爆装备]指定单位类型增加一个爆的装备"
+description = "指定单位类型增加一个爆的装备 ||单位类型：${单位类型}||物品类型：${物品类型}||物品权重：${实数}||所有物品爆率：${实数}"
+comment = "指定某个单位类型爆某种装备，权重计算[需要在地图初始化时开启爆装备系统]"
+category = TC_MMRDL
+[[.args]]
+type = unitcode
+[[.args]]
+type = itemcode
+[[.args]]
+type = real
+[[.args]]
+type = real
+
+
+[T_UD_RemovePool]
+title = "[某某人爆装备]指定单位类型清空全部爆的装备"
+description = "指定单位类型增加一个爆的装备 ||单位类型：${单位类型}"
+comment = "清理指定单位所有能爆的装备，权重计算[需要在地图初始化时开启爆装备系统]"
+category = TC_MMRDL
+[[.args]]
+type = unitcode
+
+[T_ResUDead_InMap]
+title = "[某某人爆装备]开启爆装备系统"
+description = "开启爆装备系统[初始化调用]"
+comment = "初始化调用最好，0s调用也可"
+category = TC_MMRDL
+
+
+
+
+
+
+
+
+
+[MSC_In_ChooseUI]
+title = "[某某人]超级选择创建UI"
+description = "创建UI数量：${整数},基础背景板图片：${字符串}，标题图片：${字符串}，三选一移出图片：${字符串}，三选一移入图片：${字符串}，三选一标题文字图片：${字符串}，关闭移出图片：${字符串}，关闭移入图片：${字符串}，刷新移出图片：${字符串}，刷新移入图片：${字符串}"
+comment = "显示数量不可大于创建数量：图片失效就是绿色图片了哦！"
+category = TC_WNSX1
+[[.args]]
+type = integer
+[[.args]]
+type = string
+[[.args]]
+type = string
+[[.args]]
+type = string
+[[.args]]
+type = string
+[[.args]]
+type = string
+[[.args]]
+type = string
+[[.args]]
+type = string
+[[.args]]
+type = string
+[[.args]]
+type = string
+
+[MSC_OpUiAsPlayer]
+title = "[某某人]为指定玩家打开超级选择"
+description = "玩家${玩家},事件ID${字符串},选项数量${整数}"
+comment = "选项数量不可大于你创建的选项数量，事件ID为空或当前有玩家正在选的三选一都不会有反应，事件ID如果不存在或者未被创建会有未知问题"
+category = TC_WNSX1
+[[.args]]
+type = player
+[[.args]]
+type = string
+[[.args]]
+type = integer
+
+[MSC_AsEvnentIdAddChoose]
+title = "[某某人]获得超级选择通过事件ID添加选项属性"
+description = "获得超级选择返回值，事件ID：${字符串}，选项序号：${整数}，标题：${字符串}图片：${字符串}文本：${字符串}返回值：${字符串}"
+comment = "为超级选择的指定事件ID的指定选择添加属性"
+category = TC_WNSX1
+[[.args]]
+type = string
+[[.args]]
+type = integer
+[[.args]]
+type = string
+[[.args]]
+type = string
+[[.args]]
+type = string
+[[.args]]
+type = string
+
+[MSC_DestroyChooseEvent]
+title = "[某某人]获得超级选择摧毁指定事件ID"
+description = "获得超级选择返回值，事件ID：${字符串}"
+comment = "摧毁指定事件ID"
+category = TC_WNSX1
+[[.args]]
+type = string
+
+[SplLevel_UseIt]
+title = "[某某人境界]境界系统启用"
+description = "启用境界系统"
+comment = "载入哈希表"
+category = TC_MMRJJ
+
+[SplLevel_SetLevelData]
+title = "[某某人境界]境界系统添加数据"
+description = "境界名称${字符串},境界需求值${实数}"
+comment = "从第0个境界开始，也是默认境界"
+category = TC_MMRJJ
+[[.args]]
+type = string
+[[.args]]
+type = real
+
+
+[SplLevel_SetUnitLevelData]
+title = "[某某人境界]为指定单位设置境界"
+description = "单位：${单位},境界${整数},境界值${实数}"
+comment = "如果单位没有境界将会默认添加0境界,并且不会添加境界值"
+category = TC_MMRJJ
+[[.args]]
+type = unit
+[[.args]]
+type = integer
+[[.args]]
+type = real

@@ -1,0 +1,2 @@
+[TriggerCategories]
+TC_XIAOWU=[小舞],ReplaceableTextures\CommandButtons\BTNCloakOfFlames.blp

@@ -1,0 +1,2 @@
+[TriggerCategories]
+TC_MNAPI=[猛男],ReplaceableTextures\CommandButtons\BTNBearBlink.blp

@@ -1,0 +1,11 @@
+[EncryptionAPI_ChangeKey]
+title = "加密系统秘钥"
+description = "字符串秘钥 ${String}"
+comment = "改变加密系统的秘钥"
+category = TC_JM
+[[.args]]
+type = string
+default = "需要更改的64为秘钥"
+
+
+

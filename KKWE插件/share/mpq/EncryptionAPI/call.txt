@@ -1,0 +1,28 @@
+[C2P]
+title = "转换字符串为加密字符串"
+description = "转换 ${String} 加上${String} 为加密过后的字符串"
+comment = "简单加密"
+category = TC_JM
+returns = string
+[[.args]]
+type = string
+default = "save"
+
+[[.args]]
+type = string
+default = "name"
+
+
+[P2C]
+title = "转换加密字符串为普通字符串"
+description = "转换 ${String} 加上${String} 为解密过后的字符串"
+comment = "简单加密"
+category = TC_JM
+returns = string
+[[.args]]
+type = string
+default = "load"
+
+[[.args]]
+type = string
+default = "name"
