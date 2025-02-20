@@ -1,8 +1,14 @@
-[InNzApi]
-title = "地图初始化时载入-载入内置"
-description = "地图初始化时载入-载入内置"
-comment = "必须地图初始化时载入,载入内置同是还会修改Lua引擎"
-category = TC_MMRAPI
+[MNz_RunCheckLeakage]
+title = "[某某人内置]初始化载入-排泄查看器"
+description = "[某某人内置]初始化载入-排泄查看器"
+comment = "ESC查看排泄"
+category = TC_MMRNZ
+
+[MNz_RunSetWindoInMid]
+title = "[某某人内置]初始化载入-窗口居中一次"
+description = "[某某人内置]初始化载入-窗口居中一次"
+comment = "窗口居中一次"
+category = TC_MMRNZ
 
 [T_ChooseRectAndDamage]
 title = "选取圆形范围单位造成伤害无需排泄"

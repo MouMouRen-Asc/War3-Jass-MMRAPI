@@ -2320,8 +2320,6 @@ library MmrApi initializer MmrApi_Init requires YDWEYDWEJapiScript , MMRTools
         set XW_JSQtx = null
     endfunction
 
-    function InNzApi takes nothing returns nothing
-    endfunction
 endlibrary
 
 #endif  ///MMRAPIIncluded

@@ -10,6 +10,7 @@ TC_MMRDL=[某某人爆装备],ReplaceableTextures\CommandButtons\BTNClawsOfAttac
 TC_WNSX1=[超级选择UI],ReplaceableTextures\CommandButtons\BTNJanggo.blp
 TC_MMRMATH=[某某人的特殊数学库],ReplaceableTextures\CommandButtons\BTNCrystalBall.blp
 TC_MMRJJ=[某某人境界系统],Objects\InventoryItems\TreasureChest\treasurechest.mdl
+TC_MMRNZ=[某某人内置],ReplaceableTextures\CommandButtons\BTNSentryWard.blp
 
 [TriggerTypes]
 boolean=0,1,1,WESTRING_TRIGTYPE_boolean
