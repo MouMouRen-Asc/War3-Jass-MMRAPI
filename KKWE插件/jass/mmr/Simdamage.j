@@ -5,7 +5,7 @@
 #ifndef DamageShowIncluded
 #define DamageShowIncluded
 
-library DamageShow requires optional BzAPI , YDWEYDWEJapiScript , MmrApi
+library DamageShow requires optional MmrApi
 
     globals
         private integer array UiDamQuick

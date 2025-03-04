@@ -2,7 +2,7 @@
 
 #ifndef ChooseOneForThreeIncluded 
 #define ChooseOneForThreeIncluded
-library ChooseOneForThree  requires BzAPI , YDWEAbilityState , YDWEYDWEJapiScript , MmrApi , FuncItemSystem
+library ChooseOneForThree  requires MmrApi , FuncItemSystem
     globals
 
         private integer array ChooseOneForThree_InUI

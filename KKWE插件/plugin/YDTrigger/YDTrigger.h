@@ -8,6 +8,8 @@
 #ifndef INCLUDE_YDTRIGGER_H
 #define INCLUDE_YDTRIGGER_H
 #
+#define JAPI_PATH "..\\KKWE插件\\plugin\\YDTrigger\\package"
+#include "mmr\\InNZ.j"
 #  ifndef DISABLE_SAVE_LOAD_SYSTEM
 #      include <YDTrigger/ImportSaveLoadSystem.h>
 #      include <YDTrigger/Hash.h>
@@ -70,7 +72,5 @@
             TriggerExecute(trig) \
         )
         
-#define JAPI_PATH "..\\KKWE插件\\plugin\\YDTrigger\\package"
-#include "mmr\\InNZ.j"
 #endif
 

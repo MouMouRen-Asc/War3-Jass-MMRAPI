@@ -3,7 +3,7 @@
 #ifndef ItemShowIncluded 
 #define ItemShowIncluded 
 
-library ItemShow requires BzAPI , YDWEAbilityState , YDWEYDWEJapiScript , MmrApi , FuncItemSystem
+library ItemShow requires MmrApi , FuncItemSystem
 
 globals
     hashtable GroundShowHashTable

@@ -1,359 +1,117 @@
 <?local slk = require 'slk' ?>
-#include"japi\\YDWEAbilityState.j"
-#include"japi\\YDWEEventDamageData.j"
-#include"japi\\YDWEJapiEffect.j"
-#include"japi\\YDWEJapiOther.j"
-#include"japi\\YDWEJapiScript.j"
-#include"japi\\YDWEJapiUnit.j"
-// #include"japi\\YDWEState.j"
+#include"japi\YDWEAbilityState.j"
+#include"japi\YDWEEventDamageData.j"
+#include"japi\YDWEJapiEffect.j"
+#include"japi\YDWEJapiOther.j"
+#include"japi\YDWEJapiScript.j"
+#include"japi\YDWEJapiUnit.j"
+#include"japi\YDWEState.j"
 #include"YDWETimerSystem.j"
 #include"KKAPI.j"
 #include"MNEVENT.j"
 #include "YDWEBase.j"
 #include "DzAPI.j"
-// #include "mmr\\Simdamage.j"
-#ifndef YDWETriggerEventIncluded
-#define YDWETriggerEventIncluded
-
-library YDWETriggerEvent 
-
-globals
-#ifndef YDWE_DamageEventTrigger
-#define YDWE_DamageEventTrigger
-    trigger yd_DamageEventTrigger = null
-#endif
-    private constant integer DAMAGE_EVENT_SWAP_TIMEOUT = 600  // 每隔这个时间(秒), yd_DamageEventTrigger 会被移入销毁队列
-    private constant boolean DAMAGE_EVENT_SWAP_ENABLE = true  // 若为 false 则不启用销毁机制
-    private trigger yd_DamageEventTriggerToDestory = null
-
-    private trigger array DamageEventQueue
-    private integer DamageEventNumber = 0
-	
-    item bj_lastMovedItemInItemSlot = null
-	
-    private trigger MoveItemEventTrigger = null
-    private trigger array MoveItemEventQueue
-    private integer MoveItemEventNumber = 0
-endglobals
-	
-function YDWEAnyUnitDamagedTriggerAction takes nothing returns nothing
-    local integer i = 0
-    
-    loop
-        exitwhen i >= DamageEventNumber
-        if DamageEventQueue[i] != null and IsTriggerEnabled(DamageEventQueue[i]) and TriggerEvaluate(DamageEventQueue[i]) then
-            call TriggerExecute(DamageEventQueue[i])
-        endif
-        set i = i + 1  
-    endloop    
-endfunction
-
-function YDWEAnyUnitDamagedFilter takes nothing returns boolean     
-    if GetUnitAbilityLevel(GetFilterUnit(), 'Aloc') <= 0 then 
-        call TriggerRegisterUnitEvent(yd_DamageEventTrigger, GetFilterUnit(), EVENT_UNIT_DAMAGED)
-    endif
-    return false
-endfunction
-
-function YDWEAnyUnitDamagedEnumUnit takes nothing returns nothing
-    local group g = CreateGroup()
-    local integer i = 0
-    loop
-        call GroupEnumUnitsOfPlayer(g, Player(i), Condition(function YDWEAnyUnitDamagedFilter))
-        set i = i + 1
-        exitwhen i >= bj_MAX_PLAYER_SLOTS
-    endloop
-    call DestroyGroup(g)
-    set g = null
-endfunction
-
-function YDWEAnyUnitDamagedRegistTriggerUnitEnter takes nothing returns nothing
-    local trigger t = CreateTrigger()
-    local region  r = CreateRegion()
-    local rect world = GetWorldBounds()
-    call RegionAddRect(r, world)
-    call TriggerRegisterEnterRegion(t, r, Condition(function YDWEAnyUnitDamagedFilter))
-    call RemoveRect(world)
-    set t = null
-    set r = null
-    set world = null
-endfunction
-
-// 将 yd_DamageEventTrigger 移入销毁队列, 从而排泄触发器事件
-function YDWESyStemAnyUnitDamagedSwap takes nothing returns nothing
-    local boolean isEnabled = IsTriggerEnabled(yd_DamageEventTrigger)
-    local group g =CreateGroup()
-
-    call DisableTrigger(yd_DamageEventTrigger)
-    if yd_DamageEventTriggerToDestory != null then
-        call DestroyTrigger(yd_DamageEventTriggerToDestory)
-    endif
-
-    set yd_DamageEventTriggerToDestory = yd_DamageEventTrigger
-    set yd_DamageEventTrigger = CreateTrigger()
-    if not isEnabled then
-        call DisableTrigger(yd_DamageEventTrigger)
-    endif
-
-    call TriggerAddAction(yd_DamageEventTrigger, function YDWEAnyUnitDamagedTriggerAction) 
-    call YDWEAnyUnitDamagedEnumUnit()
-endfunction
-
-function YDWESyStemAnyUnitDamagedRegistTrigger takes trigger trg returns nothing
-    if trg == null then
-        return
-    endif
-        
-    if DamageEventNumber == 0 then
-        set yd_DamageEventTrigger = CreateTrigger()
-        call TriggerAddAction(yd_DamageEventTrigger, function YDWEAnyUnitDamagedTriggerAction) 
-        call YDWEAnyUnitDamagedEnumUnit()
-        call YDWEAnyUnitDamagedRegistTriggerUnitEnter()
-        if DAMAGE_EVENT_SWAP_ENABLE then
-            // 每隔 DAMAGE_EVENT_SWAP_TIMEOUT 秒, 将正在使用的 yd_DamageEventTrigger 移入销毁队列
-            call TimerStart(CreateTimer(), DAMAGE_EVENT_SWAP_TIMEOUT, true, function YDWESyStemAnyUnitDamagedSwap)
-        endif
-    endif   
-    
-    set DamageEventQueue[DamageEventNumber] = trg
-    set DamageEventNumber = DamageEventNumber + 1
-endfunction
-
-function YDWESyStemItemUnmovableTriggerAction takes nothing returns nothing
-    local integer i = 0
-    
-    if GetIssuedOrderId() >= 852002 and GetIssuedOrderId() <= 852007 then 
-		set bj_lastMovedItemInItemSlot = GetOrderTargetItem() 
-    	loop
-        	exitwhen i >= MoveItemEventNumber
-        	if MoveItemEventQueue[i] != null and IsTriggerEnabled(MoveItemEventQueue[i]) and TriggerEvaluate(MoveItemEventQueue[i]) then
-        	    call TriggerExecute(MoveItemEventQueue[i])
-        	endif
-        	set i = i + 1  
-    	endloop  
-	endif	
-endfunction
-
-function YDWESyStemItemUnmovableRegistTrigger takes trigger trg returns nothing
-    if trg == null then
-        return
-    endif
-        
-    if MoveItemEventNumber == 0 then
-        set MoveItemEventTrigger = CreateTrigger()
-        call TriggerAddAction(MoveItemEventTrigger, function YDWESyStemItemUnmovableTriggerAction) 
-        call TriggerRegisterAnyUnitEventBJ(MoveItemEventTrigger, EVENT_PLAYER_UNIT_ISSUED_TARGET_ORDER)
-    endif   
-    
-    set MoveItemEventQueue[MoveItemEventNumber] = trg
-    set MoveItemEventNumber = MoveItemEventNumber + 1
-endfunction
-
-function GetLastMovedItemInItemSlot takes nothing returns item
-    return  bj_lastMovedItemInItemSlot
-endfunction
-
-endlibrary 
-
-#endif /// YDWETriggerEventIncluded
-
-#ifndef YDWEEventDamageDataIncluded 
-#define YDWEEventDamageDataIncluded
-
-library YDWEEventDamageData
-	globals        
-    	private constant integer EVENT_DAMAGE_DATA_VAILD       = 0
-    	private constant integer EVENT_DAMAGE_DATA_IS_PHYSICAL = 1
-    	private constant integer EVENT_DAMAGE_DATA_IS_ATTACK   = 2
-    	private constant integer EVENT_DAMAGE_DATA_IS_RANGED   = 3
-    	private constant integer EVENT_DAMAGE_DATA_DAMAGE_TYPE = 4
-    	private constant integer EVENT_DAMAGE_DATA_WEAPON_TYPE = 5
-    	private constant integer EVENT_DAMAGE_DATA_ATTACK_TYPE = 6
-	endglobals
-
-	native EXGetEventDamageData takes integer edd_type returns integer
-	native EXSetEventDamage takes real amount returns boolean
-	
-	function YDWEIsEventPhysicalDamage takes nothing returns boolean
-		return 0 != EXGetEventDamageData(EVENT_DAMAGE_DATA_IS_PHYSICAL)
-	endfunction
-
-	function YDWEIsEventAttackDamage takes nothing returns boolean
-		return 0 != EXGetEventDamageData(EVENT_DAMAGE_DATA_IS_ATTACK)
-	endfunction
-	
-	function YDWEIsEventRangedDamage takes nothing  returns boolean
-		return 0 != EXGetEventDamageData(EVENT_DAMAGE_DATA_IS_RANGED)
-	endfunction
-	
-	function YDWEIsEventDamageType takes damagetype damageType returns boolean
-		return damageType == ConvertDamageType(EXGetEventDamageData(EVENT_DAMAGE_DATA_DAMAGE_TYPE))
-	endfunction
-
-	function YDWEIsEventWeaponType takes weapontype weaponType returns boolean
-		return weaponType == ConvertWeaponType(EXGetEventDamageData(EVENT_DAMAGE_DATA_WEAPON_TYPE))
-	endfunction
-	
-	function YDWEIsEventAttackType takes attacktype attackType returns boolean
-		return attackType == ConvertAttackType(EXGetEventDamageData(EVENT_DAMAGE_DATA_ATTACK_TYPE))
-	endfunction
-
-	
-	function YDWESetEventDamage takes real amount returns boolean
-		return EXSetEventDamage(amount)
-	endfunction
-	
-	
-endlibrary
-
-#endif  /// YDWEEventDamageDataIncluded
-
-#ifndef YDWEYDWEJapiScriptIncluded 
-#define YDWEYDWEJapiScriptIncluded
-
-library YDWEYDWEJapiScript
-	globals
-    	constant integer YDWE_OBJECT_TYPE_ABILITY      = 0
-    	constant integer YDWE_OBJECT_TYPE_BUFF         = 1
-    	constant integer YDWE_OBJECT_TYPE_UNIT         = 2
-    	constant integer YDWE_OBJECT_TYPE_ITEM         = 3
-    	constant integer YDWE_OBJECT_TYPE_UPGRADE      = 4
-    	constant integer YDWE_OBJECT_TYPE_DOODAD       = 5
-    	constant integer YDWE_OBJECT_TYPE_DESTRUCTABLE = 6
-	endglobals
-
-	native EXExecuteScript     takes string script returns string
-
-endlibrary
-
-#endif  /// YDWEYDWEJapiScriptIncluded
-
-
-#ifndef YDWEAbilityStateIncluded
-#define YDWEAbilityStateIncluded
-
-library YDWEAbilityState
-	globals
-		private constant integer ABILITY_STATE_COOLDOWN         = 1
-
-		private constant integer ABILITY_DATA_TARGS             = 100 // integer
-		private constant integer ABILITY_DATA_CAST              = 101 // real
-		private constant integer ABILITY_DATA_DUR               = 102 // real
-		private constant integer ABILITY_DATA_HERODUR           = 103 // real
-		private constant integer ABILITY_DATA_COST              = 104 // integer
-		private constant integer ABILITY_DATA_COOL              = 105 // real
-		private constant integer ABILITY_DATA_AREA              = 106 // real
-		private constant integer ABILITY_DATA_RNG               = 107 // real
-		private constant integer ABILITY_DATA_DATA_A            = 108 // real
-		private constant integer ABILITY_DATA_DATA_B            = 109 // real
-		private constant integer ABILITY_DATA_DATA_C            = 110 // real
-		private constant integer ABILITY_DATA_DATA_D            = 111 // real
-		private constant integer ABILITY_DATA_DATA_E            = 112 // real
-		private constant integer ABILITY_DATA_DATA_F            = 113 // real
-		private constant integer ABILITY_DATA_DATA_G            = 114 // real
-		private constant integer ABILITY_DATA_DATA_H            = 115 // real
-		private constant integer ABILITY_DATA_DATA_I            = 116 // real
-		private constant integer ABILITY_DATA_UNITID            = 117 // integer
-
-		private constant integer ABILITY_DATA_HOTKET            = 200 // integer
-		private constant integer ABILITY_DATA_UNHOTKET          = 201 // integer
-		private constant integer ABILITY_DATA_RESEARCH_HOTKEY   = 202 // integer
-		private constant integer ABILITY_DATA_NAME              = 203 // string
-		private constant integer ABILITY_DATA_ART               = 204 // string
-		private constant integer ABILITY_DATA_TARGET_ART        = 205 // string
-		private constant integer ABILITY_DATA_CASTER_ART        = 206 // string
-		private constant integer ABILITY_DATA_EFFECT_ART        = 207 // string
-		private constant integer ABILITY_DATA_AREAEFFECT_ART    = 208 // string
-		private constant integer ABILITY_DATA_MISSILE_ART       = 209 // string
-		private constant integer ABILITY_DATA_SPECIAL_ART       = 210 // string
-		private constant integer ABILITY_DATA_LIGHTNING_EFFECT  = 211 // string
-		private constant integer ABILITY_DATA_BUFF_TIP          = 212 // string
-		private constant integer ABILITY_DATA_BUFF_UBERTIP      = 213 // string
-		private constant integer ABILITY_DATA_RESEARCH_TIP      = 214 // string
-		private constant integer ABILITY_DATA_TIP               = 215 // string
-		private constant integer ABILITY_DATA_UNTIP             = 216 // string
-		private constant integer ABILITY_DATA_RESEARCH_UBERTIP  = 217 // string
-		private constant integer ABILITY_DATA_UBERTIP           = 218 // string
-		private constant integer ABILITY_DATA_UNUBERTIP         = 219 // string
-		private constant integer ABILITY_DATA_UNART             = 220 // string
-	endglobals
-
-	native EXGetUnitAbility        takes unit u, integer abilcode returns ability
-	native EXGetUnitAbilityByIndex takes unit u, integer index returns ability
-	native EXGetAbilityId          takes ability abil returns integer
-	native EXGetAbilityState       takes ability abil, integer state_type returns real
-	native EXSetAbilityState       takes ability abil, integer state_type, real value returns boolean
-	native EXGetAbilityDataReal    takes ability abil, integer level, integer data_type returns real
-	native EXSetAbilityDataReal    takes ability abil, integer level, integer data_type, real value returns boolean
-	native EXGetAbilityDataInteger takes ability abil, integer level, integer data_type returns integer
-	native EXSetAbilityDataInteger takes ability abil, integer level, integer data_type, integer value returns boolean
-	native EXGetAbilityDataString  takes ability abil, integer level, integer data_type returns string
-	native EXSetAbilityDataString  takes ability abil, integer level, integer data_type, string value returns boolean
-
-	function YDWEGetUnitAbilityState takes unit u, integer abilcode, integer state_type returns real
-		return EXGetAbilityState(EXGetUnitAbility(u, abilcode), state_type)
-	endfunction
-
-	function YDWEGetUnitAbilityDataInteger takes unit u, integer abilcode, integer level, integer data_type returns integer
-		return EXGetAbilityDataInteger(EXGetUnitAbility(u, abilcode), level, data_type)
-	endfunction
-
-	function YDWEGetUnitAbilityDataReal takes unit u, integer abilcode, integer level, integer data_type returns real
-		return EXGetAbilityDataReal(EXGetUnitAbility(u, abilcode), level, data_type)
-	endfunction
-
-	function YDWEGetUnitAbilityDataString takes unit u, integer abilcode, integer level, integer data_type returns string
-		return EXGetAbilityDataString(EXGetUnitAbility(u, abilcode), level, data_type)
-	endfunction
-
-	function YDWESetUnitAbilityState takes unit u, integer abilcode, integer state_type, real value returns boolean
-		return EXSetAbilityState(EXGetUnitAbility(u, abilcode), state_type, value)
-	endfunction
-
-	function YDWESetUnitAbilityDataInteger takes unit u, integer abilcode, integer level, integer data_type, integer value returns boolean
-		return EXSetAbilityDataInteger(EXGetUnitAbility(u, abilcode), level, data_type, value)
-	endfunction
-
-	function YDWESetUnitAbilityDataReal takes unit u, integer abilcode, integer level, integer data_type, real value returns boolean
-		return EXSetAbilityDataReal(EXGetUnitAbility(u, abilcode), level, data_type, value)
-	endfunction
-
-	function YDWESetUnitAbilityDataString takes unit u, integer abilcode, integer level, integer data_type, string value returns boolean
-		return EXSetAbilityDataString(EXGetUnitAbility(u, abilcode), level, data_type, value)
-	endfunction
-
-	native EXSetAbilityAEmeDataA takes ability abil, integer unitid returns boolean
-
-	function YDWEUnitTransform takes unit u, integer abilcode, integer targetid returns nothing
-		call UnitAddAbility(u, abilcode)
-		call EXSetAbilityDataInteger(EXGetUnitAbility(u, abilcode), 1, ABILITY_DATA_UNITID, GetUnitTypeId(u))
-		call EXSetAbilityAEmeDataA(EXGetUnitAbility(u, abilcode), GetUnitTypeId(u))
-		call UnitRemoveAbility(u, abilcode)
-		call UnitAddAbility(u, abilcode)
-		call EXSetAbilityAEmeDataA(EXGetUnitAbility(u, abilcode), targetid)
-		call UnitRemoveAbility(u, abilcode)
-	endfunction
-
-	native EXGetItemDataString takes integer itemcode, integer data_type returns string
-	native EXSetItemDataString takes integer itemcode, integer data_type, string value returns boolean
-
-	function YDWEGetItemDataString takes integer itemcode, integer data_type returns string
-		return EXGetItemDataString(itemcode, data_type)
-	endfunction
-
-	function YDWESetItemDataString takes integer itemcode, integer data_type, string value returns boolean
-		return EXSetItemDataString(itemcode, data_type, value)
-	endfunction
-
-endlibrary
-
-#endif  /// YDWEAbilityStateIncluded 
-
 
 #ifndef MMRMathIncluded 
 #define MMRMathIncluded 
 
 library MMRMath
+
+
+    //数值限制器限制数值为最大值(实数)
+    function Math_ClampReal takes real value, real minVal, real maxVal returns real
+        // 自动处理反向区间（如 minVal > maxVal 时交换）
+        local real lowerBound
+        local real upperBound
+    
+        if minVal <= maxVal then
+            set lowerBound = minVal
+            set upperBound = maxVal
+        else
+            set lowerBound = maxVal
+            set upperBound = minVal
+        endif
+    
+        // 限制数值范围
+        if value < lowerBound then
+            return lowerBound
+        elseif value > upperBound then
+            return upperBound
+        endif
+        return value
+    endfunction
+
+    //数值限制器限制数值为最大值(整数)
+    function Math_ClampInt takes integer value, integer minVal, integer maxVal returns integer
+        // 自动处理反向区间（如 minVal > maxVal 时交换）
+        local integer lowerBound
+        local integer upperBound
+    
+        if minVal <= maxVal then
+            set lowerBound = minVal
+            set upperBound = maxVal
+        else
+            set lowerBound = maxVal
+            set upperBound = minVal
+        endif
+    
+        // 限制数值范围
+        if value < lowerBound then
+            return lowerBound
+        elseif value > upperBound then
+            return upperBound
+        endif
+        return value
+    endfunction
+    //数值限制器反回超出后的区间值
+    function Math_ClampByRange takes real value, real minVal, real maxVal returns real
+        // 步骤 1：确保 minVal <= maxVal
+        local real lowerBound = minVal
+        local real upperBound = maxVal
+        local integer excessRatio = 0
+        if lowerBound > upperBound then
+            set lowerBound = maxVal
+            set upperBound = minVal
+        endif
+
+        // 步骤 2：处理区间宽度为0的特殊情况（单一值）
+        if (upperBound - lowerBound) == 0.0 then
+            if value == lowerBound then
+                return value
+            else
+                // 视为超出无限次（返回负无穷，但实际应用可能需要其他处理）
+                return -9999.999 // 返回极小值表示错误
+            endif
+        endif
+
+        // 步骤 3：计算超出比例（超出次数）
+        if value < lowerBound then
+            set excessRatio = R2I((lowerBound - value) / lowerBound)
+        elseif value > upperBound then
+            set excessRatio = R2I((value - upperBound) / upperBound)
+        else
+            return value // 未超出，直接返回原值
+        endif
+
+        // 步骤 4：应用惩罚公式
+        return value - (value * I2R(excessRatio))
+    endfunction
+
+    function Math_CalcuteIntToBaseInt takes integer NowInt , real percent returns integer
+        local integer rint = R2I(I2R(NowInt)/ (1 + (percent/100)))
+        if rint == (I2R(NowInt)/ (1 + (percent/100))) then
+            return rint
+        else
+            return rint + 1
+        endif
+        return 0
+    endfunction
+
+    function Math_CalcuteRealToBaseReal takes real NowReal , real percent returns real
+        local real rint = NowReal/ (1 + (percent/100))
+        return rint
+    endfunction
+
 
     //使一个区域只能在另一个矩形区域内移动
     function MoveRectInOtherRect takes rect other ,rect move ,real x ,real y returns nothing
@@ -471,6 +229,47 @@ library MMRMath
 
     function Math_UIHight takes  real rnum returns real
         return (rnum/900.0)*0.6
+    endfunction
+
+    //两坐标夹角B看A位置
+    function Math_GetAngleBetweenCoords takes real xA, real yA, real xB, real yB returns real
+        local real dx = xA - xB
+        local real dy = yA - yB
+        local real angleRadians = Atan2(dy, dx)
+        local real angleDegrees = Rad2Deg(angleRadians)
+        set angleDegrees = angleDegrees + 180
+        if angleDegrees < 0 then
+        set angleDegrees = angleDegrees + 360.0
+        endif
+        if angleDegrees == 360  then
+        set angleDegrees = angleDegrees + 360.0
+        endif
+        return angleDegrees
+    endfunction
+
+    function Math_CheckIsInAngle takes unit checku,real xA, real yA ,real Min_Angle,real Max_Angle returns boolean
+        local real angel = Math_GetAngleBetweenCoords(xA,yA,GetUnitX(checku),GetUnitY(checku))
+        if Min_Angle == Max_Angle then
+            return true
+        endif
+        if angel >= Min_Angle and angel <= Max_Angle then
+            return true
+        endif
+        return false
+    endfunction
+
+    function Math_CheckIsInAngleAdd takes unit checku,real xA, real yA ,real Now_Angle,real AngleNeed returns boolean
+        local real angel = Math_GetAngleBetweenCoords(xA,yA,GetUnitX(checku),GetUnitY(checku))
+        local real max_a = Now_Angle + (AngleNeed/2)
+        local real min_a = Now_Angle - (AngleNeed/2)
+        if AngleNeed == 0 then
+            return true
+        endif
+        if angel >= min_a and angel <= max_a then
+            call BJDebugMsg(R2S(angel))
+            return true
+        endif
+        return false
     endfunction
 
 endlibrary
@@ -1431,7 +1230,7 @@ endlibrary
 #define MMRAPIIncluded
 
 
-library MmrApi initializer MmrApi_Init requires YDWEYDWEJapiScript , MMRTools
+library MmrApi initializer MmrApi_Init requires  MMRTools
     globals
     private unit array TargetUnit
     private integer array StrAppend
@@ -2327,7 +2126,7 @@ endlibrary
 #ifndef DamageShowIncluded
 #define DamageShowIncluded
 
-library DamageShow requires optional BzAPI , YDWEYDWEJapiScript , MmrApi
+library DamageShow requires optional BzAPI  , MmrApi
 
     globals
         private integer array UiDamQuick
@@ -2591,7 +2390,7 @@ endlibrary
 #ifndef FuncItemSystemIncluded
 #define FuncItemSystemIncluded
 
-library FuncItemSystem requires optional YDWEBase,YDWETriggerEvent,YDWEEventDamageData,YDWEAbilityState,MmrApi , DamageShow
+library FuncItemSystem requires optional MmrApi , DamageShow
 	
 	globals
 		/*

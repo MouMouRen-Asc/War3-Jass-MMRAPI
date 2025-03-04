@@ -6,7 +6,7 @@
 #define BagPackApiIncluded 
 
  
-library BagPackApi requires BzAPI , YDWEYDWEJapiScript , MmrApi
+library BagPackApi requires MmrApi
 
     native function DzTriggerRegisterMouseEventTrg takes trigger trg, integer status, integer btn returns nothing
     

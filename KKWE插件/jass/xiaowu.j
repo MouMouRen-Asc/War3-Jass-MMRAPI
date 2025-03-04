@@ -1,10 +1,13 @@
-#include"japi\YDWEAbilityState.j"
-#include"japi\YDWEEventDamageData.j"
-#include"japi\YDWEJapiEffect.j"
-#include"japi\YDWEJapiOther.j"
-#include"japi\YDWEJapiScript.j"
-#include"japi\YDWEJapiUnit.j"
-#include"japi\YDWEState.j"
+#include"japi\\YDWEAbilityState.j"
+#include"japi\\YDWEEventDamageData.j"
+#include"japi\\YDWEJapiEffect.j"
+#include"japi\\YDWEJapiOther.j"
+#include"japi\\YDWEJapiScript.j"
+#include"japi\\YDWEJapiUnit.j"
+#include"japi\\YDWEState.j"
+
+#ifndef XIAOWUIncluded 
+#define XIAOWUIncluded 
 library XIAOWU
 
     globals
@@ -272,4 +275,4 @@ endfunction
 endlibrary
 
 
-
+#endif

@@ -466,6 +466,118 @@ returns = real
 [[.args]]
 type = real
 
+[Math_GetAngleBetweenCoords]
+title = "[某某人]B坐标观察A坐标的角度"
+description =  "AX值：${实数},AY值：${实数},BX值：${实数},BY值：${实数}"
+comment = "返回计算后的角度"
+category = TC_MMRMATH
+returns = real
+[[.args]]
+type = real
+[[.args]]
+type = real
+[[.args]]
+type = real
+[[.args]]
+type = real
+
+[Math_CheckIsInAngle]
+title = "[某某人]单位是否在指定XY位置的相对角度"
+description =  "检查单位：${单位},X值：${实数},Y值：${实数},最小角度：${实数}，最大角度：${实数}"
+comment = ""
+category = TC_MMRMATH
+returns = boolean
+[[.args]]
+type = unit
+[[.args]]
+type = real
+[[.args]]
+type = real
+[[.args]]
+type = real
+[[.args]]
+type = real
+
+[Math_CheckIsInAngleAdd]
+title = "[某某人]单位是否在指定XY位置的相对角度(动态计算)"
+description =  "检查单位：${单位},X值：${实数},Y值：${实数},面相角度：${实数}，角度波动：${实数}"
+comment = ""
+category = TC_MMRMATH
+returns = boolean
+[[.args]]
+type = unit
+[[.args]]
+type = real
+[[.args]]
+type = real
+[[.args]]
+type = real
+[[.args]]
+type = real
+
+
+[Math_ClampReal]
+title = "[某某人]实数限制最大值"
+description =  "传入数：${实数},最小值：${实数},最大值：${实数}"
+comment = "返回不超限的实数"
+category = TC_MMRMATH
+returns = real
+[[.args]]
+type = real
+[[.args]]
+type = real
+[[.args]]
+type = real
+
+[Math_ClampInt]
+title = "[某某人]整数限制最大值"
+description =  "传入数：${整数},最小值：${整数},最大值：${整数}"
+comment = "返回不超限的整数"
+category = TC_MMRMATH
+returns = integer
+[[.args]]
+type = integer
+[[.args]]
+type = integer
+[[.args]]
+type = integer
+
+[Math_ClampByRange]
+title = "[某某人]超限余数"
+description =  "传入数：${实数},最小值：${实数},最大值：${实数}"
+comment = "返回超越N次限制后的余下值"
+category = TC_MMRMATH
+returns = real
+[[.args]]
+type = real
+[[.args]]
+type = real
+[[.args]]
+type = real
+
+[Math_CalcuteIntToBaseInt]
+title = "[某某人]还原整数根据魔兽特性"
+description =  "需要还原数：${整数},百分比值：${实数}"
+comment = "返回整数受到百分比加成前的值"
+category = TC_MMRMATH
+returns = integer
+[[.args]]
+type = integer
+[[.args]]
+type = real
+
+[Math_CalcuteRealToBaseReal]
+title = "[某某人]还原实数"
+description =  "需要还原数：${实数},百分比值：${实数}"
+comment = "返回实数受到百分比加成前的值"
+category = TC_MMRMATH
+returns = real
+[[.args]]
+type = real
+[[.args]]
+type = real
+
+
 
 [SplLevel_AddUnitLevelData]
 title = "[某某人境界]为指定单位添加境界值"

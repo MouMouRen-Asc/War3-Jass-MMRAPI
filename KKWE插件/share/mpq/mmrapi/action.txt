@@ -1032,6 +1032,34 @@ type = string
 [[.args]]
 type = integer
 
+
+[MSC_CloseUiAsPlayer]
+title = "[某某人]为指定玩家关闭超级选择"
+description = "关闭玩家选择UI并且情况内置事件ID玩家${玩家}"
+comment = ""
+category = TC_WNSX1
+[[.args]]
+type = player
+
+[MSC_DisLikeShow]
+title = "[某某人]所有玩家是否可以手动关闭超级选择"
+description = "所有玩家是否可以手动关闭超级选择${布尔}"
+comment = ""
+category = TC_WNSX1
+[[.args]]
+type = boolean
+
+[MSC_PreShow]
+title = "[某某人]指定玩家是否可以刷新"
+description = "所有玩家${玩家}是否可以手动关闭超级选择${布尔}"
+comment = ""
+category = TC_WNSX1
+[[.args]]
+type = player
+[[.args]]
+type = boolean
+
+
 [MSC_AsEvnentIdAddChoose]
 title = "[某某人]获得超级选择通过事件ID添加选项属性"
 description = "获得超级选择返回值，事件ID：${字符串}，选项序号：${整数}，标题：${字符串}图片：${字符串}文本：${字符串}返回值：${字符串}"
