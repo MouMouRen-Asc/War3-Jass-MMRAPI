@@ -34,6 +34,36 @@ type = attacktype
 [[.args]]
 type = damagetype
 
+[T_ChooseRectAndDamageCSFX]
+title = "选取圆形范围单位造成伤害无需排泄并且对伤害单位创建立即删除特效"
+description = "造成伤害单位${单位}，造成伤害位置X${实数}，造成伤害位置Y${实数},造成的伤害${实数},造成伤害范围${实数},是否是平A伤害${布尔},是否是远程伤害${布尔},攻击类型${攻击类型}，伤害类型${伤害类型},特效地址${字符串}特效相对目标正面角度${实数}"
+comment = "模拟属性增减，但是只会模拟部分属性"
+category = TC_MMRAPI
+[[.args]]
+type = unit
+[[.args]]
+type = real
+[[.args]]
+type = real
+[[.args]]
+type = real
+[[.args]]
+type = real
+[[.args]]
+type = boolean
+[[.args]]
+type = boolean
+[[.args]]
+type = attacktype
+[[.args]]
+type = damagetype
+[[.args]]
+type = string
+[[.args]]
+type = real
+
+
+
 [MMRAPI_BaseAttributemodification]
 title = "万能属性模拟系统（基础）[某某人制作]"
 description = "需要设置的单位为 ${单位}，属性类型为 ${属性类型}，数值为 ${数值}，是增加么 ${是还是否}"
@@ -227,6 +257,41 @@ comment = "如果你装备搞多了把我哈希表爆了也可以用这个腾出
 category = TC_MMRAPI
 [[.args]]
 type = item
+
+[T_SetEffectXYByCircleAsDegrees]
+title = "位移特效至圆边一点[某某人制作]"
+description = "指定的装备：${特效} ,X坐标：${实数}，Y坐标：${实数}，圆半径：${实数}，角度：${实数}[某某人制作]"
+comment = "嗯，就这么用"
+category = TC_MMRAPI
+[[.args]]
+type = effect
+[[.args]]
+type = real
+[[.args]]
+type = real
+[[.args]]
+type = real
+[[.args]]
+type = real
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 [BagPackApi_SetItemToBag]

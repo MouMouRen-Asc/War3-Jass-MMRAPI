@@ -577,6 +577,93 @@ type = real
 [[.args]]
 type = real
 
+[Math_GetDistanceAsLoc]
+title = "[某某人]两个坐标之间的距离"
+description =  "X1：${实数},Y1：${实数}X2：${实数},Y2：${实数}"
+comment = "返回距离值"
+category = TC_MMRMATH
+returns = real
+[[.args]]
+type = real
+[[.args]]
+type = real
+[[.args]]
+type = real
+[[.args]]
+type = real
+
+
+[Math_GetMovedX]
+title = "[某某人]坐标向目标坐标移动X轴"
+description =  "X1：${实数},Y1：${实数}X2：${实数},Y2：${实数}移动距离：${实数}"
+comment = "返回距离值"
+category = TC_MMRMATH
+returns = real
+[[.args]]
+type = real
+[[.args]]
+type = real
+[[.args]]
+type = real
+[[.args]]
+type = real
+[[.args]]
+type = real
+
+[Math_GetMovedY]
+title = "[某某人]坐标向目标坐标移动Y轴"
+description =  "X1：${实数},Y1：${实数}X2：${实数},Y2：${实数}移动距离：${实数}"
+comment = "返回距离值"
+category = TC_MMRMATH
+returns = real
+[[.args]]
+type = real
+[[.args]]
+type = real
+[[.args]]
+type = real
+[[.args]]
+type = real
+[[.args]]
+type = real
+
+[Math_ParabolaCalcuteAsY]
+title = "[某某人]常规抛物线计算"
+description =  "时间值：${实数}"
+comment = "返回高度比率0-1"
+category = TC_MMRMATH
+returns = real
+[[.args]]
+type = real
+
+[Math_GetCircleXDeg]
+title = "[某某人]计算圆边点-X值"
+description =  "圆心X坐标：${实数}，圆心半径：${实数},目标角度${实数}"
+comment = "根据角度计算的偏移X位置"
+category = TC_MMRMATH
+returns = real
+[[.args]]
+type = real
+[[.args]]
+type = real
+[[.args]]
+type = real
+
+[Math_GetCircleYDeg]
+title = "[某某人]计算圆边点-Y值"
+description =  "圆心Y坐标：${实数}，圆心半径：${实数},目标角度${实数}"
+comment = "根据角度计算的偏移Y位置"
+category = TC_MMRMATH
+returns = real
+[[.args]]
+type = real
+[[.args]]
+type = real
+[[.args]]
+type = real
+
+
+
 
 
 [SplLevel_AddUnitLevelData]

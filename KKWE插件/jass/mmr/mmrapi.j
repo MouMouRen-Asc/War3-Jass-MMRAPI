@@ -69,32 +69,25 @@ library MMRMath
         local real lowerBound = minVal
         local real upperBound = maxVal
         local integer excessRatio = 0
+        local real v = value
         if lowerBound > upperBound then
             set lowerBound = maxVal
             set upperBound = minVal
         endif
-
         // 步骤 2：处理区间宽度为0的特殊情况（单一值）
-        if (upperBound - lowerBound) == 0.0 then
-            if value == lowerBound then
-                return value
-            else
-                // 视为超出无限次（返回负无穷，但实际应用可能需要其他处理）
-                return -9999.999 // 返回极小值表示错误
-            endif
+        if upperBound == lowerBound then 
+            return v
         endif
 
         // 步骤 3：计算超出比例（超出次数）
-        if value < lowerBound then
-            set excessRatio = R2I((lowerBound - value) / lowerBound)
-        elseif value > upperBound then
-            set excessRatio = R2I((value - upperBound) / upperBound)
+        if v < lowerBound then
+            return upperBound
+        elseif v > upperBound then
+            return lowerBound
         else
-            return value // 未超出，直接返回原值
+            return v // 未超出，直接返回原值
         endif
-
-        // 步骤 4：应用惩罚公式
-        return value - (value * I2R(excessRatio))
+        return 0.00
     endfunction
 
     function Math_CalcuteIntToBaseInt takes integer NowInt , real percent returns integer
@@ -112,6 +105,36 @@ library MMRMath
         return rint
     endfunction
 
+    //两个坐标之间的距离
+    // 计算两点间距离的JASS函数
+    function Math_GetDistanceAsLoc takes real x1, real y1, real x2, real y2 returns real
+        local real dx = x2 - x1  // X轴差值
+        local real dy = y2 - y1  // Y轴差值
+        return SquareRoot(dx*dx + dy*dy) // 勾股定理求距离
+    endfunction
+
+
+    // 坐标向目标坐标移动X轴
+    function Math_GetMovedX takes real x1, real y1, real x2, real y2, real distance returns real
+        local real dx = x2 - x1
+        local real dy = y2 - y1
+        local real dist = Math_GetDistanceAsLoc(x1, y1, x2, y2)
+        if dist == 0 then // 起点与目标点重合，直接返回原坐标
+            return x1
+        endif
+        return x1 + (dx / dist) * distance
+    endfunction
+
+    // 坐标向目标坐标移动Y轴
+    function Math_GetMovedY takes real x1, real y1, real x2, real y2, real distance returns real
+        local real dx = x2 - x1
+        local real dy = y2 - y1
+        local real dist = Math_GetDistanceAsLoc(x1, y1, x2, y2)
+        if dist == 0 then
+            return y1
+        endif
+        return y1 + (dy / dist) * distance
+    endfunction
 
     //使一个区域只能在另一个矩形区域内移动
     function MoveRectInOtherRect takes rect other ,rect move ,real x ,real y returns nothing
@@ -266,12 +289,25 @@ library MMRMath
             return true
         endif
         if angel >= min_a and angel <= max_a then
-            call BJDebugMsg(R2S(angel))
             return true
         endif
         return false
     endfunction
 
+    function Math_ParabolaCalcuteAsY takes real x returns real
+        return ((x*x)*-1)+2*x
+    endfunction
+    // 计算圆边上的 X 坐标（输入角度为度数）
+    function Math_GetCircleXDeg takes real X, real R, real angleDegrees returns real
+        local real angleRadians = angleDegrees * bj_DEGTORAD
+        return X + R * Cos(angleRadians)
+    endfunction
+
+    // 计算圆边上的 Y 坐标（输入角度为度数）
+    function Math_GetCircleYDeg takes real Y, real R, real angleDegrees returns real
+        local real angleRadians = angleDegrees * bj_DEGTORAD
+        return Y + R * Sin(angleRadians)
+    endfunction
 endlibrary
 #endif
 
@@ -303,7 +339,7 @@ library SyncEffect initializer GolableDataInt
         set PlayerShowEffect[GetPlayerId(p)] = can
     endfunction
 
-//创建异步特效--坐标
+    //创建异步特效--坐标
     function SyncEffectByLoc takes string s ,real x ,real y returns effect
         local string z
         local effect a
@@ -315,7 +351,7 @@ library SyncEffect initializer GolableDataInt
         set a = AddSpecialEffect(z, x, y)
         return a
     endfunction
-//创建异步特效--点
+    //创建异步特效--点
     function SyncEffectByPoint takes string s ,location d returns effect
         local string z
         local effect a
@@ -328,7 +364,7 @@ library SyncEffect initializer GolableDataInt
         call RemoveLocation( d )
         return a
     endfunction
-//创建异步特效--单位
+    //创建异步特效--单位
     function SyncEffectByUnit takes string s ,widget u ,string ss returns effect
         local string z
         local effect a
@@ -548,7 +584,7 @@ library MMRTools requires SyncEffect , MMRMath
     function T_Damage takes unit dmgu ,unit tu ,real damage ,boolean isnomatk ,boolean isfaratk ,attacktype atktype ,damagetype dmgtype returns nothing
         call UnitDamageTarget(dmgu , tu ,damage, isnomatk, isfaratk, atktype, dmgtype , WEAPON_TYPE_WHOKNOWS )
     endfunction
-
+    //圆形伤害(无特效)
     function T_ChooseRectAndDamage takes unit dmgu ,real x ,real y ,real damage ,real radr,boolean isnomatk ,boolean isfaratk ,attacktype atktype ,damagetype dmgtype returns nothing
         local group g = CreateGroup()
         local unit loc_dmgu = dmgu
@@ -567,6 +603,32 @@ library MMRTools requires SyncEffect , MMRMath
 	    set loc_dmgu = null
 	    set dw = null
     endfunction
+
+    //圆形伤害(附带特效)
+    function T_ChooseRectAndDamageCSFX takes unit dmgu ,real x ,real y ,real damage ,real radr,boolean isnomatk ,boolean isfaratk ,attacktype atktype ,damagetype dmgtype ,string sfx ,real angle returns nothing
+        local group g = CreateGroup()
+        local unit loc_dmgu = dmgu
+        local unit dw 
+        local effect ef
+        call GroupEnumUnitsInRange(g,x,y,radr,null)
+        loop
+            set dw =FirstOfGroup(g)
+            exitwhen dw == null
+                if T_Check3(dw,GetOwningPlayer(loc_dmgu)) then
+                    call T_Damage.execute(loc_dmgu , dw ,damage, isnomatk, isfaratk, atktype, dmgtype)
+                    set ef = SyncEffectByLoc(sfx,GetUnitX(dw),GetUnitY(dw))
+                    call EXEffectMatRotateZ(ef,GetUnitFacing(dw)+angle)
+                    call DestroyEffect(ef)
+                    set ef = null
+                endif
+            call GroupRemoveUnit(g,dw)
+        endloop
+        call DestroyGroup(g)
+        set g = null
+	    set loc_dmgu = null
+	    set dw = null
+    endfunction
+
 
     //绝对值
     function T_Abs_I takes real a returns real
@@ -756,6 +818,8 @@ library MMRTools requires SyncEffect , MMRMath
         call SaveReal(BseHash,GetHandleId(t),8,z)
         call EXSetEffectXY(LoadEffectHandle(BseHash,GetHandleId(t),3),x,y)
         call EXSetEffectZ(LoadEffectHandle(BseHash,GetHandleId(t),3),c)
+        call EXEffectMatReset(LoadEffectHandle(BseHash,GetHandleId(t),3))
+        call EXEffectMatRotateZ(LoadEffectHandle(BseHash,GetHandleId(t),3),Math_GetAngleBetweenCoords(x,y,x2,y2))
         call RemoveLocation(d)
         call RemoveLocation(d1)
         call RemoveLocation(d2)
@@ -800,6 +864,8 @@ library MMRTools requires SyncEffect , MMRMath
         call SaveReal(BseHash,GetHandleId(t),8,z)
         call EXSetEffectXY(LoadEffectHandle(BseHash,GetHandleId(t),3),x,y)
         call EXSetEffectZ(LoadEffectHandle(BseHash,GetHandleId(t),3),c)
+        call EXEffectMatReset(LoadEffectHandle(BseHash,GetHandleId(t),3))
+        call EXEffectMatRotateZ(LoadEffectHandle(BseHash,GetHandleId(t),3),Math_GetAngleBetweenCoords(x,y,x2,y2))
         call RemoveLocation(d1)
         if z >= 1.00 then
             call DestroyEffect(LoadEffectHandle(BseHash,GetHandleId(t),3))
@@ -847,6 +913,8 @@ library MMRTools requires SyncEffect , MMRMath
     call SaveReal(BseHash,GetHandleId(t),8,z)
     call EXSetEffectXY(LoadEffectHandle(BseHash,GetHandleId(t),3),x,y)
     call EXSetEffectZ(LoadEffectHandle(BseHash,GetHandleId(t),3),c)
+    call EXEffectMatReset(LoadEffectHandle(BseHash,GetHandleId(t),3))
+    call EXEffectMatRotateZ(LoadEffectHandle(BseHash,GetHandleId(t),3),Math_GetAngleBetweenCoords(x,y,x2,y2))
     call RemoveLocation(d)
     call RemoveLocation(d1)
     call RemoveLocation(d2)
@@ -859,21 +927,21 @@ library MMRTools requires SyncEffect , MMRMath
     endfunction
     //单位到单位的贝塞尔曲线的动作及传参[带伤害]
     function T_BSE_U2UD takes unit a , unit b , effect c , real d , real e , real f , real g, real aa, attacktype bb, damagetype cc returns nothing
-    local timer t = null
-    set t =CreateTimer()
-    call SaveUnitHandle(BseHash,GetHandleId(t),1,a)
-    call SaveUnitHandle(BseHash,GetHandleId(t),2,b)
-    call SaveEffectHandle(BseHash,GetHandleId(t),3,c)
-    call SaveReal(BseHash,GetHandleId(t),4,d)
-    call SaveReal(BseHash,GetHandleId(t),5,e)
-    call SaveReal(BseHash,GetHandleId(t),6,f)
-    call SaveReal(BseHash,GetHandleId(t),7,g)
-    call SaveReal(BseHash,GetHandleId(t),8,0.00)
-    call SaveReal(BseHash,GetHandleId(t),9,aa)
-    call SaveInteger(BseHash,GetHandleId(t),10,ConvetAttackTypeToInteger(bb))
-    call SaveInteger(BseHash,GetHandleId(t),11,ConvetDamageTypeToInteger(cc))
-    call TimerStart(t,0.02,true,function T_BSE_U2UD_TimerAction)
-    set t = null
+        local timer t = null
+        set t =CreateTimer()
+        call SaveUnitHandle(BseHash,GetHandleId(t),1,a)
+        call SaveUnitHandle(BseHash,GetHandleId(t),2,b)
+        call SaveEffectHandle(BseHash,GetHandleId(t),3,c)
+        call SaveReal(BseHash,GetHandleId(t),4,d)
+        call SaveReal(BseHash,GetHandleId(t),5,e)
+        call SaveReal(BseHash,GetHandleId(t),6,f)
+        call SaveReal(BseHash,GetHandleId(t),7,g)
+        call SaveReal(BseHash,GetHandleId(t),8,0.00)
+        call SaveReal(BseHash,GetHandleId(t),9,aa)
+        call SaveInteger(BseHash,GetHandleId(t),10,ConvetAttackTypeToInteger(bb))
+        call SaveInteger(BseHash,GetHandleId(t),11,ConvetDamageTypeToInteger(cc))
+        call TimerStart(t,0.02,true,function T_BSE_U2UD_TimerAction)
+        set t = null
     endfunction
 
     //点到点的贝塞尔曲线计时器[带伤害]
@@ -905,6 +973,8 @@ library MMRTools requires SyncEffect , MMRMath
         call SaveReal(BseHash,GetHandleId(t),8,z)
         call EXSetEffectXY(LoadEffectHandle(BseHash,GetHandleId(t),3),x,y)
         call EXSetEffectZ(LoadEffectHandle(BseHash,GetHandleId(t),3),c)
+        call EXEffectMatReset(LoadEffectHandle(BseHash,GetHandleId(t),3))
+        call EXEffectMatRotateZ(LoadEffectHandle(BseHash,GetHandleId(t),3),Math_GetAngleBetweenCoords(x,y,x2,y2))
         call RemoveLocation(d1)
         if z>= 0.96 then
             call DzSetEffectVisible(sfx, true )
@@ -1221,6 +1291,10 @@ library MMRTools requires SyncEffect , MMRMath
     function GetUDItem takes nothing returns item
         local trigger t = GetTriggeringTrigger()
         return LoadItemHandle(MmrTHash,GetHandleId(t),0)
+    endfunction
+
+    function T_SetEffectXYByCircleAsDegrees takes effect needset ,real x ,real y ,real r, real angle returns nothing
+        call EXSetEffectXY(needset,Math_GetCircleXDeg(x,r,angle),Math_GetCircleYDeg(y,r,angle))
     endfunction
 endlibrary
 
