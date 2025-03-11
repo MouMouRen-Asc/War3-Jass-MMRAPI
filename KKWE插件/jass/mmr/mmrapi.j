@@ -817,7 +817,7 @@ library MMRTools requires SyncEffect , MMRMath
         set z = LoadReal(BseHash,GetHandleId(t),8) + 0.02
         call SaveReal(BseHash,GetHandleId(t),8,z)
         call EXSetEffectXY(LoadEffectHandle(BseHash,GetHandleId(t),3),x,y)
-        call EXSetEffectZ(LoadEffectHandle(BseHash,GetHandleId(t),3),c)
+        call EXSetEffectZ(LoadEffectHandle(BseHash,GetHandleId(t),3),c+GetTerrainZ(x,y))
         call EXEffectMatReset(LoadEffectHandle(BseHash,GetHandleId(t),3))
         call EXEffectMatRotateZ(LoadEffectHandle(BseHash,GetHandleId(t),3),Math_GetAngleBetweenCoords(x,y,x2,y2))
         call RemoveLocation(d)
@@ -863,7 +863,7 @@ library MMRTools requires SyncEffect , MMRMath
         set z = LoadReal(BseHash,GetHandleId(t),8) + 0.02
         call SaveReal(BseHash,GetHandleId(t),8,z)
         call EXSetEffectXY(LoadEffectHandle(BseHash,GetHandleId(t),3),x,y)
-        call EXSetEffectZ(LoadEffectHandle(BseHash,GetHandleId(t),3),c)
+        call EXSetEffectZ(LoadEffectHandle(BseHash,GetHandleId(t),3),c+GetTerrainZ(x,y))
         call EXEffectMatReset(LoadEffectHandle(BseHash,GetHandleId(t),3))
         call EXEffectMatRotateZ(LoadEffectHandle(BseHash,GetHandleId(t),3),Math_GetAngleBetweenCoords(x,y,x2,y2))
         call RemoveLocation(d1)
@@ -912,7 +912,7 @@ library MMRTools requires SyncEffect , MMRMath
     set z = LoadReal(BseHash,GetHandleId(t),8) + 0.02
     call SaveReal(BseHash,GetHandleId(t),8,z)
     call EXSetEffectXY(LoadEffectHandle(BseHash,GetHandleId(t),3),x,y)
-    call EXSetEffectZ(LoadEffectHandle(BseHash,GetHandleId(t),3),c)
+    call EXSetEffectZ(LoadEffectHandle(BseHash,GetHandleId(t),3),c+GetTerrainZ(x,y))
     call EXEffectMatReset(LoadEffectHandle(BseHash,GetHandleId(t),3))
     call EXEffectMatRotateZ(LoadEffectHandle(BseHash,GetHandleId(t),3),Math_GetAngleBetweenCoords(x,y,x2,y2))
     call RemoveLocation(d)
@@ -972,7 +972,7 @@ library MMRTools requires SyncEffect , MMRMath
         set z = LoadReal(BseHash,GetHandleId(t),8) + 0.02
         call SaveReal(BseHash,GetHandleId(t),8,z)
         call EXSetEffectXY(LoadEffectHandle(BseHash,GetHandleId(t),3),x,y)
-        call EXSetEffectZ(LoadEffectHandle(BseHash,GetHandleId(t),3),c)
+        call EXSetEffectZ(LoadEffectHandle(BseHash,GetHandleId(t),3),c+GetTerrainZ(x,y))
         call EXEffectMatReset(LoadEffectHandle(BseHash,GetHandleId(t),3))
         call EXEffectMatRotateZ(LoadEffectHandle(BseHash,GetHandleId(t),3),Math_GetAngleBetweenCoords(x,y,x2,y2))
         call RemoveLocation(d1)

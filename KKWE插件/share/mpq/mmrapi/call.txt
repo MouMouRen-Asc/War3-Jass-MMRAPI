@@ -1,3 +1,39 @@
+[GetRealSelectItem]
+title = "[某某人内置]异步获取当前选中的物品, 没有延迟但是返回值是异步的"
+description = "[某某人内置]异步获取当前选中的物品, 没有延迟但是返回值是异步的"
+comment = "异步获取当前选中的物品, 没有延迟但是返回值是异步的"
+category = TC_MMRNZ
+returns = item
+
+[GetSelectItem]
+title = "[某某人内置]获取玩家当前选中的物品, 返回值是同步的"
+description = "[某某人内置]获取玩家：${玩家}当前选中的物品, 返回值是同步的"
+comment = "异步获取当前选中的物品, 没有延迟但是返回值是异步的"
+category = TC_MMRNZ
+returns = item
+[[.args]]
+type = player
+
+[EXGetItemSize]
+title = "[某某人内置]获取物品模型缩放比例"
+description = "[某某人内置]获取物品模型:${物品}缩放比例"
+comment = "获取物品模型缩放比例"
+category = TC_MMRNZ
+returns = real
+[[.args]]
+type = item
+
+[GetTerrainZ]
+title = "[某某人内置]获取地面高度"
+description = "[某某人内置]坐标X:${实数}坐标Y:${实数}"
+comment = "获取物品模型缩放比例"
+category = TC_MMRNZ
+returns = real
+[[.args]]
+type = real
+[[.args]]
+type = real
+
 [MMRAPI_CheckHeroMainAttribute]
 title = "英雄主属性获得"
 description = "获得${单位}的主属性[某某人制作]"

@@ -10,6 +10,226 @@ description = "[某某人内置]初始化载入-窗口居中一次"
 comment = "窗口居中一次"
 category = TC_MMRNZ
 
+[DisableItemPreselectUi]
+title = "[某某人内置]屏蔽所有物品在地面的指向提示 开局调用一次即可"
+description = "[某某人内置]屏蔽所有物品在地面的指向提示 开局调用一次即可"
+comment = "屏蔽所有物品在地面的指向提示 开局调用一次即可"
+category = TC_MMRNZ
+
+[EnableDrawSkillPanel]
+title = "[某某人内置]允许查看指定单位技能"
+description = "[某某人内置]目标单位${单位}，是否可以查看${布尔}"
+comment = "设置目标单位的技能是否可见"
+category = TC_MMRNZ
+[[.args]]
+type = unit
+[[.args]]
+type = boolean
+
+[EnableDrawSkillPanelByPlayer]
+title = "[某某人内置]允许查看指定单位技能"
+description = "[某某人内置]目标玩家${玩家}，是否可以查看${布尔}"
+comment = "设置目标单位的技能是否可见"
+category = TC_MMRNZ
+[[.args]]
+type = player
+[[.args]]
+type = boolean
+
+[SetUnitAbilityRange]
+title = "[某某人内置]设置单位技能范围"
+description = "[某某人内置]目标玩家${单位}，是否可以查看${技能}，范围${实数}"
+comment = "设置目标单位的技能是否可见"
+category = TC_MMRNZ
+[[.args]]
+type = unit
+[[.args]]
+type = abilcode
+[[.args]]
+type = real
+
+[SetUnitAbilityCool]
+title = "[某某人内置]设置单位技能冷却时间"
+description = "[某某人内置]目标玩家${单位}，技能${技能}，现有冷却${实数}，最大冷却${实数}"
+comment = "设置目标单位的技能冷却参数"
+category = TC_MMRNZ
+[[.args]]
+type = unit
+[[.args]]
+type = abilcode
+[[.args]]
+type = real
+[[.args]]
+type = real
+
+[SetUnitAbilityDataA]
+title = "[某某人内置]设置单位技能数据A"
+description = "[某某人内置]目标玩家${单位}，技能${技能}，技能${实数}"
+comment = "设置目标单位技能"
+category = TC_MMRNZ
+[[.args]]
+type = unit
+[[.args]]
+type = abilcode
+[[.args]]
+type = real
+
+[SetUnitAbilityDataB]
+title = "[某某人内置]设置单位技能数据B"
+description = "[某某人内置]目标玩家${单位}，技能${技能}，技能${实数}"
+comment = "设置目标单位技能"
+category = TC_MMRNZ
+[[.args]]
+type = unit
+[[.args]]
+type = abilcode
+[[.args]]
+type = real
+
+[SetUnitAbilityDataC]
+title = "[某某人内置]设置单位技能数据C"
+description = "[某某人内置]目标玩家${单位}，技能${技能}，技能${实数}"
+comment = "设置目标单位技能"
+category = TC_MMRNZ
+[[.args]]
+type = unit
+[[.args]]
+type = abilcode
+[[.args]]
+type = real
+
+[SetUnitAbilityDataD]
+title = "[某某人内置]设置单位技能数据D"
+description = "[某某人内置]目标玩家${单位}，技能${技能}，技能${实数}"
+comment = "设置目标单位技能"
+category = TC_MMRNZ
+[[.args]]
+type = unit
+[[.args]]
+type = abilcode
+[[.args]]
+type = real
+
+[SetUnitAbilityDataE]
+title = "[某某人内置]设置单位技能数据E"
+description = "[某某人内置]目标玩家${单位}，技能${技能}，技能${实数}"
+comment = "设置目标单位技能"
+category = TC_MMRNZ
+[[.args]]
+type = unit
+[[.args]]
+type = abilcode
+[[.args]]
+type = real
+
+[SetUnitAbilityButtonPos]
+title = "[某某人内置]设置单位技能位置"
+description = "[某某人内置]目标玩家${单位}，技能${技能}，X${整数}，Y${整数}"
+comment = "设置目标单位技能"
+category = TC_MMRNZ
+[[.args]]
+type = unit
+[[.args]]
+type = abilcode
+[[.args]]
+type = integer
+[[.args]]
+type = integer
+
+[SetUnitAbilityHotkey]
+title = "[某某人内置]设置单位技能热键"
+description = "[某某人内置]目标玩家${单位}，技能${技能}，热键${字符串}"
+comment = "设置目标单位技能"
+category = TC_MMRNZ
+[[.args]]
+type = unit
+[[.args]]
+type = abilcode
+[[.args]]
+type = string
+
+[SetUnitAbilityCost]
+title = "[某某人内置]设置单位技能消耗"
+description = "[某某人内置]目标玩家${单位}，技能${技能}，消耗${整数}"
+comment = "设置目标单位技能"
+category = TC_MMRNZ
+[[.args]]
+type = unit
+[[.args]]
+type = abilcode
+[[.args]]
+type = integer
+
+[SetUnitAbilityUnitId]
+title = "[某某人内置]设置单位技能单位ID"
+description = "[某某人内置]目标玩家${单位}，技能${技能}，技能单位${整数}"
+comment = "设置目标单位技能"
+category = TC_MMRNZ
+[[.args]]
+type = unit
+[[.args]]
+type = abilcode
+[[.args]]
+type = unitcode
+
+[EXSetItemSize]
+title = "[某某人内置]设置物品模型缩放比例"
+description = "[某某人内置]目标物品${单位}，缩放比例${实数}"
+comment = "设置目标单位技能"
+category = TC_MMRNZ
+[[.args]]
+type = item
+[[.args]]
+type = real
+
+[EXItemMatRotateX]
+title = "[某某人内置]物品模型 x轴旋转  乘法计算"
+description = "[某某人内置]目标物品${单位}，旋转${实数}"
+comment = "模型旋转X"
+category = TC_MMRNZ
+[[.args]]
+type = item
+[[.args]]
+type = real
+
+[EXItemMatRotateY]
+title = "[某某人内置]物品模型 y轴旋转  乘法计算"
+description = "[某某人内置]目标物品${单位}，旋转${实数}"
+comment = "模型旋转Y"
+category = TC_MMRNZ
+[[.args]]
+type = item
+[[.args]]
+type = real
+
+[EXItemMatRotateZ]
+title = "[某某人内置]物品模型 z轴旋转  乘法计算"
+description = "[某某人内置]目标物品${单位}，旋转${实数}"
+comment = "模型旋转Z"
+category = TC_MMRNZ
+[[.args]]
+type = item
+[[.args]]
+type = real
+
+[EXSetItemColor]
+title = "[某某人内置]修改物品颜色 透明值有效"
+description = "[某某人内置]目标物品${单位}，色值${整数}"
+comment = "模型旋转Z"
+category = TC_MMRNZ
+[[.args]]
+type = item
+[[.args]]
+type = integer
+
+[EXItemMatReset]
+title = "[某某人内置]物品模型恢复"
+description = "[某某人内置]目标物品${单位}"
+comment = "物品模型恢复"
+category = TC_MMRNZ
+[[.args]]
+type = item
+
 [T_ChooseRectAndDamage]
 title = "选取圆形范围单位造成伤害无需排泄"
 description = "造成伤害单位${单位}，造成伤害位置X${实数}，造成伤害位置Y${实数},造成的伤害${实数},造成伤害范围${实数},是否是平A伤害${布尔},是否是远程伤害${布尔},攻击类型${攻击类型}，伤害类型${伤害类型}"
