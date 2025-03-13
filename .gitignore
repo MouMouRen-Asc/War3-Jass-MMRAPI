@@ -5,9 +5,23 @@
 /KKWE插件/logs
 /KKWE插件/plugin/*
 !/KKWE插件/plugin/jasshelper
+
+
+!/KKWE插件/plugin/warcraft3
+/KKWE插件/plugin/warcraft3/*
+!/KKWE插件/plugin/warcraft3/X_JAPI (KKWE).dll
+
+!/KKWE插件/plugin/wave
+/KKWE插件/plugin/wave/*
+!/KKWE插件/plugin/wave/include
+/KKWE插件/plugin/wave/include/*
+!/KKWE插件/plugin/wave/include/X_Util.h
+!/KKWE插件/plugin/wave/include/YDWE_Base.h
+
 !/KKWE插件/plugin/YDTrigger
 /KKWE插件/plugin/YDTrigger/*
 !/KKWE插件/plugin/YDTrigger/YDTrigger.h
+
 /KKWE插件/share/locale
 /KKWE插件/share/mpq/OriginGameJapi
 /KKWE插件/share/mpq/carlos
@@ -19,8 +33,12 @@
 /KKWE插件/share/mpq/units
 /KKWE插件/share/mpq/ydtrigger
 /KKWE插件/share/mpq/ydwe
+
 /KKWE插件/share/script/*
+!/KKWE插件/share/script/FourCC.lua
 !/KKWE插件/share/script/ydwe_on_menu.lua
+
+
 /KKWE插件/jass/OriginGameJass
 /KKWE插件/jass/package
 KKWE*.exe
