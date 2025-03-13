@@ -1,0 +1,2 @@
+[DEBUG] started at 81024280
+[ERROR] Usage: G:\Fork\War3-Jass-MMRAPI\KKWE²å¼þ\XZPacker\X_JAPI (Return Bug) Packer.exe <w3x>

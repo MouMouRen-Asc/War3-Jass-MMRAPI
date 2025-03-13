@@ -1,0 +1,11 @@
+[DEBUG] started at 82378828
+[DEBUG] MPQ header start at 512
+[DEBUG] W3MH header end at 56
+[DEBUG] added war3map.w3i
+[WARN ] war3mapPreview.tga does not exist in mpq
+[WARN ] falling back to war3mapMap.blp
+[DEBUG] added war3mapMap.blp
+[DEBUG] writing file
+[DEBUG] removing temp file
+[DEBUG] end at 82379035
+[DEBUG] elapsed time: 206ms

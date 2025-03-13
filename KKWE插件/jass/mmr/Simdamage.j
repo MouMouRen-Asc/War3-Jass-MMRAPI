@@ -4,7 +4,6 @@
 
 #ifndef DamageShowIncluded
 #define DamageShowIncluded
-
 library DamageShow requires optional MmrApi
 
     globals
