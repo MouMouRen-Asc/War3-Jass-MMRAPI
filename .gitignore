@@ -19,7 +19,8 @@
 /KKWE插件/share/mpq/units
 /KKWE插件/share/mpq/ydtrigger
 /KKWE插件/share/mpq/ydwe
-/KKWE插件/share/script
+/KKWE插件/share/script/*
+!/KKWE插件/share/script/ydwe_on_menu.lua
 /KKWE插件/jass/OriginGameJass
 /KKWE插件/jass/package
 KKWE*.exe
